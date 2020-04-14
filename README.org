@@ -1,0 +1,1695 @@
+#+TITLE: Doom Configuration
+#+PROPERTY: header-args :tangle-mode (identity #o444)
+
+* About
+
+I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines (via
+TRAMP).
+
+I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration.
+
+This is a literate org file, which specifies and documents the entirety of my
+Doom configuration. If you link this file to =~/.doom.d/config.org=, Doom will
+automatically tangle it on init.
+
+Thanks to tools like Nix and Guix, it's possible to declaratively specify my
+entire system configuration in this file (not just Emacs). That's a WIP.
+
+Inspirations:
+
+- http://doc.rix.si/cce/cce.html
+- https://github.com/jethrokuan/dots.git
+- https://ambrevar.xyz/emacs-everywhere/
+- [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
+
+* Declare which Doom Modules to Load
+
+This file controls what Doom modules are enabled and what order they load in.
+Remember to run =doom sync= or =doom/reload=  after modifying it.
+
+#+begin_src emacs-lisp :tangle init.el
+  ;;; init.el -*- lexical-binding: t; -*-
+
+  (doom! :input
+
+	 :desktop
+	 exwm                                        ; Emacs X Window Manager
+
+	 :completion
+	 (company +childframe)                       ; the ultimate code completion backend
+	 (ivy +prescient)                            ; a search engine for love and life
+
+	 :ui
+	 doom                                        ; what makes DOOM look the way it does
+	 doom-dashboard                              ; a nifty splash screen for Emacs
+	 hl-todo                                     ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+	 modeline                                    ; snazzy, Atom-inspired modeline, plus API
+	 nav-flash                                   ; blink the current line after jumping
+	 ophints                                     ; highlight the region an operation acts on
+	 vc-gutter                                   ; vcs diff in the fringe
+	 zen                                         ; distraction-free coding or writing
+
+	 :editor
+	 file-templates                              ; auto-snippets for empty files
+	 fold                                        ; (nigh) universal code folding
+	 lispy                                       ; vim for lisp, for people who don't like vim
+	 multiple-cursors                            ; editing in many places at once
+	 snippets                                    ; my elves. They type so I don't have to
+	 word-wrap                                   ; soft wrapping with language-aware indent
+
+	 :emacs
+	 dired                                       ; making dired pretty [functional]
+	 electric                                    ; smarter, keyword-based electric-indent
+	 vc                                          ; version-control and Emacs, sitting in a tree
+
+	 :term
+	 eshell                                      ; a consistent, cross-platform shell (WIP)
+
+	 :checkers
+	 syntax                                      ; tasing you for every semicolon you forget
+
+	 :tools
+	 direnv
+	 (eval +overlay)                             ; run code, run (also, repls)
+	 lookup                                      ; navigate your code and its documentation
+	 (magit +forge)                                       ; a git porcelain for Emacs
+	 pass                                        ; password manager for nerds
+	 pdf                                         ; pdf enhancements
+
+	 :lang
+	 common-lisp                               ; if you've seen one lisp, you've seen them all
+	 data                                        ; config/data formats
+	 emacs-lisp                                  ; drown in parentheses
+	 (haskell +dante)                            ; a language that's lazier than I am
+	 julia                                       ; a better, faster MATLAB
+	 markdown                                    ; writing docs for people to ignore
+	 nix                                       ; I hereby declare "nix geht mehr!"
+	 (org                                        ; organize your plain life in plain text
+	  +journal
+	  +hugo                                      ; use Emacs for hugo blogging
+	  +jupyter                                   ; ipython/jupyter support for babel
+	  )
+	 sh                                          ; she sells {ba,z,fi}sh shells on the C xor
+
+	 :app
+	 calendar
+
+	 :config
+	 literate
+	 (default +bindings +smartparens))
+#+end_src
+
+* Package declarationss
+
+Any desired package not declared in a Doom module must be declared here.
+
+#+begin_src emacs-lisp :tangle packages.el
+;; -*- no-byte-compile: t; -*-
+;;; $DOOMDIR/packages.el
+(package! aggressive-indent)
+(package! ace-window)
+(package! key-chord)
+(package! helpful)
+(package! phi-search)
+(package! undo-tree)
+(package! dired-narrow)
+(package! deadgrep)
+(package! dmenu)
+(package! company-posframe)
+(package! org-noter)
+(package! org-roam
+          :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! company-org-roam
+  :recipe (:host github :repo "jethrokuan/company-org-roam"))
+
+(package! smartscan)
+(package! org-ref)
+(package! google-this)
+(package! wrap-region)
+(package! edit-server)
+(package! slack)
+#+end_src
+
+* config.el
+:PROPERTIES:
+:header-args: :tangle config.el
+:END:
+** Header
+Set =lexical-binding= for this file.
+
+#+begin_src emacs-lisp
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+#+end_src
+
+** Global Constants
+*** Org
+
+#+begin_src emacs-lisp
+(setq org-directory "~/Sync/"
+      org-roam-directory "/home/dan/Sync/org-roam/")
+#+end_src
+
+*** Contact info
+
+Some functionality uses this to identify you, e.g. GPG configuration, email
+clients, file templates and snippets.
+
+#+begin_src emacs-lisp
+(setq user-full-name "Dan Girshovich"
+      user-mail-address "dan.girsh@gmail.com")
+#+end_src
+
+** Visual Settings
+
+#+begin_src emacs-lisp
+
+(setq doom-font (font-spec :family "Hack" :size 20)
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+      doom-serif-font (font-spec :family "Libre Baskerville"))
+
+(setq +doom-dashboard-banner-padding '(0 . 2)
+      +doom-dashboard-banner-file "deepfield-window.png"
+      +doom-dashboard-banner-dir "~/.doom.d/banners")
+
+(setq display-line-numbers-type nil)
+
+;; Thin grey line separating windows
+(set-face-background 'vertical-border "grey")
+(set-face-foreground 'vertical-border (face-background 'vertical-border))
+
+(use-package! doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
+  (load-theme 'doom-acario-dark t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+#+end_src
+
+** Key Chord Config
+
+I don't use Evil (Vim emulation), which would add an extra layer of complexity
+to /everything./ Instead, I heavily leverage key-chord.el, which enables binding
+simultaneous key presses (chords) to commands.
+
+I have some custom code to bind chords to Doom's leaders. Many commonly used
+commands are bound in these "key chord maps".
+
+*** Enable the key chord package
+
+Set hardware-specific delay. Tweak this if:
+
+- there are false keychords triggered when typing fast (delay too large)
+- if expected keychords don't register (delay too small)
+- there's a noticable lag when typing normally (delay too large)
+
+#+begin_src emacs-lisp
+(use-package! key-chord
+  :config
+  (key-chord-mode 1)
+  (setq key-chord-one-keys-delay 0.02
+        key-chord-two-keys-delay 0.03))
+#+end_src
+
+*** Setup for binding chords as leaders
+
+#+begin_src emacs-lisp
+(defun simulate-seq (seq)
+  (setq unread-command-events (listify-key-sequence seq)))
+
+(defun send-doom-leader ()
+  (interactive)
+  (simulate-seq "\C-c"))
+
+(setq doom-localleader-alt-key "M-c")
+
+(defun send-doom-local-leader ()
+  (interactive)
+  (simulate-seq "\M-c"))
+
+#+end_src
+
+*** Define global key-chords
+
+#+begin_src emacs-lisp
+  (after! key-chord
+
+    (key-chord-define-global "fj" 'send-doom-leader)
+    (key-chord-define-global "gh" 'send-doom-local-leader)
+
+    (setq dk-keymap (make-sparse-keymap))
+    (setq sl-keymap (make-sparse-keymap))
+
+    (key-chord-define-global "dk" dk-keymap)
+    (key-chord-define-global "sl" sl-keymap)
+
+    (defun add-to-keymap (keymap bindings)
+      (dolist (binding bindings)
+	      (define-key keymap (kbd (car binding)) (cdr binding))))
+
+    (defun add-to-dk-keymap (bindings)
+      (add-to-keymap dk-keymap bindings))
+
+    (defun add-to-sl-keymap (bindings)
+      (add-to-keymap sl-keymap bindings))
+
+    (add-to-dk-keymap
+     '(("k" . doom/kill-this-buffer-in-all-windows)
+       ("n" . narrow-or-widen-dwim)
+       ("d" . dired-jump)
+       ("b" . my/set-brightness)
+       ("<SPC>" . rgrep)
+       ("s" . save-buffer)
+       ("t" . eshell-here)
+       ("w" . google-this-noconfirm)
+       ("x" . sp-splice-sexp)
+       ("/" . find-name-dired)))
+
+    (key-chord-define-global ",." 'end-of-buffer)
+    (key-chord-define-global "xz" 'beginning-of-buffer)
+    (key-chord-define-global "xc" 'beginning-of-buffer)
+
+    (key-chord-define-global "qw" 'delete-window)
+    (key-chord-define-global "qp" 'delete-other-windows)
+
+    (key-chord-define-global "fk" 'other-window)
+
+    (key-chord-define-global "jd" 'rev-other-window)
+
+    (key-chord-define-global "hh" 'helpful-at-point)
+    (key-chord-define-global "hk" 'helpful-key)
+    (key-chord-define-global "hv" 'helpful-variable)
+    (key-chord-define-global "hf" 'helpful-function)
+
+    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+
+    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+    (key-chord-define-global "fv" 'comment-line)
+
+    (key-chord-define-global "kl" 'er/expand-region)
+
+    (key-chord-define-global "a;" 'execute-extended-command)
+    (key-chord-define-global "xf" 'find-file)
+
+    (key-chord-define-global "l;" 'repeat))
+#+end_src
+
+** Hardware Settings
+*** Keyboard
+
+Sets caps to control and sets a snappy key repeat / delay.
+
+=xset [r rate delay [rate]]=
+
+#+begin_src emacs-lisp
+(defun fix-keyboard ()
+  (interactive)
+  (shell-command "setxkbmap -option 'ctrl:nocaps'")
+  (shell-command "xset r rate 160 50"))
+
+(fix-keyboard)
+#+end_src
+
+*** Toggle Touchpad
+
+Occassionally, the touchpad gets triggered accidentally while typing. This is a
+quick way to disable/enable it.
+
+#+begin_src emacs-lisp
+(defun toggle-touchpad ()
+  (interactive)
+  (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
+
+(add-to-dk-keymap
+   '(("m" . toggle-touchpad)))
+#+end_src
+
+*** Display Brightness
+
+Set brightness by writing directly to system brightness file.
+
+#+begin_src emacs-lisp
+(defun my/set-brightness (brightness)
+  (interactive "nBrightness level: ")
+  (save-window-excursion
+    (find-file "/sudo:root@localhost:/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/brightness")
+    (kill-region
+     (point-min)
+     (point-max))
+    (insert
+     (format "%s" brightness))
+    (save-buffer)
+    (kill-buffer)))
+#+end_src
+
+**** TODO Switch to interfacing with a brightness manager.
+
+Had issues the first time, but that was years ago.
+
+** Load helper functions
+
+#+begin_src emacs-lisp
+(load-file (concat doom-private-dir "funcs.el"))
+#+end_src
+
+** Org
+
+I use org as a primary interface. It currently manages:
+
+- My second brain with org-roam & org-journal
+- literate programming with babel and emacs-jupyter (e.g. this file)
+- tasks + calendar with org-agenda and calfw
+- Writing / blogging with ox-hugo, pandoc, etc...
+  - Has nice inline rendering of LaTeX
+- Managing references + pdfs with org-ref
+- Annotating PDFs with notes via org-noter
+
+#+begin_src emacs-lisp
+(use-package! org
+  :mode ("\\.org\\'" . org-mode)
+  :init
+  (add-hook 'org-src-mode-hook #'(lambda () (flycheck-mode 0)))
+  (add-hook 'org-mode-hook #'(lambda () (flycheck-mode 0)))
+  (map! :map org-mode-map
+        "M-n" #'outline-next-visible-heading
+        "M-p" #'outline-previous-visible-heading)
+  (setq org-src-window-setup 'current-window
+        org-return-follows-link t
+        org-confirm-elisp-link-function nil
+        org-confirm-shell-link-function nil
+        org-use-speed-commands t
+        org-catch-invisible-edits 'show
+        org-preview-latex-image-directory "/tmp/ltximg/"))
+
+(after! org
+
+  ;; (add-hook 'ob-async-pre-execute-src-block-hook
+  ;;           '(lambda ()
+  ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
+  ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
+  ;;              ))
+
+  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
+                                                      (:display . "text/plain")
+                                                      (:async . "yes")))
+
+  (setq org-confirm-babel-evaluate nil
+        org-use-property-inheritance t
+        org-export-with-sub-superscripts nil
+        org-startup-indented t
+        org-pretty-entities nil
+        org-use-speed-commands t
+        org-return-follows-link t
+        org-outline-path-complete-in-steps nil
+        org-ellipsis ""
+        org-html-htmlize-output-type 'css
+        org-fontify-whole-heading-line t
+        org-fontify-done-headline t
+        org-fontify-quote-and-verse-blocks t
+        org-image-actual-width nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+        org-edit-src-content-indentation 0
+        org-adapt-indentation nil
+        org-hide-emphasis-markers t
+        org-special-ctrl-a/e t
+        org-special-ctrl-k t
+        org-export-with-broken-links t
+        org-yank-adjusted-subtrees t
+        org-src-window-setup 'reorganize-frame
+        org-src-ask-before-returning-to-edit-buffer nil
+        org-insert-heading-respect-content nil)
+
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  (add-hook 'org-babel-after-execute-hook 'org-toggle-latex-fragment 'append)
+
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
+  (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
+
+  (setq org-agenda-files (directory-files org-roam-directory  t ".*.org")
+        org-refile-targets `((,(append (my/open-org-files-list) org-agenda-files) :maxlevel . 7))
+        ;; https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm)
+
+  (setq org-format-latex-options
+        (quote (:foreground default
+                            :background default
+                            :scale 2.0
+                            :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d@/!)")
+          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+
+  ;; Colorize org babel output. Without this color codes are left in the output.
+  (defun my/display-ansi-colors ()
+    (interactive)
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region (point-min) (point-max))))
+
+  (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors))
+#+end_src
+
+*** Org-noter
+
+#+BEGIN_SRC emacs-lisp
+(use-package! org-noter
+  :after org
+  :config
+  (setq org-noter-notes-window-location 'vertical-split
+        org-noter-notes-search-path '("~/Sync")
+        org-noter-auto-save-last-location t
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+#+END_SRC
+
+*** Org-ref
+
+#+BEGIN_SRC emacs-lisp
+;; Note that this pulls in Helm :/
+;; https://github.com/jkitchin/org-ref/issues/202
+(use-package! org-ref
+  :after (org bibtex)
+  :init
+  (setq org-ref-default-bibliography '("~/Sync/references.bib"))
+  :config
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+        org-ref-bibliography-notes "~/Sync/pdf_notes.org"
+        org-ref-pdf-directory "~/Sync/pdf/"
+        org-ref-notes-function #'org-ref-notes-function-one-file)
+
+  (defun get-pdf-filename (key)
+    (let ((results (bibtex-completion-find-pdf key)))
+      (if (equal 0 (length results))
+          (org-ref-get-pdf-filename key)
+        (car results))))
+
+  (add-hook 'org-ref-create-notes-hook
+            (lambda ()
+              (org-entry-put
+               nil
+               "NOTER_DOCUMENT"
+               (get-pdf-filename (org-entry-get
+			                            (point) "Custom_ID")))) )
+
+  (defun org-ref-noter-at-point ()
+    (interactive)
+    (let* ((results (org-ref-get-bibtex-key-and-file))
+           (key (car results))
+           (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+      (if (file-exists-p pdf-file)
+          (save-window-excursion
+            (org-ref-open-notes-at-point)
+            (find-file-other-window pdf-file)
+            (org-noter))
+        (message "no pdf found for %s" key))))
+
+  (map! :leader
+        :map org-mode-map
+        :desc "org-noter from ref"
+        "n p" 'org-ref-noter-at-point))
+#+END_SRC
+
+*** Org-journal
+
+
+(use-package! org-journal
+  :config
+  (map! :leader
+        (:prefix-map ("n" . "notes")
+          (:prefix ("j" . "journal")
+            :desc "Today" "t" #'org-journal-today)))
+  (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-file-format "private-%Y-%m-%d.org"
+        org-journal-dir (concat org-roam-directory "journal")
+        org-journal-carryover-items nil
+        org-journal-date-format "%Y-%m-%d")
+  (defun org-journal-today ()
+    (interactive)
+    (org-journal-new-entry t)))
+#+end_src
+
+*** Org-roam
+
+#+begin_src emacs-lisp
+(use-package! org-roam
+  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+  :hook
+  (after-init . org-roam-mode)
+  :custom-face
+  (org-roam-link ((t (:inherit org-link))))
+  :init
+  (map! :leader
+        :prefix "n"
+        :desc "org-roam" "l" #'org-roam
+        :desc "org-roam-insert" "i" #'org-roam-insert
+        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
+        :desc "org-roam-find-file" "f" #'org-roam-find-file
+        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
+        :desc "org-roam-capture" "c" #'org-roam-capture)
+  (key-chord-define-global "[[" #'org-roam-insert)
+  (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
+        org-roam-graph-exclude-matcher "private"))
+
+(use-package! company-org-roam
+              :when (featurep! :completion company)
+              :after org-roam
+              :config
+              (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
+#+end_src
+
+**** Capture Templates
+
+This is used when new files in org-roam are created. The default doesn't have
+=:immediate-finish= set, which makes an annoying empty file buffer pop-up any time
+a new entity is created in org-roam. Setting it here smooths out the experience.
+
+Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
+
+#+begin_src emacs-lisp
+(setq org-roam-capture-templates
+      '(("d" "default" plain (function org-roam--capture-get-point)
+         "%?"
+         :file-name "%<%Y%m%d%H%M%S>-${slug}"
+         :head "#+TITLE: ${title}\n"
+         :unnarrowed t
+         :immediate-finish t)))
+#+end_src
+
+** Jumping between windows
+
+Here we set the window labels to homerow keys (they are numbers by default)
+
+Would use the window-select Doom module, but that (unwantedly in EXWM) binds other-window
+to ace-window.
+
+#+begin_src emacs-lisp
+(use-package! ace-window
+  :config
+  (map! "C-M-SPC" #'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+#+end_src
+
+** Slack
+
+A lightweight Slack client is useful if, for example, you flee a global
+pandemic in some bandwidth-limited backcountry location.
+
+#+begin_src emacs-lisp
+(use-package! slack
+  :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "embassy-network"
+   :default t
+   ;; FIXME: After one incorrect entry, the client won't load
+   :token (password-store-get "api-token/slack/embassy-network")
+   ;; FIXME add channels
+   :subscribed-channels '(esf-citizens)
+   :full-and-display-names t))
+#+end_src
+
+** Email  :noexport:
+
+http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-/
+
+#+begin_src conf :tangle /home/dan/.offlineimaprc :tangle-mode (identity #o664)
+[general]
+accounts = Gmail
+maxsyncaccounts = 2
+
+[Account Gmail]
+localrepository = LocalGmail
+remoterepository = RepositoryGmail
+autorefresh = 10
+quick = 10
+postsynchook = mu index --maildir ~/.mail
+
+[Repository LocalGmail]
+type = Maildir
+localfolders = ~/.mail/gmail
+
+[Repository RepositoryGmail]
+type = Gmail
+maxconnections = 2
+remoteuser = dan.girsh@gmail.com
+remotepass = ttyevoajakdliunw
+folderfilter = lambda foldername: foldername in ['INBOX']
+
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+#+end_src
+
+#+begin_src emacs-lisp
+;; (use-package! notmuch
+;;   :commands (notmuch)
+;;   :init
+
+;;   (map! :desc "notmuch" "<f2>" #'notmuch)
+;;   (map! :map notmuch-search-mode-map
+;;         :desc "toggle read" "t" #'+notmuch/toggle-read
+;;         :desc "Reply to thread" "R" #'notmuch-search-reply-to-thread
+;;         :desc "Reply to thread sender" "r" #'notmuch-search-reply-to-thread-sender)
+;;   (map! :map notmuch-show-mode-map
+;;         :desc "Next link" "<tab>" #'org-next-link
+;;         :desc "Previous link" "<backtab>" #'org-previous-link
+;;         :desc "URL at point" "C-<return>" #'browse-url-at-point)
+;;   (defun +notmuch/toggle-read ()
+;;     "toggle read status of message"
+;;     (interactive)
+;;     (if (member "unread" (notmuch-search-get-tags))
+;;         (notmuch-search-tag (list "-unread"))
+;;       (notmuch-search-tag (list "+unread"))))
+;;   :config
+;;   (setq
+;;    +notmuch-sync-backend 'offlineimap
+;;    +notmuch-mail-folder "~/.mail/gmail"
+;;    message-auto-save-directory "~/.mail/gmail/drafts/"
+;;    message-send-mail-function 'message-send-mail-with-sendmail
+;;    sendmail-program (executable-find "msmtp")
+;;    message-sendmail-envelope-from 'header
+;;    mail-envelope-from 'header
+;;    mail-specify-envelope-from t
+;;    message-sendmail-f-is-evil nil
+;;    message-kill-buffer-on-exit t
+;;    notmuch-always-prompt-for-sender t
+;;    notmuch-archive-tags '("-inbox" "-unread")
+;;    notmuch-crypto-process-mime t
+;;    notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+;;    notmuch-labeler-hide-known-labels t
+;;    notmuch-search-oldest-first nil
+;;    notmuch-archive-tags '("-inbox" "-unread")
+;;    notmuch-message-headers '("To" "Cc" "Subject" "Bcc")
+;;    notmuch-saved-searches '((:name "unread" :query "tag:inbox and tag:unread")
+;;                             (:name "drafts" :query "tag:draft"))))
+#+end_src
+
+#+RESULTS:
+: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (24209 33952 222199 769000) :init (24209 33952 222171 431000) :init-secs (0 0 3838 873000) :use-package-secs (0 0 3892 899000)))
+
+** Next Browser :noexport:
+
+#+begin_src emacs-lisp
+(setenv "WEBKIT_DISABLE_COMPOSITING_MODE" "1")
+#+end_src
+
+** Jupyter
+
+#+BEGIN_SRC emacs-lisp
+(use-package! jupyter
+  :init
+  (setq jupyter-eval-use-overlays t)
+
+  (map!
+   :map org-mode-map
+   :localleader
+   (:desc "Org Hydra"       "j" #'jupyter-org-hydra/body))
+
+  (defun my/insert-julia-src-block ()
+    (interactive)
+    (jupyter-org-insert-src-block t current-prefix-arg))
+
+  ;; Better than `M-c C-, j` or `M-c j =`
+  (key-chord-define-global "j;" #'my/insert-julia-src-block)
+  (map!
+   :map julia-mode-map
+   :localleader
+   (:prefix ("j" . "jupyter")
+     :desc "Run REPL"         "o" #'jupyter-run-repl
+     :desc "Eval function"    "f" #'jupyter-eval-defun
+     :desc "Eval buffer"      "b" #'jupyter-eval-buffer
+     :desc "Eval region"      "r" #'jupyter-eval-region
+     :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
+     :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
+     :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
+     :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
+     :desc "Eval string"      "w" #'jupyter-eval-string
+     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
+#+END_SRC
+
+** Ivy
+
+Ivy allows you to find the input to a command by incrementally searching the
+space of all valid inputs. It's well-supported in Doom.
+
+#+BEGIN_SRC emacs-lisp
+(after! ivy
+  ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
+  (setq ivy-use-virtual-buffers t
+        counsel-find-file-at-point t
+        ivy-wrap nil)
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (eshell-cmpl-initialize)
+              (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))
+  (add-to-dk-keymap
+   '(("g" . +ivy/project-search)
+     ("h" . +ivy/projectile-find-file)
+     ("i" . counsel-semantic-or-imenu)
+     ("j" . ivy-switch-buffer))))
+#+END_SRC
+
+
+** Rest
+
+#+begin_src emacs-lisp
+
+(flycheck-mode 0)
+
+(use-package! dmenu)
+
+(setq direnv-always-show-summary nil)
+
+(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+
+;; all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; Coordinate between kill ring and system clipboard
+(setq save-interprogram-paste-before-kill t)
+
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+
+
+(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
+
+;; (after! ivy-posframe
+;;   (setq
+;;    ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+;;    ivy-posframe-width 120
+;;    ivy-posframe-parameters
+;;    `((min-width . 120)
+;;      (min-height . nil))))
+
+;; (use-package! ctrlf
+;;   :config
+;;   (setq ctrlf-auto-recenter t)
+;;   (ctrlf-mode +1))
+
+
+;; (defun my/recentf-find-file ()
+;;   "Find a recent file using selectrum."
+;;   (interactive)
+;;   (let ((file (selectrum-completing-read "Choose recent file: "
+;;                                          (mapcar 'abbreviate-file-name recentf-list)
+;;                                          nil t)))
+;;     (when file
+;;       (find-file file))))
+
+
+;; (use-package! selectrum
+;;   :config
+;;   (selectrum-mode +1)
+;;   (add-to-dk-keymap
+;;    '(("f" . my/recentf-find-file))))
+
+
+;; (use-package! selectrum-prescient
+;;   :config
+;;   ;; to make sorting and filtering more intelligent
+;;   (selectrum-prescient-mode +1)
+
+;;   ;; to save your command history on disk, so the sorting gets more
+;;   ;; intelligent over time
+;;   (prescient-persist-mode +1))
+
+
+
+(defun split-window-horizontally-and-switch ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1))
+
+(defun split-window-vertically-and-switch ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1))
+
+(after! dired
+  (setq dired-listing-switches "-aBhl  --group-directories-first"
+        dired-dwim-target t
+        dired-recursive-copies (quote always)
+        dired-recursive-deletes (quote top)
+        ;; Directly edit permisison bits!
+        wdired-allow-to-change-permissions t))
+
+(use-package! dired-narrow
+              :commands (dired-narrow-fuzzy)
+              :init
+              (map! :map dired-mode-map
+                    :desc "narrow" "/" #'dired-narrow-fuzzy))
+
+(use-package! deadgrep
+              :if (executable-find "rg")
+              :init
+              (map! "M-s" #'deadgrep))
+
+
+(use-package! magit
+              :config
+              (set-default 'magit-stage-all-confirm nil)
+              (set-default 'magit-unstage-all-confirm nil)
+
+              ;; Restores "normal" behavior in branch view (when hitting RET)
+              (setq magit-visit-ref-behavior '(create-branch checkout-any focus-on-ref))
+
+              (setq git-commit-finish-query-functions nil)
+              (setq magit-visit-ref-create 1)
+              (setq magit-revision-show-gravatars nil))
+
+(after! (magit key-chord)
+  (add-to-sl-keymap
+   '(("k" . magit-dispatch-popup)
+     ("s" . magit-status)
+     ("o" . magit-log)
+     ("u" . magit-submodule-update)
+     ("l" . magit-show-refs-head))))
+
+
+(use-package! lispy
+  :config
+  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
+  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
+  ;; the compat code isn't even getting hit!
+  (setq lispy-compat '(edebug magit-blame-mode))
+
+  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
+  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
+  :hook
+  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
+  :bind (:map lispy-mode-map
+          ("'" . nil)             ; leave tick behaviour alone
+          ("M-n" . nil)
+          ("C-M-m" . nil)))
+
+;; FIXME
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
+
+(use-package! smartparens
+  :init
+  (map! :map smartparens-mode-map
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-p" #'sp-backward-down-sexp
+        "C-M-n" #'sp-up-sexp
+        "C-M-s" #'sp-splice-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-barf-sexp))
+
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun spacemacs/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+
+(use-package! wrap-region
+  :hook
+  (org-mode-hook . wrap-region-mode)
+  (latex-mode-hook . wrap-region-mode)
+  :config
+  (wrap-region-add-wrappers
+   '(("*" "*" nil (org-mode))
+     ("~" "~" nil (org-mode))
+     ("/" "/" nil (org-mode))
+     ("=" "=" nil (org-mode))
+     ("_" "_" nil (org-mode))
+     ("$" "$" nil (org-mode latex-mode)))))
+
+
+(after! pdf-tools
+  ;;swiper doesn't trigger the pdf-isearch
+  (map! :map pdf-isearch-minor-mode-map
+        "C-s" 'isearch-forward-regexp))
+
+(use-package! multiple-cursors
+              :init
+              (setq mc/always-run-for-all t)
+              :config
+              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+              :bind (("C-S-c" . mc/edit-lines)
+                     ("C-M-g" . mc/mark-all-like-this-dwim)
+                     ("C->" . mc/mark-next-like-this)
+                     ("C-<" . mc/mark-previous-like-this)
+                     ("C-)" . mc/skip-to-next-like-this)
+                     ("C-M->" . mc/skip-to-next-like-this)
+                     ("C-(" . mc/skip-to-previous-like-this)
+                     ("C-M-<" . mc/skip-to-previous-like-this)))
+
+
+(use-package! smartscan
+  :init (global-smartscan-mode 1)
+  :bind (("M-N" . smartscan-symbol-go-forward)
+         ("M-P" . smartscan-symbol-go-backward)
+         :map smartscan-map
+         ("M-p" . nil)
+         ("M-n" . nil)))
+
+(map!
+ "M-p" (lambda () (interactive) (scroll-down 4))
+ "M-n" (lambda () (interactive) (scroll-up 4))
+
+ "C-h h" 'helpful-at-point
+ "C-h f" 'helpful-function
+ "C-h v" 'helpful-variable
+ "C-h k" 'helpful-key
+
+ "M-SPC" 'avy-goto-word-or-subword-1
+
+ "C-s" 'swiper
+ "C-M-s" 'swiper-isearch
+
+ "C-S-d" 'my/duplicate-line-or-region
+ "C-c <left>" 'winner-undo
+ "C-c <right>" 'winner-redo
+
+ "C-+" 'text-scale-increase
+ "C--" 'text-scale-decrease
+
+ ;; FIXME: This currently relies on Helm as an undeclared dep!
+ "M-y" 'helm-show-kill-ring
+
+ "<f5>" 'my/night-mode
+ "<f6>" 'my/day-mode
+
+ "C-z"   'undo-fu-only-undo
+ "C-S-z" 'undo-fu-only-redo
+
+ "C-/"   'undo-fu-only-undo
+ "C-?" 'undo-fu-only-redo
+
+ "<print>"  'my/screenshot)
+
+
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
+
+(use-package! edit-server
+  :init (edit-server-start)
+  :config
+  (setq edit-server-default-major-mode 'markdown-mode))
+
+
+;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
+;; a file with a "Local Variables" clause (like many Org files) is opened.
+(setq enable-local-variables :all)
+
+;; This is usually just annoying
+(setq compilation-ask-about-save nil)
+
+;; No confirm on exit
+(setq confirm-kill-emacs nil)
+
+
+;; Save whenever focus changes
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+
+;; Disable version control to avoid delays in TRAMP
+(setq vc-ignore-dir-regexp
+                (format "\\(%s\\)\\|\\(%s\\)"
+                        vc-ignore-dir-regexp
+                        tramp-file-name-regexp))
+
+;; Directly edit permisison bits!
+(setq wdired-allow-to-change-permissions t)
+
+(load-file (concat doom-private-dir "secrets.el"))
+
+#+end_src
+
+#+RESULTS:
+: t
+* funcs.el
+
+Utility functions.
+
+#+begin_src emacs-lisp :tangle funcs.el
+;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
+
+(defun my/goto-literate-private-config-file ()
+  "Open the private config.org file."
+  (interactive)
+  (find-file (expand-file-name "config.org" doom-private-dir)))
+
+(defun my/rot13-and-kill-region ()
+  (interactive)
+  (kill-new (rot13 (buffer-substring (region-beginning) (region-end)))))
+
+(defun my/org-export-subtree-as-markdown-and-copy ()
+  (interactive)
+  (save-window-excursion
+    (let ((export-buffer (org-md-export-as-markdown nil t nil)))
+      (with-current-buffer export-buffer
+        (clipboard-kill-ring-save (point-min) (point-max)))
+      (kill-buffer export-buffer))))
+
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (call-interactively 'goto-line))
+    (linum-mode -1)))
+
+(defun my-increment-number-decimal
+    (&optional
+     arg)
+  "Increment the number forward from point by 'arg'."
+  (interactive "p*")
+  (save-excursion
+    (save-match-data
+      (let (inc-by field-width answer)
+        (setq inc-by
+              (if arg
+                  arg
+                1))
+        (skip-chars-backward "0123456789")
+        (when (re-search-forward "[0-9]+" nil t)
+          (setq field-width (- (match-end 0)
+                               (match-beginning 0)))
+          (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+          (when (< answer 0)
+            (setq answer (+ (expt 10 field-width) answer)))
+          (replace-match (format (concat "%0" (int-to-string field-width) "d") answer)))))))
+
+(defun rev-other-window ()
+  (interactive)
+  (other-window -1))
+
+(defun eshell-here ()
+  "Opens up a new shell in the directory associated with the
+     current buffer's file. The eshell is renamed to match that
+     directory to make multiple eshell windows easier."
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+                     (file-name-directory (buffer-file-name))
+                   default-directory))
+         (name   (car (last (split-string parent "/" t)))))
+    (eshell "new")
+    (rename-buffer (concat "*eshell: " name "*"))
+    (insert (concat "ls"))
+    (eshell-send-input)))
+
+(defun treemax-save-shebanged-file-as-executable ()
+  (and (save-excursion
+         (save-restriction
+           (widen)
+           (goto-char (point-min))
+           (save-match-data
+             (looking-at "^#!"))))
+       (not (file-executable-p buffer-file-name))
+       (shell-command (concat "chmod +x " buffer-file-name))
+       (message
+        (concat "Saved as script: " buffer-file-name))))
+
+;; https://www.emacswiki.org/emacs/CopyingWholeLines
+(defun my/duplicate-line-or-region (&optional n)
+  "Duplicate current line, or region if active.
+With argument N, make N copies.
+With negative N, comment out original line and use the absolute value."
+  (interactive "*p")
+  (let ((use-region (use-region-p)))
+    (save-excursion
+      (let ((text (if use-region        ; Get region if active, otherwise line
+                      (buffer-substring (region-beginning) (region-end))
+                    (prog1 (thing-at-point 'line)
+                      (end-of-line)
+                      (if (< 0 (forward-line 1)) ; Go to beginning of next line, or make a new one
+                          (newline))))))
+        (dotimes (i (abs (or n 1)))     ; Insert N times, or once if not specified
+          (insert text))))
+    (if use-region nil                  ; Only if we're working with a line (not a region)
+      (let ((pos (- (point) (line-beginning-position)))) ; Save column
+        (if (> 0 n)                             ; Comment out original with negative arg
+            (comment-region (line-beginning-position) (line-end-position)))
+        (forward-line 1)
+        (forward-char pos)))))
+
+(defun my/org-ref-noter-link-from-arxiv (arxiv-number)
+  "Retrieve a pdf for ARXIV-NUMBER and save it to the default PDF dir.
+Then, add a bibtex entry for the new file in the default bib
+file. Then, create a new org-ref note heading for it (see
+org-ref-create-notes-hook in packages.el to see it also creates
+an property for org-noter). Finally, insert a descriptive link to
+the note heading at point, using the paper title as the link
+text.
+"
+  (interactive "sarxiv number: ")
+  (let ( (bibtex-dialect 'BibTeX))
+    (org-ref-save-all-bibtex-buffers)
+    (save-window-excursion
+      (arxiv-get-pdf-add-bibtex-entry arxiv-number
+                                      (car org-ref-default-bibliography)
+                                      org-ref-pdf-directory)
+      (org-ref-save-all-bibtex-buffers))
+    (let* ((parsed-entry (save-excursion
+                           (with-temp-buffer
+                             (insert-file-contents (car org-ref-default-bibliography))
+                             (bibtex-set-dialect (parsebib-find-bibtex-dialect) t)
+                             (search-forward (format "{%s}" arxiv-number))
+                             (bibtex-narrow-to-entry)
+                             (bibtex-beginning-of-entry)
+                             (bibtex-parse-entry)))))
+      (org-insert-heading)
+      (let* ((raw-ref-title (cdr (assoc "title" parsed-entry)))
+             (ref-title (s-replace-regexp (rx (sequence "\n" (+ space))) " "
+                                          (car (cdr (s-match (rx "{" (group (+ anything)) "}") raw-ref-title)))))
+             (ref-key (cdr (assoc "=key=" parsed-entry))))
+        (insert ref-title)
+        (insert "\n\n")
+        (insert (format "cite:%s" ref-key))))))
+
+(defun my/set-redshift (level)
+  (interactive "nRedshift level: ")
+  (shell-command (format "redshift -O %s" level)))
+
+(defun my/night-mode ()
+  (interactive)
+  (my/set-brightness 10)
+  (my/set-redshift 1500))
+
+(defun my/day-mode ()
+  (interactive)
+  (my/set-brightness 1000)
+  (my/set-redshift 6000))
+
+
+(defun narrow-or-widen-dwim (p)
+  "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+Intelligently means: region, subtree, or defun, whichever applies
+first.
+
+With prefix P, don't widen, just narrow even if buffer is already
+narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning) (region-end)))
+        ((derived-mode-p 'org-mode) (org-narrow-to-subtree))
+        (t (narrow-to-defun))))
+
+;; https://stackoverflow.com/questions/28727190/org-babel-tangle-only-one-code-block
+(defun my/org-babel-tangle-block()
+  (interactive)
+  (let ((current-prefix-arg '(4)))
+    (call-interactively 'org-babel-tangle)))
+
+(defun my/open-org-files-list ()
+  (delq nil
+        (mapcar (lambda (buffer)
+                  (buffer-file-name buffer))
+                (org-buffer-list 'files t))))
+
+(defun my/save-shebanged-file-as-executable ()
+  (and (save-excursion
+         (save-restriction
+           (widen)
+           (goto-char (point-min))
+           (save-match-data
+             (looking-at "^#!"))))
+       (not (file-executable-p buffer-file-name))
+       (shell-command (concat "chmod +x " buffer-file-name))
+       (message
+        (concat "Saved as script: " buffer-file-name))))
+
+(add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
+
+#+end_src
+* Emacs X Window Management (EXWM)
+
+Yes, Emacs is my window manager.
+
+Pros:
+
+- System-wide UI consistency
+  - X windows and Emacs windows are treated the same
+    - e.g. Use Ivy to surface Firefox windows with fuzzy search
+  - Key simulation allows consistent keybindings (e.g. the copy/paste bindings
+    can be made the same between Emacs, browsers, terminals, etc...)
+- Interactively update WM configuration
+  - Unlike e.g. XMonad, which requires a re-compile + restart
+  - Can add new bindings and immediately use them
+- No separate WM install + config. It's just Emacs + Elisp.
+
+Cons:
+- Need to be careful not to block the main thread! That will lock the entire system.
+  - Workaround: just spawn a secondary Emacs within the base Emacs whenever
+    there's a risk of blocking.
+    - e.g. Before using TRAMP, spawn a fresh Emacs.
+- Less stable than XMonad, which is a tiny, well-tested Haskell program
+- Limited support for managing multiple screens.
+  - It works, but it hardwires each workspace to a specific monitor.
+- Need to be careful not to leave your Emacs configuration in a broken state.
+  - Fallbacks include other WMs installed (XMonad) or switching to a tty (Ctrl-Alt-f#)
+
+** package.el
+#+begin_src emacs-lisp :tangle ./modules/desktop/exwm/packages.el
+;; -*- no-byte-compile: t; -*-
+;;; desktop/exwm/packages.el
+(package! exwm)
+;; (package! exwm-firefox
+;;   :recipe (:host github :repo "ieure/exwm-firefox"))
+;; (package! exwm-mff
+;;   :recipe (:host github :repo "ieure/exwm-mff"))
+(package! xelb)
+(package! exwm-edit)
+
+#+end_src
+
+** config.el
+
+#+begin_src emacs-lisp :tangle ./modules/desktop/exwm/config.el
+  ;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
+  (use-package! exwm
+    :init
+    (setq
+     mouse-autoselect-window t
+     focus-follows-mouse t)
+    :config
+    (setq exwm-workspace-number 9))
+
+  (defun my/exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer (format "%s - %s" exwm-class-name exwm-title)))
+  (setq exwm-workspace-show-all-buffers t
+        exwm-layout-show-all-buffers t
+        exwm-manage-force-tiling nil)
+
+
+  (setq exwm-input-prefix-keys '(?\s- ))
+
+  (display-battery-mode 1)
+  (display-time-mode 1)
+
+
+  (setq exwm-manage-configurations
+        '(((string= exwm-class-name "Google-chrome")
+           workspace 0)
+          ((string= exwm-class-name "Firefox")
+           workspace 1)
+          ((string= exwm-instance-name "terminator")
+           workspace 8)
+          ((string= exwm-instance-name "keybase")
+           workspace 9)))
+
+
+  (defun my/launch (command)
+    (interactive (list (read-shell-command "$ ")))
+    (start-process-shell-command command nil command))
+
+  (defun my/launch-terminal ()
+    (interactive)
+    (my/launch "terminator"))
+
+  (defun my/launch-browser ()
+    (interactive)
+    (my/launch "firefox"))
+
+  (defun my/launch-emacs ()
+    (interactive)
+    (my/launch "emacs"))
+
+  (defun my/lock-screen ()
+    (interactive)
+    (my/launch "xtrlock -b"))
+
+  (defun my/volume-up ()
+    (interactive)
+    (my/launch "amixer sset Master unmute")
+    (my/launch "amixer sset Master 5%+"))
+
+  (defun my/volume-down ()
+    (interactive)
+    (my/launch "amixer sset Master 5%-"))
+
+
+  ;; TODO Prompt for location after taking the shot
+  (defun my/screenshot ()
+    (interactive)
+    (shell-command
+     (concat "bash -c 'FILENAME=/home/dan/screenshots/$(date +'%Y-%m-%d-%H:%M:%S').png && maim -s $FILENAME'")))
+
+
+  (defun my/screen-to-clipboard ()
+    (interactive)
+    (shell-command
+     (concat "bash -c 'FILENAME=/home/dan/screenshots/$(date +'%Y-%m-%d-%H:%M:%S').png && maim -s $FILENAME"
+             " && xclip $FILENAME -selection clipboard "
+             "-t image/png &> /dev/null && rm $FILENAME'"))
+    (message "Added to clipboard."))
+
+  (setq exwm-workspace-minibuffer-position 'nil)
+
+  (setq ivy-posframe-parameters '((parent-frame nil)))
+
+
+  (exwm-input-set-key (kbd "s-:") #'eval-expression)
+
+  ;; https://emacs.stackexchange.com/questions/33326/how-do-i-cut-and-paste-effectively-between-applications-while-using-exwm
+  (defun my/exwm-input-line-mode ()
+    "Set exwm window to line-mode and show mode line"
+    (call-interactively #'exwm-input-grab-keyboard)
+    (exwm-layout-show-mode-line))
+
+  (defun my/exwm-input-char-mode ()
+    "Set exwm window to char-mode and hide mode line"
+    (call-interactively #'exwm-input-release-keyboard)
+    (exwm-layout-hide-mode-line))
+
+  (defun my/exwm-input-toggle-mode ()
+    "Toggle between line- and char-mode"
+    (interactive)
+    (with-current-buffer (window-buffer)
+      (when (eq major-mode 'exwm-mode)
+        (if (equal (second (second mode-line-process)) "line")
+            (my/exwm-input-char-mode)
+          (my/exwm-input-line-mode)))))
+
+  (defun my/toggle-exwm-input-line-mode-passthrough ()
+    (interactive)
+    (if exwm-input-line-mode-passthrough
+        (progn
+          (setq exwm-input-line-mode-passthrough nil)
+          (message "App receives all the keys now (with some simulation)"))
+      (progn
+        (setq exwm-input-line-mode-passthrough t)
+        (message "emacs receives all the keys now")))
+    (force-mode-line-update))
+
+  (exwm-input-set-key (kbd "s-;") 'my/toggle-exwm-input-line-mode-passthrough)
+
+
+
+  ;; Switch to last workspace
+  (defvar my/exwm-workspace-previous-index 0 "The previous active workspace index.")
+
+  (defun my/exwm-workspace--current-to-previous-index (_x &optional _y)
+    (setq my/exwm-workspace-previous-index exwm-workspace-current-index))
+
+  (advice-add 'exwm-workspace-switch :before #'my/exwm-workspace--current-to-previous-index)
+
+  (defun my/exwm-workspace-switch-to-previous ()
+    (interactive)
+    "Switch to the previous active workspace."
+    (let ((index my/exwm-workspace-previous-index))
+      (exwm-workspace-switch index)))
+
+  (defun my/switch-to-last-buffer ()
+    "Switch to last open buffer in current window."
+    (interactive)
+    (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+  ;; Re-use muscle memory from 6 years of an xmonad setup
+  (exwm-input-set-key (kbd "s-p") #'dmenu)
+  (exwm-input-set-key (kbd "s-P") #'counsel-linux-app)
+  (exwm-input-set-key (kbd "s-s") #'password-store-copy)
+  (exwm-input-set-key (kbd "s-<return>") #'my/launch-terminal)
+  (exwm-input-set-key (kbd "s-.") #'my/switch-to-last-buffer)
+  (exwm-input-set-key (kbd "s-,") #'my/exwm-workspace-switch-to-previous)
+  (exwm-input-set-key (kbd "s-i") #'my/launch-browser)
+  (exwm-input-set-key (kbd "s-b") 'switch-to-buffer)
+  (exwm-input-set-key (kbd "s-M-O") #'my/lock-screen)
+  (exwm-input-set-key (kbd "s-<up>") #'my/volume-up)
+  (exwm-input-set-key (kbd "s-<down>") #'my/volume-down)
+  (exwm-input-set-key (kbd "s-<print>") #'my/screen-to-clipboard)
+
+  (exwm-input-set-key (kbd "s-R") #'doom/reload)
+  (exwm-input-set-key (kbd "s-Q") #'kill-emacs)
+
+  (exwm-input-set-key (kbd "s-m") #'bury-buffer)
+  (exwm-input-set-key (kbd "s-M") #'unbury-buffer)
+
+  (exwm-input-set-key (kbd "s-j") #'other-window)
+  (exwm-input-set-key (kbd "s-k") #'rev-other-window)
+
+  (exwm-input-set-key (kbd "s-J") #'previous-buffer)
+  (exwm-input-set-key (kbd "s-K") #'next-buffer)
+
+  (exwm-input-set-key (kbd "s-h") 'shrink-window)
+  (exwm-input-set-key (kbd "s-l") 'enlarge-window)
+  (exwm-input-set-key (kbd "s-H") 'shrink-window-horizontally)
+  (exwm-input-set-key (kbd "s-L") 'enlarge-window-horizontally)
+
+  (exwm-input-set-key (kbd "s-/") 'winner-undo)
+  (exwm-input-set-key (kbd "s-?") 'winner-redo)
+
+  (exwm-input-set-key (kbd "s-'") 'exwm-edit--compose)
+
+  (exwm-input-set-key (kbd "s-w") 'delete-window)
+  (exwm-input-set-key (kbd "s-q") 'kill-this-buffer)
+
+(exwm-input-set-key (kbd "s-c") 'my/goto-literate-private-config-file)
+(exwm-input-set-key (kbd "s-C") 'cfw:open-org-calendar)
+
+
+  (exwm-input-set-key (kbd "s-x") 'counsel-M-x)
+
+
+  (mapcar (lambda (i)
+            (exwm-input-set-key (kbd (format "s-%d" i))
+                                `(lambda ()
+                                   (interactive)
+                                   (exwm-workspace-switch-create ,i))))
+          (number-sequence 0 9))
+
+
+
+  ;; Configure firefox to open every tab as a new window instead
+  ;; http://p.hagelb.org/exwm-ff-tabs.html
+  (add-hook 'exwm-manage-finish-hook
+            (lambda ()
+              (when (string= exwm-class-name "Firefox")
+                ;; New windows instead of tabs
+                (exwm-input-set-local-simulation-keys
+                 `(([?\s-w] . [?\C-w]) ; s-w on the root window kills all tabs unwantedly
+                   ,@exwm-input-simulation-keys)))
+              (when (string= exwm-class-name "Next")
+                ;; New windows instead of tabs
+                (exwm-input-set-local-simulation-keys nil))
+              ;; FIXME copy/paste in terminator
+              ;; (when (string= exwm-class-name "Terminator")
+              ;;   (exwm-input-set-local-simulation-keys
+              ;;    `(([?\M-w] . [?\C-C])
+              ;;      ([?\C-y] . [?\C-V])
+              ;;      ,@exwm-input-simulation-keys)))
+              ))
+
+  ;; (add-hook 'exwm-update-title-hook
+  ;;           (defun my/exwm-title-hook ()
+  ;;             (when (string-match "Firefox" exwm-class-name)
+  ;;               (exwm-workspace-rename-buffer exwm-title))))
+
+  (add-hook 'exwm-update-title-hook 'my/exwm-rename-buffer-to-title)
+
+  (setq browse-url-firefox-arguments '("-new-window"))
+
+  (setq exwm-input-simulation-keys
+        '(
+          ;; movement
+          ([?\C-b] . [left])
+          ([?\M-b] . [C-left])
+          ([?\C-f] . [right])
+          ([?\M-f] . [C-right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-e] . [end])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ;; undo
+          ([?\C-/] . [?\C-z])
+
+
+          ;; Interferes with Slack
+          ;; ([?\C-k] . [S-end delete])
+
+          ;; cut/copy/paste.
+          ([?\C-w] . [?\C-x])
+          ([?\M-w] . [?\C-c])
+          ([?\C-y] . [?\C-v])
+          ;; search
+          ([?\C-s] . [?\C-f])))
+
+  (define-ibuffer-column exwm-class (:name "Class")
+    (if (bound-and-true-p exwm-class-name)
+        exwm-class-name
+      ""))
+  (define-ibuffer-column exwm-instance (:name "Instance")
+    (if (bound-and-true-p exwm-instance-name)
+        exwm-instance-name
+      ""))
+  (define-ibuffer-column exwm-urgent (:name "U")
+    (if (bound-and-true-p exwm--hints-urgency)
+        "U"
+      " "))
+
+  (defun my/exwm-ibuffer (&optional other-window)
+    (interactive "P")
+    (let ((name (buffer-name)))
+      (ibuffer other-window
+               "*exwm-ibuffer*"
+               '((mode . exwm-mode))
+               nil nil nil
+               '((mark exwm-urgent
+                       " "
+                       (name 64 64 :left :elide)
+                       " "
+                       (exwm-class 20 -1 :left)
+                       " "
+                       (exwm-instance 10 -1 :left))))
+      (ignore-errors (ibuffer-jump-to-buffer name))))
+
+  (exwm-input-set-key (kbd "s-o") #'my/exwm-ibuffer)
+
+  ;; (when (file-exists-p "/home/my/.screenlayout/desktop.sh")
+  ;;   (require 'exwm-randr)
+  ;;   (setq exwm-randr-workspace-monitor-plist '(1 "USB-C-0" 2 "HDMI-0"))
+  ;;   (call-process "bash" nil 0 nil "-c" "/home/my/.screenlayout/desktop.sh")
+  ;;   (exwm-randr-enable))
+
+  (use-package! exwm-edit
+    :init
+    ;; Otherwise it steals C-c ' from org
+    (setq exwm-edit-bind-default-keys nil))
+
+  (defun my/exwm-start-in-char-mode ()
+    (when (or (string-prefix-p "terminator" exwm-instance-name)
+              (string-prefix-p "emacs" exwm-instance-name)
+              (string-prefix-p "next" exwm-instance-name))
+      (exwm-input-release-keyboard (exwm--buffer->id (window-buffer)))))
+  (add-hook 'exwm-manage-finish-hook 'my/exwm-start-in-char-mode)
+
+  ;; (use-package! exwm-firefox
+  ;;   :config
+  ;;   (exwm-firefox-mode 1))
+
+  (require 'exwm-randr)
+  ;; FIXME
+  (setq exwm-randr-workspace-monitor-plist '(0 "eDP-1"
+                                               1 "HDMI-1"
+                                               1 "HDMI-1"
+                                               2 "HDMI-1"
+                                               3 "HDMI-1"
+                                               4 "HDMI-1"
+                                               5 "HDMI-1"
+                                               6 "HDMI-1"
+                                               7 "HDMI-1"
+                                               8 "HDMI-1"
+                                               9 "HDMI-1"))
+
+
+(setq my/screenlayout-file "/home/dan/.screenlayout/wilbur_hotel_office.sh")
+
+(when (file-exists-p my/screenlayout-file)
+  (require 'exwm-randr)
+  (call-process "bash" nil 0 nil "-c" my/screenlayout-file)
+  (exwm-randr-enable))
+
+  (exwm-enable)
+
+;; (use-package! exwm-mff
+;;   :config
+;;   (exwm-mff-mode 1))
+
+#+END_SRC
+
+#+RESULTS:
+
+** launch_exwm.sh
+
+#+begin_src sh :tangle ./modules/desktop/exwm/launch-exwm.sh :tangle-mode (identity #o775)
+#!/bin/bash
+
+# Disable access control for the current user.
+xhost +SI:localuser:$USER
+
+# Identify the home of our gtkrc file, important for setting styles of
+# gtk-based applications
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+
+
+# Make Java applications aware this is a non-reparenting window manager.
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Bind caps to ctrl
+setxkbmap -option 'ctrl:nocaps'
+
+# set keyboard rate
+xset r rate 160 50
+
+xsetroot -solid black
+
+# Set default cursor.
+xsetroot -cursor_name left_ptr
+
+# Nix + direnv
+lorri daemon &
+
+# Email sync
+offlineimap &
+
+# Uncomment the following block to use the exwm-xim module.
+# export XMODIFIERS=@im=exwm-xim
+# export GTK_IM_MODULE=xim
+# export QT_IM_MODULE=xim
+# export CLUTTER_IM_MODULE=xim
+
+source ~/.profile
+
+# Sync Doom
+# ~/.emacs.d/bin/doom sync
+
+# Finally start Emacs
+exec ~/.emacs.d/bin/doom run
+#+end_src
+
+** exwm.desktop for DM
+
+#+begin_src conf :tangle "/sudo::/usr/share/xsessions/exwm.desktop" :tangle-mode (identity #o644)
+[Desktop Entry]
+Encoding=UTF-8
+Name=EXWM
+Comment=Emacs X WM
+Exec=/home/dan/.doom.d/modules/desktop/exwm/launch-exwm.sh
+Type=XSession
+#+end_src

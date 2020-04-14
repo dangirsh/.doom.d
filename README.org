@@ -173,9 +173,10 @@ clients, file templates and snippets.
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
-(setq +doom-dashboard-banner-padding '(0 . 2)
-      +doom-dashboard-banner-file "deepfield-window.png"
-      +doom-dashboard-banner-dir "~/.doom.d/banners")
+(when (file-exists-p "~/.doom.d/banners")
+  (setq +doom-dashboard-banner-padding '(0 . 2)
+        +doom-dashboard-banner-file "deepfield-window.png"
+        +doom-dashboard-banner-dir "~/.doom.d/banners"))
 
 (setq display-line-numbers-type nil)
 
@@ -933,7 +934,9 @@ WIP: Split these out and document
 ;; Directly edit permisison bits!
 (setq wdired-allow-to-change-permissions t)
 
-(load-file (concat doom-private-dir "secrets.el"))
+(setq my/secrets-file (concat doom-private-dir "secrets.el"))
+(when (file-exists-p my/secrets-file)
+ (load-file my/secrets-file))
 
 #+end_src
 

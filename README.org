@@ -3,17 +3,23 @@
 
 * About
 
-I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines (via
-TRAMP).
+If you're reading this in a browser, consdier opening it in Emacs Org mode for
+the full experience.
 
-I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration.
+I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many
+situations, it replaces CLIs or GUIs with well-designed keyboard-driven
+interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
 
-This is a literate org file, which specifies and documents the entirety of my
-Doom configuration. If you link this file to =~/.doom.d/config.org=, Doom will
-automatically tangle it on init.
+I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration. This is a literate org file,
+which specifies and documents the entirety of my Doom configuration. If you link
+this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
+and whenever it changes.
+
+Emacs is my window manager via [[https://github.com/ch11ng/exwm/][EXWM]]. The primary downside to using EXWM is that
+people think you've lost your mind. See the [[*Emacs X Window Management (EXWM)][relevant config section]] for more details.
 
 Thanks to tools like Nix and Guix, it's possible to declaratively specify my
-entire system configuration in this file (not just Emacs). That's a WIP.
+entire system configuration in this file. That's a WIP.
 
 Inspirations:
 
@@ -130,7 +136,7 @@ Any desired package not declared in a Doom module must be declared here.
 (package! slack)
 #+end_src
 
-* config.el
+* Package Configuration
 :PROPERTIES:
 :header-args: :tangle config.el
 :END:
@@ -526,7 +532,7 @@ I use org as a primary interface. It currently manages:
 
 *** Org-journal
 
-
+#+BEGIN_SRC emacs-lisp
 (use-package! org-journal
   :config
   (map! :leader
@@ -541,7 +547,7 @@ I use org as a primary interface. It currently manages:
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))
-#+end_src
+#+END_SRC
 
 *** Org-roam
 
@@ -626,89 +632,6 @@ pandemic in some bandwidth-limited backcountry location.
    :full-and-display-names t))
 #+end_src
 
-** Email  :noexport:
-
-http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-/
-
-#+begin_src conf :tangle /home/dan/.offlineimaprc :tangle-mode (identity #o664)
-[general]
-accounts = Gmail
-maxsyncaccounts = 2
-
-[Account Gmail]
-localrepository = LocalGmail
-remoterepository = RepositoryGmail
-autorefresh = 10
-quick = 10
-postsynchook = mu index --maildir ~/.mail
-
-[Repository LocalGmail]
-type = Maildir
-localfolders = ~/.mail/gmail
-
-[Repository RepositoryGmail]
-type = Gmail
-maxconnections = 2
-remoteuser = dan.girsh@gmail.com
-remotepass = ttyevoajakdliunw
-folderfilter = lambda foldername: foldername in ['INBOX']
-
-sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-#+end_src
-
-#+begin_src emacs-lisp
-;; (use-package! notmuch
-;;   :commands (notmuch)
-;;   :init
-
-;;   (map! :desc "notmuch" "<f2>" #'notmuch)
-;;   (map! :map notmuch-search-mode-map
-;;         :desc "toggle read" "t" #'+notmuch/toggle-read
-;;         :desc "Reply to thread" "R" #'notmuch-search-reply-to-thread
-;;         :desc "Reply to thread sender" "r" #'notmuch-search-reply-to-thread-sender)
-;;   (map! :map notmuch-show-mode-map
-;;         :desc "Next link" "<tab>" #'org-next-link
-;;         :desc "Previous link" "<backtab>" #'org-previous-link
-;;         :desc "URL at point" "C-<return>" #'browse-url-at-point)
-;;   (defun +notmuch/toggle-read ()
-;;     "toggle read status of message"
-;;     (interactive)
-;;     (if (member "unread" (notmuch-search-get-tags))
-;;         (notmuch-search-tag (list "-unread"))
-;;       (notmuch-search-tag (list "+unread"))))
-;;   :config
-;;   (setq
-;;    +notmuch-sync-backend 'offlineimap
-;;    +notmuch-mail-folder "~/.mail/gmail"
-;;    message-auto-save-directory "~/.mail/gmail/drafts/"
-;;    message-send-mail-function 'message-send-mail-with-sendmail
-;;    sendmail-program (executable-find "msmtp")
-;;    message-sendmail-envelope-from 'header
-;;    mail-envelope-from 'header
-;;    mail-specify-envelope-from t
-;;    message-sendmail-f-is-evil nil
-;;    message-kill-buffer-on-exit t
-;;    notmuch-always-prompt-for-sender t
-;;    notmuch-archive-tags '("-inbox" "-unread")
-;;    notmuch-crypto-process-mime t
-;;    notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-;;    notmuch-labeler-hide-known-labels t
-;;    notmuch-search-oldest-first nil
-;;    notmuch-archive-tags '("-inbox" "-unread")
-;;    notmuch-message-headers '("To" "Cc" "Subject" "Bcc")
-;;    notmuch-saved-searches '((:name "unread" :query "tag:inbox and tag:unread")
-;;                             (:name "drafts" :query "tag:draft"))))
-#+end_src
-
-#+RESULTS:
-: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (24209 33952 222199 769000) :init (24209 33952 222171 431000) :init-secs (0 0 3838 873000) :use-package-secs (0 0 3892 899000)))
-
-** Next Browser :noexport:
-
-#+begin_src emacs-lisp
-(setenv "WEBKIT_DISABLE_COMPOSITING_MODE" "1")
-#+end_src
-
 ** Jupyter
 
 #+BEGIN_SRC emacs-lisp
@@ -765,8 +688,9 @@ space of all valid inputs. It's well-supported in Doom.
      ("j" . ivy-switch-buffer))))
 #+END_SRC
 
-
 ** Rest
+
+WIP: Split these out and document
 
 #+begin_src emacs-lisp
 
@@ -790,51 +714,7 @@ space of all valid inputs. It's well-supported in Doom.
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
-
-
 (setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
-
-;; (after! ivy-posframe
-;;   (setq
-;;    ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-;;    ivy-posframe-width 120
-;;    ivy-posframe-parameters
-;;    `((min-width . 120)
-;;      (min-height . nil))))
-
-;; (use-package! ctrlf
-;;   :config
-;;   (setq ctrlf-auto-recenter t)
-;;   (ctrlf-mode +1))
-
-
-;; (defun my/recentf-find-file ()
-;;   "Find a recent file using selectrum."
-;;   (interactive)
-;;   (let ((file (selectrum-completing-read "Choose recent file: "
-;;                                          (mapcar 'abbreviate-file-name recentf-list)
-;;                                          nil t)))
-;;     (when file
-;;       (find-file file))))
-
-
-;; (use-package! selectrum
-;;   :config
-;;   (selectrum-mode +1)
-;;   (add-to-dk-keymap
-;;    '(("f" . my/recentf-find-file))))
-
-
-;; (use-package! selectrum-prescient
-;;   :config
-;;   ;; to make sorting and filtering more intelligent
-;;   (selectrum-prescient-mode +1)
-
-;;   ;; to save your command history on disk, so the sorting gets more
-;;   ;; intelligent over time
-;;   (prescient-persist-mode +1))
-
-
 
 (defun split-window-horizontally-and-switch ()
   (interactive)
@@ -1284,7 +1164,7 @@ Cons:
 - Need to be careful not to leave your Emacs configuration in a broken state.
   - Fallbacks include other WMs installed (XMonad) or switching to a tty (Ctrl-Alt-f#)
 
-** package.el
+** Package Declarations
 #+begin_src emacs-lisp :tangle ./modules/desktop/exwm/packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; desktop/exwm/packages.el
@@ -1298,7 +1178,7 @@ Cons:
 
 #+end_src
 
-** config.el
+** EXWM Configuration
 
 #+begin_src emacs-lisp :tangle ./modules/desktop/exwm/config.el
   ;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
@@ -1635,7 +1515,7 @@ Cons:
 
 #+RESULTS:
 
-** launch_exwm.sh
+** Launch Script
 
 #+begin_src sh :tangle ./modules/desktop/exwm/launch-exwm.sh :tangle-mode (identity #o775)
 #!/bin/bash
@@ -1683,7 +1563,9 @@ source ~/.profile
 exec ~/.emacs.d/bin/doom run
 #+end_src
 
-** exwm.desktop for DM
+** XSession Configuration
+
+This gets picked up by DM
 
 #+begin_src conf :tangle "/sudo::/usr/share/xsessions/exwm.desktop" :tangle-mode (identity #o644)
 [Desktop Entry]

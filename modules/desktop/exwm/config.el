@@ -1,4 +1,4 @@
-  ;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
+;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
   (use-package! exwm
     :init
     (setq

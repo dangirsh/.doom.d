@@ -10,9 +10,10 @@
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
-(setq +doom-dashboard-banner-padding '(0 . 2)
-      +doom-dashboard-banner-file "deepfield-window.png"
-      +doom-dashboard-banner-dir "~/.doom.d/banners")
+(when (file-exists-p "~/.doom.d/banners")
+  (setq +doom-dashboard-banner-padding '(0 . 2)
+        +doom-dashboard-banner-file "deepfield-window.png"
+        +doom-dashboard-banner-dir "~/.doom.d/banners"))
 
 (setq display-line-numbers-type nil)
 
@@ -52,67 +53,67 @@
   (interactive)
   (simulate-seq "\M-c"))
 
-  (after! key-chord
+(after! key-chord
 
-    (key-chord-define-global "fj" 'send-doom-leader)
-    (key-chord-define-global "gh" 'send-doom-local-leader)
+  (key-chord-define-global "fj" 'send-doom-leader)
+  (key-chord-define-global "gh" 'send-doom-local-leader)
 
-    (setq dk-keymap (make-sparse-keymap))
-    (setq sl-keymap (make-sparse-keymap))
+  (setq dk-keymap (make-sparse-keymap))
+  (setq sl-keymap (make-sparse-keymap))
 
-    (key-chord-define-global "dk" dk-keymap)
-    (key-chord-define-global "sl" sl-keymap)
+  (key-chord-define-global "dk" dk-keymap)
+  (key-chord-define-global "sl" sl-keymap)
 
-    (defun add-to-keymap (keymap bindings)
-      (dolist (binding bindings)
-	      (define-key keymap (kbd (car binding)) (cdr binding))))
+  (defun add-to-keymap (keymap bindings)
+    (dolist (binding bindings)
+	    (define-key keymap (kbd (car binding)) (cdr binding))))
 
-    (defun add-to-dk-keymap (bindings)
-      (add-to-keymap dk-keymap bindings))
+  (defun add-to-dk-keymap (bindings)
+    (add-to-keymap dk-keymap bindings))
 
-    (defun add-to-sl-keymap (bindings)
-      (add-to-keymap sl-keymap bindings))
+  (defun add-to-sl-keymap (bindings)
+    (add-to-keymap sl-keymap bindings))
 
-    (add-to-dk-keymap
-     '(("k" . doom/kill-this-buffer-in-all-windows)
-       ("n" . narrow-or-widen-dwim)
-       ("d" . dired-jump)
-       ("b" . my/set-brightness)
-       ("<SPC>" . rgrep)
-       ("s" . save-buffer)
-       ("t" . eshell-here)
-       ("w" . google-this-noconfirm)
-       ("x" . sp-splice-sexp)
-       ("/" . find-name-dired)))
+  (add-to-dk-keymap
+   '(("k" . doom/kill-this-buffer-in-all-windows)
+     ("n" . narrow-or-widen-dwim)
+     ("d" . dired-jump)
+     ("b" . my/set-brightness)
+     ("<SPC>" . rgrep)
+     ("s" . save-buffer)
+     ("t" . eshell-here)
+     ("w" . google-this-noconfirm)
+     ("x" . sp-splice-sexp)
+     ("/" . find-name-dired)))
 
-    (key-chord-define-global ",." 'end-of-buffer)
-    (key-chord-define-global "xz" 'beginning-of-buffer)
-    (key-chord-define-global "xc" 'beginning-of-buffer)
+  (key-chord-define-global ",." 'end-of-buffer)
+  (key-chord-define-global "xz" 'beginning-of-buffer)
+  (key-chord-define-global "xc" 'beginning-of-buffer)
 
-    (key-chord-define-global "qw" 'delete-window)
-    (key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global "qw" 'delete-window)
+  (key-chord-define-global "qp" 'delete-other-windows)
 
-    (key-chord-define-global "fk" 'other-window)
+  (key-chord-define-global "fk" 'other-window)
 
-    (key-chord-define-global "jd" 'rev-other-window)
+  (key-chord-define-global "jd" 'rev-other-window)
 
-    (key-chord-define-global "hh" 'helpful-at-point)
-    (key-chord-define-global "hk" 'helpful-key)
-    (key-chord-define-global "hv" 'helpful-variable)
-    (key-chord-define-global "hf" 'helpful-function)
+  (key-chord-define-global "hh" 'helpful-at-point)
+  (key-chord-define-global "hk" 'helpful-key)
+  (key-chord-define-global "hv" 'helpful-variable)
+  (key-chord-define-global "hf" 'helpful-function)
 
-    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
-    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+  (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+  (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
-    (key-chord-define-global "fv" 'comment-line)
+  (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+  (key-chord-define-global "fv" 'comment-line)
 
-    (key-chord-define-global "kl" 'er/expand-region)
+  (key-chord-define-global "kl" 'er/expand-region)
 
-    (key-chord-define-global "a;" 'execute-extended-command)
-    (key-chord-define-global "xf" 'find-file)
+  (key-chord-define-global "a;" 'execute-extended-command)
+  (key-chord-define-global "xf" 'find-file)
 
-    (key-chord-define-global "l;" 'repeat))
+  (key-chord-define-global "l;" 'repeat))
 
 (defun fix-keyboard ()
   (interactive)
@@ -293,6 +294,9 @@
           (:prefix ("j" . "journal")
             :desc "Today" "t" #'org-journal-today)))
   (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-time-prefix "* "
+        org-journal-time-format ""
+        org-journal-file-format "private-%Y-%m-%d.org"
         org-journal-file-format "private-%Y-%m-%d.org"
         org-journal-dir (concat org-roam-directory "journal")
         org-journal-carryover-items nil
@@ -638,4 +642,6 @@
 ;; Directly edit permisison bits!
 (setq wdired-allow-to-change-permissions t)
 
-(load-file (concat doom-private-dir "secrets.el"))
+(setq my/secrets-file (concat doom-private-dir "secrets.el"))
+(when (file-exists-p my/secrets-file)
+ (load-file my/secrets-file))

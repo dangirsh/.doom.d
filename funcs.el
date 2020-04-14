@@ -26,6 +26,16 @@
         (call-interactively 'goto-line))
     (linum-mode -1)))
 
+(defun split-window-horizontally-and-switch ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1))
+
+(defun split-window-vertically-and-switch ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1))
+
 (defun my-increment-number-decimal
     (&optional
      arg)

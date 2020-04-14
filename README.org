@@ -132,7 +132,6 @@ Any desired package not declared in a Doom module must be declared here.
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
-(package! edit-server)
 (package! slack)
 #+end_src
 
@@ -163,6 +162,12 @@ clients, file templates and snippets.
 #+begin_src emacs-lisp
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
+#+end_src
+
+** Load helper functions
+
+#+begin_src emacs-lisp
+(load-file (concat doom-private-dir "funcs.el"))
 #+end_src
 
 ** Visual Settings
@@ -358,12 +363,6 @@ Set brightness by writing directly to system brightness file.
 **** TODO Switch to interfacing with a brightness manager.
 
 Had issues the first time, but that was years ago.
-
-** Load helper functions
-
-#+begin_src emacs-lisp
-(load-file (concat doom-private-dir "funcs.el"))
-#+end_src
 
 ** Org
 
@@ -692,44 +691,9 @@ space of all valid inputs. It's well-supported in Doom.
      ("j" . ivy-switch-buffer))))
 #+END_SRC
 
-** Rest
+** Dired
 
-WIP: Split these out and document
-
-#+begin_src emacs-lisp
-
-(flycheck-mode 0)
-
-(use-package! dmenu)
-
-(setq direnv-always-show-summary nil)
-
-(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
-
-;; all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-;; Coordinate between kill ring and system clipboard
-(setq save-interprogram-paste-before-kill t)
-
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-
-(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
-
-(defun split-window-horizontally-and-switch ()
-  (interactive)
-  (split-window-horizontally)
-  (other-window 1))
-
-(defun split-window-vertically-and-switch ()
-  (interactive)
-  (split-window-vertically)
-  (other-window 1))
-
+#+BEGIN_SRC emacs-lisp
 (after! dired
   (setq dired-listing-switches "-aBhl  --group-directories-first"
         dired-dwim-target t
@@ -744,12 +708,52 @@ WIP: Split these out and document
               (map! :map dired-mode-map
                     :desc "narrow" "/" #'dired-narrow-fuzzy))
 
+;; Directly edit permisison bits!
+(setq wdired-allow-to-change-permissions t)
+#+END_SRC
+
+** Search Utilities
+
+*** Better Grep
+
+#+BEGIN_SRC emacs-lisp
 (use-package! deadgrep
               :if (executable-find "rg")
               :init
               (map! "M-s" #'deadgrep))
+#+END_SRC
 
+*** Scanning occurances within a buffer
 
+This is one of my primary ways of navigating next: jump through other occurances
+of the text currently under the cursor.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! smartscan
+  :init (global-smartscan-mode 1)
+  :bind (("M-N" . smartscan-symbol-go-forward)
+         ("M-P" . smartscan-symbol-go-backward)
+         :map smartscan-map
+         ("M-p" . nil)
+         ("M-n" . nil)))
+#+END_SRC
+
+** Version Control
+
+Disable version control when using TRAMP to avoid extra delays
+
+#+BEGIN_SRC emacs-lisp
+(setq vc-ignore-dir-regexp
+                (format "\\(%s\\)\\|\\(%s\\)"
+                        vc-ignore-dir-regexp
+                        tramp-file-name-regexp))
+#+END_SRC
+
+*** Magit
+
+Stunningly useful.
+
+#+BEGIN_SRC emacs-lisp
 (use-package! magit
               :config
               (set-default 'magit-stage-all-confirm nil)
@@ -769,8 +773,12 @@ WIP: Split these out and document
      ("o" . magit-log)
      ("u" . magit-submodule-update)
      ("l" . magit-show-refs-head))))
+#+END_SRC
 
+** Effective Editing
+*** Structure Editing
 
+#+BEGIN_SRC emacs-lisp
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -786,12 +794,6 @@ WIP: Split these out and document
           ("'" . nil)             ; leave tick behaviour alone
           ("M-n" . nil)
           ("C-M-m" . nil)))
-
-;; FIXME
-(use-package! aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
 
 (use-package! smartparens
   :init
@@ -809,19 +811,6 @@ WIP: Split these out and document
         "C-M-)" #'sp-backward-slurp-sexp
         "C-M-)" #'sp-backward-barf-sexp))
 
-(use-package undo-tree
-  :init
-  (setq undo-tree-visualizer-timestamps t
-        undo-tree-visualizer-diff t)
-  :config
-  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
-  (progn
-    ;; restore diff window after quit.  TODO fix upstream
-    (defun spacemacs/undo-tree-restore-default ()
-      (setq undo-tree-visualizer-diff t))
-    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
-  (global-undo-tree-mode 1))
-
 (use-package! wrap-region
   :hook
   (org-mode-hook . wrap-region-mode)
@@ -835,12 +824,15 @@ WIP: Split these out and document
      ("_" "_" nil (org-mode))
      ("$" "$" nil (org-mode latex-mode)))))
 
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
+#+END_SRC
 
-(after! pdf-tools
-  ;;swiper doesn't trigger the pdf-isearch
-  (map! :map pdf-isearch-minor-mode-map
-        "C-s" 'isearch-forward-regexp))
+*** Multiple Cursors
 
+#+BEGIN_SRC emacs-lisp
 (use-package! multiple-cursors
               :init
               (setq mc/always-run-for-all t)
@@ -855,15 +847,55 @@ WIP: Split these out and document
                      ("C-(" . mc/skip-to-previous-like-this)
                      ("C-M-<" . mc/skip-to-previous-like-this)))
 
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
+#+END_SRC
 
-(use-package! smartscan
-  :init (global-smartscan-mode 1)
-  :bind (("M-N" . smartscan-symbol-go-forward)
-         ("M-P" . smartscan-symbol-go-backward)
-         :map smartscan-map
-         ("M-p" . nil)
-         ("M-n" . nil)))
+*** Undo Tree
 
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun spacemacs/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+#+END_SRC
+
+** Better PDF support
+
+#+BEGIN_SRC emacs-lisp
+(after! pdf-tools
+  ;;swiper doesn't trigger the pdf-isearch
+  (map! :map pdf-isearch-minor-mode-map
+        "C-s" 'isearch-forward-regexp))
+#+END_SRC
+
+** Lauching External Programs
+
+#+BEGIN_SRC emacs-lisp
+(use-package! dmenu)
+#+END_SRC
+
+** Load Secrets
+
+#+BEGIN_SRC emacs-lisp
+(setq my/secrets-file (concat doom-private-dir "secrets.el"))
+(when (file-exists-p my/secrets-file)
+  (load-file my/secrets-file))
+#+END_SRC
+
+** Misc Keybindings
+
+#+BEGIN_SRC emacs-lisp
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))
  "M-n" (lambda () (interactive) (scroll-up 4))
@@ -900,16 +932,30 @@ WIP: Split these out and document
  "<print>"  'my/screenshot)
 
 
-(use-package! iedit
-  :init
-  (map! "C-;" 'company-complete)
-  (map! "M-i" 'iedit-mode))
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
 
-(use-package! edit-server
-  :init (edit-server-start)
-  :config
-  (setq edit-server-default-major-mode 'markdown-mode))
+#+END_SRC
 
+** Misc
+
+#+begin_src emacs-lisp
+(flycheck-mode 0)
+
+(setq direnv-always-show-summary nil)
+
+(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+
+;; all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; Coordinate between kill ring and system clipboard
+(setq save-interprogram-paste-before-kill t)
+
+(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
@@ -921,30 +967,16 @@ WIP: Split these out and document
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
 
-
 ;; Save whenever focus changes
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
-
-;; Disable version control to avoid delays in TRAMP
-(setq vc-ignore-dir-regexp
-                (format "\\(%s\\)\\|\\(%s\\)"
-                        vc-ignore-dir-regexp
-                        tramp-file-name-regexp))
-
-;; Directly edit permisison bits!
-(setq wdired-allow-to-change-permissions t)
-
-(setq my/secrets-file (concat doom-private-dir "secrets.el"))
-(when (file-exists-p my/secrets-file)
- (load-file my/secrets-file))
-
 #+end_src
 
 #+RESULTS:
 : t
+
 * funcs.el
 
 Utility functions.
@@ -977,6 +1009,16 @@ Utility functions.
         (linum-mode 1)
         (call-interactively 'goto-line))
     (linum-mode -1)))
+
+(defun split-window-horizontally-and-switch ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1))
+
+(defun split-window-vertically-and-switch ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1))
 
 (defun my-increment-number-decimal
     (&optional

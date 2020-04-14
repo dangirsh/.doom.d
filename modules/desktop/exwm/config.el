@@ -314,8 +314,7 @@
                                                8 "HDMI-1"
                                                9 "HDMI-1"))
 
-
-(setq my/screenlayout-file "/home/dan/.screenlayout/wilbur_hotel_office.sh")
+(setq my/screenlayout-file "/home/dan/.screenlayout/main.sh")
 
 (when (file-exists-p my/screenlayout-file)
   (require 'exwm-randr)

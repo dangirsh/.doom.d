@@ -4,7 +4,7 @@
       org-roam-directory "/home/dan/Sync/org-roam/")
 
 (setq user-full-name "Dan Girshovich"
-      user-mail-address "dan.girsh@gmail.com")
+      user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 
 (setq doom-font (font-spec :family "Hack" :size 20)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")

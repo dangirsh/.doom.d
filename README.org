@@ -24,7 +24,7 @@ entire system configuration in this file. That's a WIP.
 Inspirations:
 
 - http://doc.rix.si/cce/cce.html
-- https://github.com/jethrokuan/dots.git
+- https://github.com/jethrokuan/dots/tree/master/.doom.d
 - https://ambrevar.xyz/emacs-everywhere/
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
 

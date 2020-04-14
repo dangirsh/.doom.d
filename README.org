@@ -612,8 +612,8 @@ to ace-window.
 
 ** Slack
 
-A lightweight Slack client is useful if, for example, you flee a global
-pandemic in some bandwidth-limited backcountry location.
+A lightweight text-based Slack client is useful if, for example, you flee a global
+pandemic to some bandwidth-limited backcountry location.
 
 #+begin_src emacs-lisp
 (use-package! slack

@@ -6,6 +6,8 @@
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 
+(load-file (concat doom-private-dir "funcs.el"))
+
 (setq doom-font (font-spec :family "Hack" :size 20)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
@@ -140,8 +142,6 @@
      (format "%s" brightness))
     (save-buffer)
     (kill-buffer)))
-
-(load-file (concat doom-private-dir "funcs.el"))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -403,38 +403,6 @@
      ("i" . counsel-semantic-or-imenu)
      ("j" . ivy-switch-buffer))))
 
-(flycheck-mode 0)
-
-(use-package! dmenu)
-
-(setq direnv-always-show-summary nil)
-
-(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
-
-;; all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-;; Coordinate between kill ring and system clipboard
-(setq save-interprogram-paste-before-kill t)
-
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-
-(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
-
-(defun split-window-horizontally-and-switch ()
-  (interactive)
-  (split-window-horizontally)
-  (other-window 1))
-
-(defun split-window-vertically-and-switch ()
-  (interactive)
-  (split-window-vertically)
-  (other-window 1))
-
 (after! dired
   (setq dired-listing-switches "-aBhl  --group-directories-first"
         dired-dwim-target t
@@ -449,11 +417,26 @@
               (map! :map dired-mode-map
                     :desc "narrow" "/" #'dired-narrow-fuzzy))
 
+;; Directly edit permisison bits!
+(setq wdired-allow-to-change-permissions t)
+
 (use-package! deadgrep
               :if (executable-find "rg")
               :init
               (map! "M-s" #'deadgrep))
 
+(use-package! smartscan
+  :init (global-smartscan-mode 1)
+  :bind (("M-N" . smartscan-symbol-go-forward)
+         ("M-P" . smartscan-symbol-go-backward)
+         :map smartscan-map
+         ("M-p" . nil)
+         ("M-n" . nil)))
+
+(setq vc-ignore-dir-regexp
+                (format "\\(%s\\)\\|\\(%s\\)"
+                        vc-ignore-dir-regexp
+                        tramp-file-name-regexp))
 
 (use-package! magit
               :config
@@ -475,7 +458,6 @@
      ("u" . magit-submodule-update)
      ("l" . magit-show-refs-head))))
 
-
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -491,12 +473,6 @@
           ("'" . nil)             ; leave tick behaviour alone
           ("M-n" . nil)
           ("C-M-m" . nil)))
-
-;; FIXME
-(use-package! aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
 
 (use-package! smartparens
   :init
@@ -514,19 +490,6 @@
         "C-M-)" #'sp-backward-slurp-sexp
         "C-M-)" #'sp-backward-barf-sexp))
 
-(use-package undo-tree
-  :init
-  (setq undo-tree-visualizer-timestamps t
-        undo-tree-visualizer-diff t)
-  :config
-  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
-  (progn
-    ;; restore diff window after quit.  TODO fix upstream
-    (defun spacemacs/undo-tree-restore-default ()
-      (setq undo-tree-visualizer-diff t))
-    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
-  (global-undo-tree-mode 1))
-
 (use-package! wrap-region
   :hook
   (org-mode-hook . wrap-region-mode)
@@ -540,11 +503,10 @@
      ("_" "_" nil (org-mode))
      ("$" "$" nil (org-mode latex-mode)))))
 
-
-(after! pdf-tools
-  ;;swiper doesn't trigger the pdf-isearch
-  (map! :map pdf-isearch-minor-mode-map
-        "C-s" 'isearch-forward-regexp))
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
 
 (use-package! multiple-cursors
               :init
@@ -560,14 +522,34 @@
                      ("C-(" . mc/skip-to-previous-like-this)
                      ("C-M-<" . mc/skip-to-previous-like-this)))
 
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
 
-(use-package! smartscan
-  :init (global-smartscan-mode 1)
-  :bind (("M-N" . smartscan-symbol-go-forward)
-         ("M-P" . smartscan-symbol-go-backward)
-         :map smartscan-map
-         ("M-p" . nil)
-         ("M-n" . nil)))
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun spacemacs/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+
+(after! pdf-tools
+  ;;swiper doesn't trigger the pdf-isearch
+  (map! :map pdf-isearch-minor-mode-map
+        "C-s" 'isearch-forward-regexp))
+
+(use-package! dmenu)
+
+(setq my/secrets-file (concat doom-private-dir "secrets.el"))
+(when (file-exists-p my/secrets-file)
+  (load-file my/secrets-file))
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))
@@ -605,16 +587,25 @@
  "<print>"  'my/screenshot)
 
 
-(use-package! iedit
-  :init
-  (map! "C-;" 'company-complete)
-  (map! "M-i" 'iedit-mode))
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
 
-(use-package! edit-server
-  :init (edit-server-start)
-  :config
-  (setq edit-server-default-major-mode 'markdown-mode))
+(flycheck-mode 0)
 
+(setq direnv-always-show-summary nil)
+
+(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+
+;; all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; Coordinate between kill ring and system clipboard
+(setq save-interprogram-paste-before-kill t)
+
+(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
@@ -626,22 +617,8 @@
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
 
-
 ;; Save whenever focus changes
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
-
-;; Disable version control to avoid delays in TRAMP
-(setq vc-ignore-dir-regexp
-                (format "\\(%s\\)\\|\\(%s\\)"
-                        vc-ignore-dir-regexp
-                        tramp-file-name-regexp))
-
-;; Directly edit permisison bits!
-(setq wdired-allow-to-change-permissions t)
-
-(setq my/secrets-file (concat doom-private-dir "secrets.el"))
-(when (file-exists-p my/secrets-file)
- (load-file my/secrets-file))

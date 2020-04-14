@@ -162,7 +162,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq user-full-name "Dan Girshovich"
-      user-mail-address "dan.girsh@gmail.com")
+      user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 #+end_src
 
 ** Visual Settings

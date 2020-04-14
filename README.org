@@ -1162,7 +1162,14 @@ Cons:
 - Limited support for managing multiple screens.
   - It works, but it hardwires each workspace to a specific monitor.
 - Need to be careful not to leave your Emacs configuration in a broken state.
-  - Fallbacks include other WMs installed (XMonad) or switching to a tty (Ctrl-Alt-f#)
+  - Fallbacks include other WMs installed (XMonad) or switching to a tty
+    (Ctrl-Alt-f#)
+
+** Create the config directory where Doom expects it
+
+#+BEGIN_SRC sh
+mkdir -p ./modules/desktop/exwm
+#+END_SRC
 
 ** Package Declarations
 #+begin_src emacs-lisp :tangle ./modules/desktop/exwm/packages.el

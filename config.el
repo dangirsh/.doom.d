@@ -1,0 +1,641 @@
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+
+(setq org-directory "~/Sync/"
+      org-roam-directory "/home/dan/Sync/org-roam/")
+
+(setq user-full-name "Dan Girshovich"
+      user-mail-address "dan.girsh@gmail.com")
+
+(setq doom-font (font-spec :family "Hack" :size 20)
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+      doom-serif-font (font-spec :family "Libre Baskerville"))
+
+(setq +doom-dashboard-banner-padding '(0 . 2)
+      +doom-dashboard-banner-file "deepfield-window.png"
+      +doom-dashboard-banner-dir "~/.doom.d/banners")
+
+(setq display-line-numbers-type nil)
+
+;; Thin grey line separating windows
+(set-face-background 'vertical-border "grey")
+(set-face-foreground 'vertical-border (face-background 'vertical-border))
+
+(use-package! doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
+  (load-theme 'doom-acario-dark t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+(use-package! key-chord
+  :config
+  (key-chord-mode 1)
+  (setq key-chord-one-keys-delay 0.02
+        key-chord-two-keys-delay 0.03))
+
+(defun simulate-seq (seq)
+  (setq unread-command-events (listify-key-sequence seq)))
+
+(defun send-doom-leader ()
+  (interactive)
+  (simulate-seq "\C-c"))
+
+(setq doom-localleader-alt-key "M-c")
+
+(defun send-doom-local-leader ()
+  (interactive)
+  (simulate-seq "\M-c"))
+
+  (after! key-chord
+
+    (key-chord-define-global "fj" 'send-doom-leader)
+    (key-chord-define-global "gh" 'send-doom-local-leader)
+
+    (setq dk-keymap (make-sparse-keymap))
+    (setq sl-keymap (make-sparse-keymap))
+
+    (key-chord-define-global "dk" dk-keymap)
+    (key-chord-define-global "sl" sl-keymap)
+
+    (defun add-to-keymap (keymap bindings)
+      (dolist (binding bindings)
+	      (define-key keymap (kbd (car binding)) (cdr binding))))
+
+    (defun add-to-dk-keymap (bindings)
+      (add-to-keymap dk-keymap bindings))
+
+    (defun add-to-sl-keymap (bindings)
+      (add-to-keymap sl-keymap bindings))
+
+    (add-to-dk-keymap
+     '(("k" . doom/kill-this-buffer-in-all-windows)
+       ("n" . narrow-or-widen-dwim)
+       ("d" . dired-jump)
+       ("b" . my/set-brightness)
+       ("<SPC>" . rgrep)
+       ("s" . save-buffer)
+       ("t" . eshell-here)
+       ("w" . google-this-noconfirm)
+       ("x" . sp-splice-sexp)
+       ("/" . find-name-dired)))
+
+    (key-chord-define-global ",." 'end-of-buffer)
+    (key-chord-define-global "xz" 'beginning-of-buffer)
+    (key-chord-define-global "xc" 'beginning-of-buffer)
+
+    (key-chord-define-global "qw" 'delete-window)
+    (key-chord-define-global "qp" 'delete-other-windows)
+
+    (key-chord-define-global "fk" 'other-window)
+
+    (key-chord-define-global "jd" 'rev-other-window)
+
+    (key-chord-define-global "hh" 'helpful-at-point)
+    (key-chord-define-global "hk" 'helpful-key)
+    (key-chord-define-global "hv" 'helpful-variable)
+    (key-chord-define-global "hf" 'helpful-function)
+
+    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+
+    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+    (key-chord-define-global "fv" 'comment-line)
+
+    (key-chord-define-global "kl" 'er/expand-region)
+
+    (key-chord-define-global "a;" 'execute-extended-command)
+    (key-chord-define-global "xf" 'find-file)
+
+    (key-chord-define-global "l;" 'repeat))
+
+(defun fix-keyboard ()
+  (interactive)
+  (shell-command "setxkbmap -option 'ctrl:nocaps'")
+  (shell-command "xset r rate 160 50"))
+
+(fix-keyboard)
+
+(defun toggle-touchpad ()
+  (interactive)
+  (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
+
+(add-to-dk-keymap
+   '(("m" . toggle-touchpad)))
+
+(defun my/set-brightness (brightness)
+  (interactive "nBrightness level: ")
+  (save-window-excursion
+    (find-file "/sudo:root@localhost:/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/brightness")
+    (kill-region
+     (point-min)
+     (point-max))
+    (insert
+     (format "%s" brightness))
+    (save-buffer)
+    (kill-buffer)))
+
+(load-file (concat doom-private-dir "funcs.el"))
+
+(use-package! org
+  :mode ("\\.org\\'" . org-mode)
+  :init
+  (add-hook 'org-src-mode-hook #'(lambda () (flycheck-mode 0)))
+  (add-hook 'org-mode-hook #'(lambda () (flycheck-mode 0)))
+  (map! :map org-mode-map
+        "M-n" #'outline-next-visible-heading
+        "M-p" #'outline-previous-visible-heading)
+  (setq org-src-window-setup 'current-window
+        org-return-follows-link t
+        org-confirm-elisp-link-function nil
+        org-confirm-shell-link-function nil
+        org-use-speed-commands t
+        org-catch-invisible-edits 'show
+        org-preview-latex-image-directory "/tmp/ltximg/"))
+
+(after! org
+
+  ;; (add-hook 'ob-async-pre-execute-src-block-hook
+  ;;           '(lambda ()
+  ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
+  ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
+  ;;              ))
+
+  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
+                                                      (:display . "text/plain")
+                                                      (:async . "yes")))
+
+  (setq org-confirm-babel-evaluate nil
+        org-use-property-inheritance t
+        org-export-with-sub-superscripts nil
+        org-startup-indented t
+        org-pretty-entities nil
+        org-use-speed-commands t
+        org-return-follows-link t
+        org-outline-path-complete-in-steps nil
+        org-ellipsis ""
+        org-html-htmlize-output-type 'css
+        org-fontify-whole-heading-line t
+        org-fontify-done-headline t
+        org-fontify-quote-and-verse-blocks t
+        org-image-actual-width nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+        org-edit-src-content-indentation 0
+        org-adapt-indentation nil
+        org-hide-emphasis-markers t
+        org-special-ctrl-a/e t
+        org-special-ctrl-k t
+        org-export-with-broken-links t
+        org-yank-adjusted-subtrees t
+        org-src-window-setup 'reorganize-frame
+        org-src-ask-before-returning-to-edit-buffer nil
+        org-insert-heading-respect-content nil)
+
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  (add-hook 'org-babel-after-execute-hook 'org-toggle-latex-fragment 'append)
+
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
+  (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
+
+  (setq org-agenda-files (directory-files org-roam-directory  t ".*.org")
+        org-refile-targets `((,(append (my/open-org-files-list) org-agenda-files) :maxlevel . 7))
+        ;; https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm)
+
+  (setq org-format-latex-options
+        (quote (:foreground default
+                            :background default
+                            :scale 2.0
+                            :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d@/!)")
+          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+
+  ;; Colorize org babel output. Without this color codes are left in the output.
+  (defun my/display-ansi-colors ()
+    (interactive)
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region (point-min) (point-max))))
+
+  (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors))
+
+(use-package! org-noter
+  :after org
+  :config
+  (setq org-noter-notes-window-location 'vertical-split
+        org-noter-notes-search-path '("~/Sync")
+        org-noter-auto-save-last-location t
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+
+;; Note that this pulls in Helm :/
+;; https://github.com/jkitchin/org-ref/issues/202
+(use-package! org-ref
+  :after (org bibtex)
+  :init
+  (setq org-ref-default-bibliography '("~/Sync/references.bib"))
+  :config
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+        org-ref-bibliography-notes "~/Sync/pdf_notes.org"
+        org-ref-pdf-directory "~/Sync/pdf/"
+        org-ref-notes-function #'org-ref-notes-function-one-file)
+
+  (defun get-pdf-filename (key)
+    (let ((results (bibtex-completion-find-pdf key)))
+      (if (equal 0 (length results))
+          (org-ref-get-pdf-filename key)
+        (car results))))
+
+  (add-hook 'org-ref-create-notes-hook
+            (lambda ()
+              (org-entry-put
+               nil
+               "NOTER_DOCUMENT"
+               (get-pdf-filename (org-entry-get
+			                            (point) "Custom_ID")))) )
+
+  (defun org-ref-noter-at-point ()
+    (interactive)
+    (let* ((results (org-ref-get-bibtex-key-and-file))
+           (key (car results))
+           (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+      (if (file-exists-p pdf-file)
+          (save-window-excursion
+            (org-ref-open-notes-at-point)
+            (find-file-other-window pdf-file)
+            (org-noter))
+        (message "no pdf found for %s" key))))
+
+  (map! :leader
+        :map org-mode-map
+        :desc "org-noter from ref"
+        "n p" 'org-ref-noter-at-point))
+
+(use-package! org-journal
+  :config
+  (map! :leader
+        (:prefix-map ("n" . "notes")
+          (:prefix ("j" . "journal")
+            :desc "Today" "t" #'org-journal-today)))
+  (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-file-format "private-%Y-%m-%d.org"
+        org-journal-dir (concat org-roam-directory "journal")
+        org-journal-carryover-items nil
+        org-journal-date-format "%Y-%m-%d")
+  (defun org-journal-today ()
+    (interactive)
+    (org-journal-new-entry t)))
+
+(use-package! org-roam
+  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+  :hook
+  (after-init . org-roam-mode)
+  :custom-face
+  (org-roam-link ((t (:inherit org-link))))
+  :init
+  (map! :leader
+        :prefix "n"
+        :desc "org-roam" "l" #'org-roam
+        :desc "org-roam-insert" "i" #'org-roam-insert
+        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
+        :desc "org-roam-find-file" "f" #'org-roam-find-file
+        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
+        :desc "org-roam-capture" "c" #'org-roam-capture)
+  (key-chord-define-global "[[" #'org-roam-insert)
+  (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
+        org-roam-graph-exclude-matcher "private"))
+
+(use-package! company-org-roam
+              :when (featurep! :completion company)
+              :after org-roam
+              :config
+              (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
+
+(setq org-roam-capture-templates
+      '(("d" "default" plain (function org-roam--capture-get-point)
+         "%?"
+         :file-name "%<%Y%m%d%H%M%S>-${slug}"
+         :head "#+TITLE: ${title}\n"
+         :unnarrowed t
+         :immediate-finish t)))
+
+(use-package! ace-window
+  :config
+  (map! "C-M-SPC" #'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+(use-package! slack
+  :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "embassy-network"
+   :default t
+   ;; FIXME: After one incorrect entry, the client won't load
+   :token (password-store-get "api-token/slack/embassy-network")
+   ;; FIXME add channels
+   :subscribed-channels '(esf-citizens)
+   :full-and-display-names t))
+
+(use-package! jupyter
+  :init
+  (setq jupyter-eval-use-overlays t)
+
+  (map!
+   :map org-mode-map
+   :localleader
+   (:desc "Org Hydra"       "j" #'jupyter-org-hydra/body))
+
+  (defun my/insert-julia-src-block ()
+    (interactive)
+    (jupyter-org-insert-src-block t current-prefix-arg))
+
+  ;; Better than `M-c C-, j` or `M-c j =`
+  (key-chord-define-global "j;" #'my/insert-julia-src-block)
+  (map!
+   :map julia-mode-map
+   :localleader
+   (:prefix ("j" . "jupyter")
+     :desc "Run REPL"         "o" #'jupyter-run-repl
+     :desc "Eval function"    "f" #'jupyter-eval-defun
+     :desc "Eval buffer"      "b" #'jupyter-eval-buffer
+     :desc "Eval region"      "r" #'jupyter-eval-region
+     :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
+     :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
+     :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
+     :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
+     :desc "Eval string"      "w" #'jupyter-eval-string
+     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
+
+(after! ivy
+  ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
+  (setq ivy-use-virtual-buffers t
+        counsel-find-file-at-point t
+        ivy-wrap nil)
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (eshell-cmpl-initialize)
+              (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))
+  (add-to-dk-keymap
+   '(("g" . +ivy/project-search)
+     ("h" . +ivy/projectile-find-file)
+     ("i" . counsel-semantic-or-imenu)
+     ("j" . ivy-switch-buffer))))
+
+(flycheck-mode 0)
+
+(use-package! dmenu)
+
+(setq direnv-always-show-summary nil)
+
+(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+
+;; all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; Coordinate between kill ring and system clipboard
+(setq save-interprogram-paste-before-kill t)
+
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
+
+(defun split-window-horizontally-and-switch ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1))
+
+(defun split-window-vertically-and-switch ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1))
+
+(after! dired
+  (setq dired-listing-switches "-aBhl  --group-directories-first"
+        dired-dwim-target t
+        dired-recursive-copies (quote always)
+        dired-recursive-deletes (quote top)
+        ;; Directly edit permisison bits!
+        wdired-allow-to-change-permissions t))
+
+(use-package! dired-narrow
+              :commands (dired-narrow-fuzzy)
+              :init
+              (map! :map dired-mode-map
+                    :desc "narrow" "/" #'dired-narrow-fuzzy))
+
+(use-package! deadgrep
+              :if (executable-find "rg")
+              :init
+              (map! "M-s" #'deadgrep))
+
+
+(use-package! magit
+              :config
+              (set-default 'magit-stage-all-confirm nil)
+              (set-default 'magit-unstage-all-confirm nil)
+
+              ;; Restores "normal" behavior in branch view (when hitting RET)
+              (setq magit-visit-ref-behavior '(create-branch checkout-any focus-on-ref))
+
+              (setq git-commit-finish-query-functions nil)
+              (setq magit-visit-ref-create 1)
+              (setq magit-revision-show-gravatars nil))
+
+(after! (magit key-chord)
+  (add-to-sl-keymap
+   '(("k" . magit-dispatch-popup)
+     ("s" . magit-status)
+     ("o" . magit-log)
+     ("u" . magit-submodule-update)
+     ("l" . magit-show-refs-head))))
+
+
+(use-package! lispy
+  :config
+  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
+  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
+  ;; the compat code isn't even getting hit!
+  (setq lispy-compat '(edebug magit-blame-mode))
+
+  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
+  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
+  :hook
+  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
+  :bind (:map lispy-mode-map
+          ("'" . nil)             ; leave tick behaviour alone
+          ("M-n" . nil)
+          ("C-M-m" . nil)))
+
+;; FIXME
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
+
+(use-package! smartparens
+  :init
+  (map! :map smartparens-mode-map
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-p" #'sp-backward-down-sexp
+        "C-M-n" #'sp-up-sexp
+        "C-M-s" #'sp-splice-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-barf-sexp))
+
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun spacemacs/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+
+(use-package! wrap-region
+  :hook
+  (org-mode-hook . wrap-region-mode)
+  (latex-mode-hook . wrap-region-mode)
+  :config
+  (wrap-region-add-wrappers
+   '(("*" "*" nil (org-mode))
+     ("~" "~" nil (org-mode))
+     ("/" "/" nil (org-mode))
+     ("=" "=" nil (org-mode))
+     ("_" "_" nil (org-mode))
+     ("$" "$" nil (org-mode latex-mode)))))
+
+
+(after! pdf-tools
+  ;;swiper doesn't trigger the pdf-isearch
+  (map! :map pdf-isearch-minor-mode-map
+        "C-s" 'isearch-forward-regexp))
+
+(use-package! multiple-cursors
+              :init
+              (setq mc/always-run-for-all t)
+              :config
+              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+              :bind (("C-S-c" . mc/edit-lines)
+                     ("C-M-g" . mc/mark-all-like-this-dwim)
+                     ("C->" . mc/mark-next-like-this)
+                     ("C-<" . mc/mark-previous-like-this)
+                     ("C-)" . mc/skip-to-next-like-this)
+                     ("C-M->" . mc/skip-to-next-like-this)
+                     ("C-(" . mc/skip-to-previous-like-this)
+                     ("C-M-<" . mc/skip-to-previous-like-this)))
+
+
+(use-package! smartscan
+  :init (global-smartscan-mode 1)
+  :bind (("M-N" . smartscan-symbol-go-forward)
+         ("M-P" . smartscan-symbol-go-backward)
+         :map smartscan-map
+         ("M-p" . nil)
+         ("M-n" . nil)))
+
+(map!
+ "M-p" (lambda () (interactive) (scroll-down 4))
+ "M-n" (lambda () (interactive) (scroll-up 4))
+
+ "C-h h" 'helpful-at-point
+ "C-h f" 'helpful-function
+ "C-h v" 'helpful-variable
+ "C-h k" 'helpful-key
+
+ "M-SPC" 'avy-goto-word-or-subword-1
+
+ "C-s" 'swiper
+ "C-M-s" 'swiper-isearch
+
+ "C-S-d" 'my/duplicate-line-or-region
+ "C-c <left>" 'winner-undo
+ "C-c <right>" 'winner-redo
+
+ "C-+" 'text-scale-increase
+ "C--" 'text-scale-decrease
+
+ ;; FIXME: This currently relies on Helm as an undeclared dep!
+ "M-y" 'helm-show-kill-ring
+
+ "<f5>" 'my/night-mode
+ "<f6>" 'my/day-mode
+
+ "C-z"   'undo-fu-only-undo
+ "C-S-z" 'undo-fu-only-redo
+
+ "C-/"   'undo-fu-only-undo
+ "C-?" 'undo-fu-only-redo
+
+ "<print>"  'my/screenshot)
+
+
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
+
+(use-package! edit-server
+  :init (edit-server-start)
+  :config
+  (setq edit-server-default-major-mode 'markdown-mode))
+
+
+;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
+;; a file with a "Local Variables" clause (like many Org files) is opened.
+(setq enable-local-variables :all)
+
+;; This is usually just annoying
+(setq compilation-ask-about-save nil)
+
+;; No confirm on exit
+(setq confirm-kill-emacs nil)
+
+
+;; Save whenever focus changes
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+
+;; Disable version control to avoid delays in TRAMP
+(setq vc-ignore-dir-regexp
+                (format "\\(%s\\)\\|\\(%s\\)"
+                        vc-ignore-dir-regexp
+                        tramp-file-name-regexp))
+
+;; Directly edit permisison bits!
+(setq wdired-allow-to-change-permissions t)
+
+(load-file (concat doom-private-dir "secrets.el"))

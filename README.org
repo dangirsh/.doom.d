@@ -541,6 +541,9 @@ I use org as a primary interface. It currently manages:
           (:prefix ("j" . "journal")
             :desc "Today" "t" #'org-journal-today)))
   (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-time-prefix "* "
+        org-journal-time-format ""
+        org-journal-file-format "private-%Y-%m-%d.org"
         org-journal-file-format "private-%Y-%m-%d.org"
         org-journal-dir (concat org-roam-directory "journal")
         org-journal-carryover-items nil

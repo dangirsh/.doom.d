@@ -1218,9 +1218,9 @@ Cons:
 
 ** Create the config directory where Doom expects it
 
-#+BEGIN_SRC sh
+#+BEGIN_EXAMPLE sh
 mkdir -p ./modules/desktop/exwm
-#+END_SRC
+#+END_EXAMPLE
 
 ** Package Declarations
 #+begin_src emacs-lisp :tangle ./modules/desktop/exwm/packages.el

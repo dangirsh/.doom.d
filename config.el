@@ -150,7 +150,8 @@
   (add-hook 'org-mode-hook #'(lambda () (flycheck-mode 0)))
   (map! :map org-mode-map
         "M-n" #'outline-next-visible-heading
-        "M-p" #'outline-previous-visible-heading)
+        "M-p" #'outline-previous-visible-heading
+        "C-c ;" nil)
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-elisp-link-function nil
@@ -238,7 +239,9 @@
   (setq org-noter-notes-window-location 'vertical-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
+        ;; helpful in EXWM, where there are no frames
+        org-noter-always-create-frame nil)
 
 ;; Note that this pulls in Helm :/
 ;; https://github.com/jkitchin/org-ref/issues/202

@@ -6,4 +6,4 @@
 ;; (package! exwm-mff
 ;;   :recipe (:host github :repo "ieure/exwm-mff"))
 (package! xelb)
-(package! exwm-edit)
+;; (package! exwm-edit)

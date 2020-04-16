@@ -1326,13 +1326,11 @@ mkdir -p ./modules/desktop/exwm
   ;; https://emacs.stackexchange.com/questions/33326/how-do-i-cut-and-paste-effectively-between-applications-while-using-exwm
   (defun my/exwm-input-line-mode ()
     "Set exwm window to line-mode and show mode line"
-    (call-interactively #'exwm-input-grab-keyboard)
-    (exwm-layout-show-mode-line))
+    (call-interactively #'exwm-input-grab-keyboard))
 
   (defun my/exwm-input-char-mode ()
     "Set exwm window to char-mode and hide mode line"
-    (call-interactively #'exwm-input-release-keyboard)
-    (exwm-layout-hide-mode-line))
+    (call-interactively #'exwm-input-release-keyboard))
 
   (defun my/exwm-input-toggle-mode ()
     "Toggle between line- and char-mode"

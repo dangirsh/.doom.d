@@ -477,7 +477,9 @@ I use org as a primary interface. It currently manages:
   (setq org-noter-notes-window-location 'vertical-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
+        ;; helpful in EXWM, where there are no frames
+        org-noter-always-create-frame nil)
 #+END_SRC
 
 *** Org-ref

@@ -191,9 +191,10 @@
 ;; http://p.hagelb.org/exwm-ff-tabs.html
 (add-hook 'exwm-manage-finish-hook
           (lambda ()
+            ;; these have their own Emacs simulation installed (e.g. Surfingkeys)
             (when (or (string= exwm-class-name "Firefox")
-                      (string= exwm-class-name "Google-chrome"))
-              ;;only need a few simulation keys bc Surfingkeys is awesome
+                      (string= exwm-class-name "Google-chrome")
+                      (string= exwm-class-name "Atom"))
               (exwm-input-set-local-simulation-keys
                `(([?\s-w] . [?\C-w])
                  ([?\M-w] . [?\C-c])
@@ -267,12 +268,6 @@
 
 (exwm-input-set-key (kbd "s-o") #'my/exwm-ibuffer)
 
-;; (when (file-exists-p "/home/my/.screenlayout/desktop.sh")
-;;   (require 'exwm-randr)
-;;   (setq exwm-randr-workspace-monitor-plist '(1 "USB-C-0" 2 "HDMI-0"))
-;;   (call-process "bash" nil 0 nil "-c" "/home/my/.screenlayout/desktop.sh")
-;;   (exwm-randr-enable))
-
 (use-package! exwm-edit
   :init
   ;; Otherwise it steals C-c ' from org
@@ -284,10 +279,6 @@
             (string-prefix-p "next" exwm-instance-name))
     (exwm-input-release-keyboard (exwm--buffer->id (window-buffer)))))
 (add-hook 'exwm-manage-finish-hook 'my/exwm-start-in-char-mode)
-
-;; (use-package! exwm-firefox
-;;   :config
-;;   (exwm-firefox-mode 1))
 
 (require 'exwm-randr)
 ;; FIXME
@@ -303,12 +294,17 @@
                                              8 "HDMI-1"
                                              9 "HDMI-1"))
 
-(setq my/screenlayout-file "/home/dan/.screenlayout/main.sh")
+(setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
 
-(when (file-exists-p my/screenlayout-file)
+(when (file-exists-p my/monitor-screenlayout-file)
   (require 'exwm-randr)
-  (call-process "bash" nil 0 nil "-c" my/screenlayout-file)
+  (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file)
   (exwm-randr-enable))
+
+(setq my/default-screenlayout-file "/home/dan/.screenlayout/default.sh")
+
+(defun my/default-screen-layout ()
+  (call-process "bash" nil 0 nil "-c" my/default-screenlayout-file))
 
 (exwm-enable)
 

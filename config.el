@@ -82,6 +82,7 @@
      ("d" . dired-jump)
      ("b" . my/set-brightness)
      ("<SPC>" . rgrep)
+     ("o" . ibuffer)
      ("s" . save-buffer)
      ("t" . eshell-here)
      ("w" . google-this-noconfirm)

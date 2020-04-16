@@ -759,16 +759,18 @@ Stunningly useful.
 
 #+BEGIN_SRC emacs-lisp
 (use-package! magit
-              :config
-              (set-default 'magit-stage-all-confirm nil)
-              (set-default 'magit-unstage-all-confirm nil)
+  :config
+  (set-default 'magit-stage-all-confirm nil)
+  (set-default 'magit-unstage-all-confirm nil)
 
-              ;; Restores "normal" behavior in branch view (when hitting RET)
-              (setq magit-visit-ref-behavior '(create-branch checkout-any focus-on-ref))
+  (remove-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
-              (setq git-commit-finish-query-functions nil)
-              (setq magit-visit-ref-create 1)
-              (setq magit-revision-show-gravatars nil))
+  ;; Restores "normal" behavior in branch view (when hitting RET)
+  (setq magit-visit-ref-behavior '(create-branch checkout-any focus-on-ref))
+
+  (setq git-commit-finish-query-functions nil)
+  (setq magit-visit-ref-create 1)
+  (setq magit-revision-show-gravatars nil))
 
 (after! (magit key-chord)
   (add-to-sl-keymap

@@ -1512,12 +1512,6 @@ mkdir -p ./modules/desktop/exwm
 
 (exwm-input-set-key (kbd "s-o") #'my/exwm-ibuffer)
 
-;; (when (file-exists-p "/home/my/.screenlayout/desktop.sh")
-;;   (require 'exwm-randr)
-;;   (setq exwm-randr-workspace-monitor-plist '(1 "USB-C-0" 2 "HDMI-0"))
-;;   (call-process "bash" nil 0 nil "-c" "/home/my/.screenlayout/desktop.sh")
-;;   (exwm-randr-enable))
-
 (use-package! exwm-edit
   :init
   ;; Otherwise it steals C-c ' from org
@@ -1529,10 +1523,6 @@ mkdir -p ./modules/desktop/exwm
             (string-prefix-p "next" exwm-instance-name))
     (exwm-input-release-keyboard (exwm--buffer->id (window-buffer)))))
 (add-hook 'exwm-manage-finish-hook 'my/exwm-start-in-char-mode)
-
-;; (use-package! exwm-firefox
-;;   :config
-;;   (exwm-firefox-mode 1))
 
 (require 'exwm-randr)
 ;; FIXME

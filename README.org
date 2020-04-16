@@ -384,7 +384,8 @@ I use org as a primary interface. It currently manages:
   (add-hook 'org-mode-hook #'(lambda () (flycheck-mode 0)))
   (map! :map org-mode-map
         "M-n" #'outline-next-visible-heading
-        "M-p" #'outline-previous-visible-heading)
+        "M-p" #'outline-previous-visible-heading
+        "C-c ;" nil)
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-elisp-link-function nil

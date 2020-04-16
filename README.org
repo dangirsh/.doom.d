@@ -1428,27 +1428,18 @@ mkdir -p ./modules/desktop/exwm
                                    (exwm-workspace-switch-create ,i))))
           (number-sequence 0 9))
 
-
-
   ;; Configure firefox to open every tab as a new window instead
   ;; http://p.hagelb.org/exwm-ff-tabs.html
   (add-hook 'exwm-manage-finish-hook
             (lambda ()
-              (when (string= exwm-class-name "Firefox")
-                ;; New windows instead of tabs
+              (when (or (string= exwm-class-name "Firefox")
+                        (string= exwm-class-name "Google-chrome"))
+                ;;only need a few simulation keys bc Surfingkeys is awesome
                 (exwm-input-set-local-simulation-keys
-                 `(([?\s-w] . [?\C-w]) ; s-w on the root window kills all tabs unwantedly
-                   ,@exwm-input-simulation-keys)))
-              (when (string= exwm-class-name "Next")
-                ;; New windows instead of tabs
-                (exwm-input-set-local-simulation-keys nil))
-              ;; FIXME copy/paste in terminator
-              ;; (when (string= exwm-class-name "Terminator")
-              ;;   (exwm-input-set-local-simulation-keys
-              ;;    `(([?\M-w] . [?\C-C])
-              ;;      ([?\C-y] . [?\C-V])
-              ;;      ,@exwm-input-simulation-keys)))
-              ))
+                 `(([?\s-w] . [?\C-w])
+                   ([?\M-w] . [?\C-c])
+                   ([?\C-y] . [?\C-y])))
+                (exwm-layout-hide-mode-line))))
 
   ;; (add-hook 'exwm-update-title-hook
   ;;           (defun my/exwm-title-hook ()

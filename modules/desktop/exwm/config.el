@@ -1,4 +1,5 @@
 ;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
+
   (use-package! exwm
     :init
     (setq
@@ -85,13 +86,11 @@
   ;; https://emacs.stackexchange.com/questions/33326/how-do-i-cut-and-paste-effectively-between-applications-while-using-exwm
   (defun my/exwm-input-line-mode ()
     "Set exwm window to line-mode and show mode line"
-    (call-interactively #'exwm-input-grab-keyboard)
-    (exwm-layout-show-mode-line))
+    (call-interactively #'exwm-input-grab-keyboard))
 
   (defun my/exwm-input-char-mode ()
     "Set exwm window to char-mode and hide mode line"
-    (call-interactively #'exwm-input-release-keyboard)
-    (exwm-layout-hide-mode-line))
+    (call-interactively #'exwm-input-release-keyboard))
 
   (defun my/exwm-input-toggle-mode ()
     "Toggle between line- and char-mode"
@@ -170,7 +169,7 @@
   (exwm-input-set-key (kbd "s-/") 'winner-undo)
   (exwm-input-set-key (kbd "s-?") 'winner-redo)
 
-  (exwm-input-set-key (kbd "s-'") 'exwm-edit--compose)
+  ;; (exwm-input-set-key (kbd "s-'") 'exwm-edit--compose)
 
   (exwm-input-set-key (kbd "s-w") 'delete-window)
   (exwm-input-set-key (kbd "s-q") 'kill-this-buffer)
@@ -189,27 +188,18 @@
                                    (exwm-workspace-switch-create ,i))))
           (number-sequence 0 9))
 
-
-
   ;; Configure firefox to open every tab as a new window instead
   ;; http://p.hagelb.org/exwm-ff-tabs.html
   (add-hook 'exwm-manage-finish-hook
             (lambda ()
-              (when (string= exwm-class-name "Firefox")
-                ;; New windows instead of tabs
+              (when (or (string= exwm-class-name "Firefox")
+                        (string= exwm-class-name "Google-chrome"))
+                ;;only need a few simulation keys bc Surfingkeys is awesome
                 (exwm-input-set-local-simulation-keys
-                 `(([?\s-w] . [?\C-w]) ; s-w on the root window kills all tabs unwantedly
-                   ,@exwm-input-simulation-keys)))
-              (when (string= exwm-class-name "Next")
-                ;; New windows instead of tabs
-                (exwm-input-set-local-simulation-keys nil))
-              ;; FIXME copy/paste in terminator
-              ;; (when (string= exwm-class-name "Terminator")
-              ;;   (exwm-input-set-local-simulation-keys
-              ;;    `(([?\M-w] . [?\C-C])
-              ;;      ([?\C-y] . [?\C-V])
-              ;;      ,@exwm-input-simulation-keys)))
-              ))
+                 `(([?\s-w] . [?\C-w])
+                   ([?\M-w] . [?\C-c])
+                   ([?\C-y] . [?\C-y])))
+                (exwm-layout-hide-mode-line))))
 
   ;; (add-hook 'exwm-update-title-hook
   ;;           (defun my/exwm-title-hook ()
@@ -284,10 +274,10 @@
   ;;   (call-process "bash" nil 0 nil "-c" "/home/my/.screenlayout/desktop.sh")
   ;;   (exwm-randr-enable))
 
-  (use-package! exwm-edit
-    :init
-    ;; Otherwise it steals C-c ' from org
-    (setq exwm-edit-bind-default-keys nil))
+  ;; (use-package! exwm-edit
+  ;;   :init
+  ;;   ;; Otherwise it steals C-c ' from org
+  ;;   (setq exwm-edit-bind-default-keys nil))
 
   (defun my/exwm-start-in-char-mode ()
     (when (or (string-prefix-p "terminator" exwm-instance-name)

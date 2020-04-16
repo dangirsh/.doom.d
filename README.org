@@ -1538,12 +1538,17 @@ mkdir -p ./modules/desktop/exwm
                                              8 "HDMI-1"
                                              9 "HDMI-1"))
 
-(setq my/screenlayout-file "/home/dan/.screenlayout/main.sh")
+(setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
 
-(when (file-exists-p my/screenlayout-file)
+(when (file-exists-p my/monitor-screenlayout-file)
   (require 'exwm-randr)
-  (call-process "bash" nil 0 nil "-c" my/screenlayout-file)
+  (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file)
   (exwm-randr-enable))
+
+(setq my/default-screenlayout-file "/home/dan/.screenlayout/default.sh")
+
+(defun my/default-screen-layout ()
+  (call-process "bash" nil 0 nil "-c" my/default-screenlayout-file))
 
 (exwm-enable)
 

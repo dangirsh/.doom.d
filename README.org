@@ -1435,9 +1435,10 @@ mkdir -p ./modules/desktop/exwm
 ;; http://p.hagelb.org/exwm-ff-tabs.html
 (add-hook 'exwm-manage-finish-hook
           (lambda ()
+            ;; these have their own Emacs simulation installed (e.g. Surfingkeys)
             (when (or (string= exwm-class-name "Firefox")
-                      (string= exwm-class-name "Google-chrome"))
-              ;;only need a few simulation keys bc Surfingkeys is awesome
+                      (string= exwm-class-name "Google-chrome")
+                      (string= exwm-class-name "Atom"))
               (exwm-input-set-local-simulation-keys
                `(([?\s-w] . [?\C-w])
                  ([?\M-w] . [?\C-c])

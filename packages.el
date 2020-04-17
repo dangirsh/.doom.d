@@ -20,4 +20,3 @@
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
-(package! slack)

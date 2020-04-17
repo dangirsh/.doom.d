@@ -347,21 +347,6 @@
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-(use-package! slack
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "embassy-network"
-   :default t
-   ;; FIXME: After one incorrect entry, the client won't load
-   :token (password-store-get "api-token/slack/embassy-network")
-   ;; FIXME add channels
-   :subscribed-channels '(esf-citizens)
-   :full-and-display-names t))
-
 (use-package! jupyter
   :init
   (setq jupyter-eval-use-overlays t)

@@ -1397,9 +1397,7 @@ mkdir -p ./modules/desktop/exwm
 (exwm-input-set-key (kbd "s-c") 'my/goto-literate-private-config-file)
 (exwm-input-set-key (kbd "s-C") 'cfw:open-org-calendar)
 
-
 (exwm-input-set-key (kbd "s-x") 'counsel-M-x)
-
 
 (mapcar (lambda (i)
           (exwm-input-set-key (kbd (format "s-%d" i))
@@ -1413,14 +1411,16 @@ mkdir -p ./modules/desktop/exwm
 (add-hook 'exwm-manage-finish-hook
           (lambda ()
             ;; these have their own Emacs simulation installed (e.g. Surfingkeys)
-            (when (or (string= exwm-class-name "Firefox")
-                      (string= exwm-class-name "Google-chrome")
-                      (string= exwm-class-name "Atom"))
-              (exwm-input-set-local-simulation-keys
-               `(([?\s-w] . [?\C-w])
-                 ([?\M-w] . [?\C-c])
-                 ([?\C-y] . [?\C-v])))
-              (exwm-layout-hide-mode-line))))
+            (if (or (string= exwm-class-name "Firefox")
+                    (string= exwm-class-name "Google-chrome")
+                    (string= exwm-class-name "Atom"))
+                (progn
+                  (exwm-input-set-local-simulation-keys
+                   `(([?\s-w] . [?\C-w])
+                     ([?\M-w] . [?\C-c])
+                     ([?\C-y] . [?\C-v])))
+                  (exwm-layout-hide-mode-line))
+              (exwm-layout-show-mode-line))))
 
 ;; (add-hook 'exwm-update-title-hook
 ;;           (defun my/exwm-title-hook ()
@@ -1446,7 +1446,6 @@ mkdir -p ./modules/desktop/exwm
         ([?\C-d] . [delete])
         ;; undo
         ([?\C-/] . [?\C-z])
-
 
         ;; Interferes with Slack
         ;; ([?\C-k] . [S-end delete])

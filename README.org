@@ -132,7 +132,6 @@ Any desired package not declared in a Doom module must be declared here.
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
-(package! slack)
 #+end_src
 
 * Package Configuration
@@ -615,28 +614,6 @@ to ace-window.
   :config
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-#+end_src
-
-** Slack
-
-A lightweight text-based Slack client is useful if, for example, you flee a global
-pandemic to some bandwidth-limited backcountry location.
-
-#+begin_src emacs-lisp
-(use-package! slack
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "embassy-network"
-   :default t
-   ;; FIXME: After one incorrect entry, the client won't load
-   :token (password-store-get "api-token/slack/embassy-network")
-   ;; FIXME add channels
-   :subscribed-channels '(esf-citizens)
-   :full-and-display-names t))
 #+end_src
 
 ** Jupyter

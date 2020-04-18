@@ -27,6 +27,7 @@ Inspirations:
 - https://github.com/jethrokuan/dots/tree/master/.doom.d
 - https://ambrevar.xyz/emacs-everywhere/
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
+- https://github.com/LemonBreezes/.doom.d/blob/master/config.org
 
 * Declare which Doom Modules to Load
 
@@ -34,68 +35,71 @@ This file controls what Doom modules are enabled and what order they load in.
 Remember to run =doom sync= or =doom/reload=  after modifying it.
 
 #+begin_src emacs-lisp :tangle init.el
-  ;;; init.el -*- lexical-binding: t; -*-
+;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
 
 	     :desktop
-	     exwm                           ; Emacs X Window Manager
+	     exwm
 
 	     :completion
-	     (company +childframe)          ; the ultimate code completion backend
-	     (ivy +prescient)               ; a search engine for love and life
+	     (company +childframe)
+	     (ivy +prescient)
 
 	     :ui
-	     doom                 ; what makes DOOM look the way it does
-	     doom-dashboard       ; a nifty splash screen for Emacs
-	     hl-todo              ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-	     modeline             ; snazzy, Atom-inspired modeline, plus API
-	     nav-flash            ; blink the current line after jumping
-	     ophints              ; highlight the region an operation acts on
-	     vc-gutter            ; vcs diff in the fringe
-	     zen                  ; distraction-free coding or writing
+	     doom
+	     doom-dashboard
+	     hl-todo
+	     modeline
+	     nav-flash
+	     ophints
+	     vc-gutter
+	     zen
 
 	     :editor
-	     file-templates            ; auto-snippets for empty files
-	     fold                      ; (nigh) universal code folding
-	     lispy                     ; vim for lisp, for people who don't like vim
-	     multiple-cursors          ; editing in many places at once
-	     snippets                  ; my elves. They type so I don't have to
-	     word-wrap                 ; soft wrapping with language-aware indent
+	     file-templates
+	     fold
+	     lispy
+	     multiple-cursors
+	     snippets
+	     word-wrap
 
 	     :emacs
-	     dired                    ; making dired pretty [functional]
-	     electric                 ; smarter, keyword-based electric-indent
-	     vc                       ; version-control and Emacs, sitting in a tree
+	     dired
+	     electric
+	     vc
 
 	     :term
-	     eshell                       ; a consistent, cross-platform shell (WIP)
+	     eshell
+       vterm
 
 	     :checkers
-	     syntax                      ; tasing you for every semicolon you forget
+	     syntax
 
 	     :tools
-	     direnv
-	     (eval +overlay)              ; run code, run (also, repls)
-	     lookup                       ; navigate your code and its documentation
-	     (magit +forge)               ; a git porcelain for Emacs
-	     pass                         ; password manager for nerds
-	     pdf                          ; pdf enhancements
+	     ;; direnv
+	     (eval +overlay)
+	     lookup
+	     (magit +forge)
+	     pass
+	     pdf
+       ;; lsp
 
 	     :lang
-	     common-lisp             ; if you've seen one lisp, you've seen them all
-	     data                    ; config/data formats
-	     emacs-lisp              ; drown in parentheses
-	     (haskell +dante)        ; a language that's lazier than I am
-	     julia                   ; a better, faster MATLAB
-	     markdown                ; writing docs for people to ignore
-	     nix                     ; I hereby declare "nix geht mehr!"
-	     (org                    ; organize your plain life in plain text
+	     common-lisp
+	     data
+	     emacs-lisp
+	     (haskell +dante)
+	     ;; (julia +lsp)
+	     julia
+	     markdown
+	     nix
+	     (org
 	      +journal
-	      +hugo                         ; use Emacs for hugo blogging
-	      +jupyter                      ; ipython/jupyter support for babel
+	      +hugo
+	      +jupyter
 	      )
-	     sh                          ; she sells {ba,z,fi}sh shells on the C xor
+	     sh
 
 	     :app
 	     calendar

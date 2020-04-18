@@ -542,6 +542,10 @@ I use org as a primary interface. It currently manages:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! org-journal
+  :after org
+  :custom
+  ;; this must be "customized"  to work
+  (org-journal-dir (concat org-roam-directory "journal"))
   :config
   (map! :leader
         (:prefix-map ("n" . "notes")
@@ -551,8 +555,6 @@ I use org as a primary interface. It currently manages:
         org-journal-time-prefix "* "
         org-journal-time-format ""
         org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-dir (concat org-roam-directory "journal")
         org-journal-carryover-items nil
         org-journal-date-format "%Y-%m-%d")
   (defun org-journal-today ()
@@ -607,19 +609,109 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
          :immediate-finish t)))
 #+end_src
 
-** Jumping between windows
+** Effective Editing
+*** Structure Editing
 
-Here we set the window labels to homerow keys (they are numbers by default)
-
-Would use the window-select Doom module, but that (unwantedly in EXWM) binds other-window
-to ace-window.
-
-#+begin_src emacs-lisp
-(use-package! ace-window
+#+BEGIN_SRC emacs-lisp
+(use-package! lispy
   :config
-  (map! "C-M-SPC" #'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-#+end_src
+  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
+  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
+  ;; the compat code isn't even getting hit!
+  (setq lispy-compat '(edebug magit-blame-mode))
+
+  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
+  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
+  :hook
+  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
+  :bind (:map lispy-mode-map
+          ("'" . nil)             ; leave tick behaviour alone
+          ("M-n" . nil)
+          ("C-M-m" . nil)))
+
+(use-package! smartparens
+  :init
+  (map! :map smartparens-mode-map
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-p" #'sp-backward-down-sexp
+        "C-M-n" #'sp-up-sexp
+        "C-M-s" #'sp-splice-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-barf-sexp))
+
+(use-package! wrap-region
+  :hook
+  (org-mode-hook . wrap-region-mode)
+  (latex-mode-hook . wrap-region-mode)
+  :config
+  (wrap-region-add-wrappers
+   '(("*" "*" nil (org-mode))
+     ("~" "~" nil (org-mode))
+     ("/" "/" nil (org-mode))
+     ("=" "=" nil (org-mode))
+     ("_" "_" nil (org-mode))
+     ("$" "$" nil (org-mode latex-mode)))))
+
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
+#+END_SRC
+
+*** Multiple Cursors
+
+#+BEGIN_SRC emacs-lisp
+(use-package! multiple-cursors
+              :init
+              (setq mc/always-run-for-all t)
+              :config
+              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+              :bind (("C-S-c" . mc/edit-lines)
+                     ("C-M-g" . mc/mark-all-like-this-dwim)
+                     ("C->" . mc/mark-next-like-this)
+                     ("C-<" . mc/mark-previous-like-this)
+                     ("C-)" . mc/skip-to-next-like-this)
+                     ("C-M->" . mc/skip-to-next-like-this)
+                     ("C-(" . mc/skip-to-previous-like-this)
+                     ("C-M-<" . mc/skip-to-previous-like-this)))
+
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
+#+END_SRC
+
+*** Undo Tree
+
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun my/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+#+END_SRC
+
+** Julia
+
+Most of this is handled by the julia Doom module.
+
+#+BEGIN_SRC emacs-lisp
+(after! julia-repl
+  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+#+END_SRC
 
 ** Jupyter
 
@@ -763,101 +855,6 @@ Stunningly useful.
      ("l" . magit-show-refs-head))))
 #+END_SRC
 
-** Effective Editing
-*** Structure Editing
-
-#+BEGIN_SRC emacs-lisp
-(use-package! lispy
-  :config
-  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
-  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
-  ;; the compat code isn't even getting hit!
-  (setq lispy-compat '(edebug magit-blame-mode))
-
-  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
-  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
-  :hook
-  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
-  :bind (:map lispy-mode-map
-          ("'" . nil)             ; leave tick behaviour alone
-          ("M-n" . nil)
-          ("C-M-m" . nil)))
-
-(use-package! smartparens
-  :init
-  (map! :map smartparens-mode-map
-        "C-M-f" #'sp-forward-sexp
-        "C-M-b" #'sp-backward-sexp
-        "C-M-u" #'sp-backward-up-sexp
-        "C-M-d" #'sp-down-sexp
-        "C-M-p" #'sp-backward-down-sexp
-        "C-M-n" #'sp-up-sexp
-        "C-M-s" #'sp-splice-sexp
-        "C-)" #'sp-forward-slurp-sexp
-        "C-}" #'sp-forward-barf-sexp
-        "C-(" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-barf-sexp))
-
-(use-package! wrap-region
-  :hook
-  (org-mode-hook . wrap-region-mode)
-  (latex-mode-hook . wrap-region-mode)
-  :config
-  (wrap-region-add-wrappers
-   '(("*" "*" nil (org-mode))
-     ("~" "~" nil (org-mode))
-     ("/" "/" nil (org-mode))
-     ("=" "=" nil (org-mode))
-     ("_" "_" nil (org-mode))
-     ("$" "$" nil (org-mode latex-mode)))))
-
-(use-package! aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
-#+END_SRC
-
-*** Multiple Cursors
-
-#+BEGIN_SRC emacs-lisp
-(use-package! multiple-cursors
-              :init
-              (setq mc/always-run-for-all t)
-              :config
-              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
-              :bind (("C-S-c" . mc/edit-lines)
-                     ("C-M-g" . mc/mark-all-like-this-dwim)
-                     ("C->" . mc/mark-next-like-this)
-                     ("C-<" . mc/mark-previous-like-this)
-                     ("C-)" . mc/skip-to-next-like-this)
-                     ("C-M->" . mc/skip-to-next-like-this)
-                     ("C-(" . mc/skip-to-previous-like-this)
-                     ("C-M-<" . mc/skip-to-previous-like-this)))
-
-(use-package! iedit
-  :init
-  (map! "C-;" 'company-complete)
-  (map! "M-i" 'iedit-mode))
-#+END_SRC
-
-*** Undo Tree
-
-#+BEGIN_SRC emacs-lisp
-(use-package undo-tree
-  :init
-  (setq undo-tree-visualizer-timestamps t
-        undo-tree-visualizer-diff t)
-  :config
-  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
-  (progn
-    ;; restore diff window after quit.  TODO fix upstream
-    (defun spacemacs/undo-tree-restore-default ()
-      (setq undo-tree-visualizer-diff t))
-    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
-  (global-undo-tree-mode 1))
-#+END_SRC
-
 ** Better PDF support
 
 #+BEGIN_SRC emacs-lisp
@@ -868,10 +865,28 @@ Stunningly useful.
 #+END_SRC
 
 ** Lauching External Programs
-** Autosave
 
 #+BEGIN_SRC emacs-lisp
 (use-package! dmenu)
+#+END_SRC
+
+** Jumping between windows
+
+Here we set the window labels to homerow keys (they are numbers by default)
+
+Would use the window-select Doom module, but that (unwantedly in EXWM) binds other-window
+to ace-window.
+
+#+begin_src emacs-lisp
+(use-package! ace-window
+  :config
+  (map! "C-M-SPC" #'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+#+end_src
+
+** Autosave
+
+#+BEGIN_SRC emacs-lisp
 ;; Save whenever focus changes
 (use-package! super-save
   :ensure t
@@ -960,21 +975,12 @@ Stunningly useful.
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
-
-;; Save whenever focus changes
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
 #+end_src
 
 #+RESULTS:
 : t
 
-* funcs.el
-
-Utility functions.
-
+* Utility functions.
 #+begin_src emacs-lisp :tangle funcs.el
 ;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
 
@@ -1242,7 +1248,7 @@ mkdir -p ./modules/desktop/exwm
 (defun my/exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer (format "%s - %s" exwm-class-name exwm-title)))
 (setq exwm-workspace-show-all-buffers t
       exwm-layout-show-all-buffers t
-      exwm-manage-force-tiling nil)
+      exwm-manage-force-tiling t)
 
 
 (setq exwm-input-prefix-keys '(?\s- ))
@@ -1410,6 +1416,8 @@ mkdir -p ./modules/desktop/exwm
 
 (exwm-input-set-key (kbd "s-x") 'counsel-M-x)
 
+(exwm-input-set-key (kbd "s-t") 'vterm)
+
 (mapcar (lambda (i)
           (exwm-input-set-key (kbd (format "s-%d" i))
                               `(lambda ()
@@ -1575,7 +1583,7 @@ xsetroot -solid black
 xsetroot -cursor_name left_ptr
 
 # Nix + direnv
-lorri daemon &
+# lorri daemon &
 
 # Email sync
 offlineimap &

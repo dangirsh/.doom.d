@@ -133,6 +133,7 @@ Any desired package not declared in a Doom module must be declared here.
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
 
 (package! smartscan)
+(package! super-save)
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
@@ -867,9 +868,15 @@ Stunningly useful.
 #+END_SRC
 
 ** Lauching External Programs
+** Autosave
 
 #+BEGIN_SRC emacs-lisp
 (use-package! dmenu)
+;; Save whenever focus changes
+(use-package! super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
 #+END_SRC
 
 ** Load Secrets

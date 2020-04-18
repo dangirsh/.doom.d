@@ -292,6 +292,10 @@
         "n p" 'org-ref-noter-at-point))
 
 (use-package! org-journal
+  :after org
+  :custom
+  ;; this must be "customized"  to work
+  (org-journal-dir (concat org-roam-directory "journal"))
   :config
   (map! :leader
         (:prefix-map ("n" . "notes")
@@ -301,8 +305,6 @@
         org-journal-time-prefix "* "
         org-journal-time-format ""
         org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-dir (concat org-roam-directory "journal")
         org-journal-carryover-items nil
         org-journal-date-format "%Y-%m-%d")
   (defun org-journal-today ()
@@ -342,10 +344,90 @@
          :unnarrowed t
          :immediate-finish t)))
 
-(use-package! ace-window
+(use-package! lispy
   :config
-  (map! "C-M-SPC" #'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
+  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
+  ;; the compat code isn't even getting hit!
+  (setq lispy-compat '(edebug magit-blame-mode))
+
+  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
+  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
+  :hook
+  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
+  :bind (:map lispy-mode-map
+          ("'" . nil)             ; leave tick behaviour alone
+          ("M-n" . nil)
+          ("C-M-m" . nil)))
+
+(use-package! smartparens
+  :init
+  (map! :map smartparens-mode-map
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-p" #'sp-backward-down-sexp
+        "C-M-n" #'sp-up-sexp
+        "C-M-s" #'sp-splice-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-slurp-sexp
+        "C-M-)" #'sp-backward-barf-sexp))
+
+(use-package! wrap-region
+  :hook
+  (org-mode-hook . wrap-region-mode)
+  (latex-mode-hook . wrap-region-mode)
+  :config
+  (wrap-region-add-wrappers
+   '(("*" "*" nil (org-mode))
+     ("~" "~" nil (org-mode))
+     ("/" "/" nil (org-mode))
+     ("=" "=" nil (org-mode))
+     ("_" "_" nil (org-mode))
+     ("$" "$" nil (org-mode latex-mode)))))
+
+(use-package! aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode)
+  (common-lisp-mode-hook . aggressive-indent-mode))
+
+(use-package! multiple-cursors
+              :init
+              (setq mc/always-run-for-all t)
+              :config
+              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+              :bind (("C-S-c" . mc/edit-lines)
+                     ("C-M-g" . mc/mark-all-like-this-dwim)
+                     ("C->" . mc/mark-next-like-this)
+                     ("C-<" . mc/mark-previous-like-this)
+                     ("C-)" . mc/skip-to-next-like-this)
+                     ("C-M->" . mc/skip-to-next-like-this)
+                     ("C-(" . mc/skip-to-previous-like-this)
+                     ("C-M-<" . mc/skip-to-previous-like-this)))
+
+(use-package! iedit
+  :init
+  (map! "C-;" 'company-complete)
+  (map! "M-i" 'iedit-mode))
+
+(use-package undo-tree
+  :init
+  (setq undo-tree-visualizer-timestamps t
+        undo-tree-visualizer-diff t)
+  :config
+  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
+  (progn
+    ;; restore diff window after quit.  TODO fix upstream
+    (defun my/undo-tree-restore-default ()
+      (setq undo-tree-visualizer-diff t))
+    (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
+  (global-undo-tree-mode 1))
+
+(after! julia-repl
+  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 
 (use-package! jupyter
   :init
@@ -449,94 +531,23 @@
      ("u" . magit-submodule-update)
      ("l" . magit-show-refs-head))))
 
-(use-package! lispy
-  :config
-  (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
-  ;; FIXME: magit-blame still fails to all "ret" when lispy is on
-  ;; the compat code isn't even getting hit!
-  (setq lispy-compat '(edebug magit-blame-mode))
-
-  ;; this hook leaves lispy mode off, but that's not as bad as breaking blame!
-  (add-hook 'magit-blame-mode-hook #'(lambda () (lispy-mode 0)))
-  :hook
-  ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
-  :bind (:map lispy-mode-map
-          ("'" . nil)             ; leave tick behaviour alone
-          ("M-n" . nil)
-          ("C-M-m" . nil)))
-
-(use-package! smartparens
-  :init
-  (map! :map smartparens-mode-map
-        "C-M-f" #'sp-forward-sexp
-        "C-M-b" #'sp-backward-sexp
-        "C-M-u" #'sp-backward-up-sexp
-        "C-M-d" #'sp-down-sexp
-        "C-M-p" #'sp-backward-down-sexp
-        "C-M-n" #'sp-up-sexp
-        "C-M-s" #'sp-splice-sexp
-        "C-)" #'sp-forward-slurp-sexp
-        "C-}" #'sp-forward-barf-sexp
-        "C-(" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-barf-sexp))
-
-(use-package! wrap-region
-  :hook
-  (org-mode-hook . wrap-region-mode)
-  (latex-mode-hook . wrap-region-mode)
-  :config
-  (wrap-region-add-wrappers
-   '(("*" "*" nil (org-mode))
-     ("~" "~" nil (org-mode))
-     ("/" "/" nil (org-mode))
-     ("=" "=" nil (org-mode))
-     ("_" "_" nil (org-mode))
-     ("$" "$" nil (org-mode latex-mode)))))
-
-(use-package! aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
-
-(use-package! multiple-cursors
-              :init
-              (setq mc/always-run-for-all t)
-              :config
-              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
-              :bind (("C-S-c" . mc/edit-lines)
-                     ("C-M-g" . mc/mark-all-like-this-dwim)
-                     ("C->" . mc/mark-next-like-this)
-                     ("C-<" . mc/mark-previous-like-this)
-                     ("C-)" . mc/skip-to-next-like-this)
-                     ("C-M->" . mc/skip-to-next-like-this)
-                     ("C-(" . mc/skip-to-previous-like-this)
-                     ("C-M-<" . mc/skip-to-previous-like-this)))
-
-(use-package! iedit
-  :init
-  (map! "C-;" 'company-complete)
-  (map! "M-i" 'iedit-mode))
-
-(use-package undo-tree
-  :init
-  (setq undo-tree-visualizer-timestamps t
-        undo-tree-visualizer-diff t)
-  :config
-  ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
-  (progn
-    ;; restore diff window after quit.  TODO fix upstream
-    (defun spacemacs/undo-tree-restore-default ()
-      (setq undo-tree-visualizer-diff t))
-    (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default))
-  (global-undo-tree-mode 1))
-
 (after! pdf-tools
   ;;swiper doesn't trigger the pdf-isearch
   (map! :map pdf-isearch-minor-mode-map
         "C-s" 'isearch-forward-regexp))
 
 (use-package! dmenu)
+
+(use-package! ace-window
+  :config
+  (map! "C-M-SPC" #'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+;; Save whenever focus changes
+(use-package! super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
 
 (setq my/secrets-file (concat doom-private-dir "secrets.el"))
 (when (file-exists-p my/secrets-file)
@@ -607,9 +618,3 @@
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
-
-;; Save whenever focus changes
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))

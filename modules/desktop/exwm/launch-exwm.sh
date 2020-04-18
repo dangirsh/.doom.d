@@ -23,7 +23,7 @@ xsetroot -solid black
 xsetroot -cursor_name left_ptr
 
 # Nix + direnv
-lorri daemon &
+# lorri daemon &
 
 # Email sync
 offlineimap &

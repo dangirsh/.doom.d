@@ -10,7 +10,7 @@
 (defun my/exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer (format "%s - %s" exwm-class-name exwm-title)))
 (setq exwm-workspace-show-all-buffers t
       exwm-layout-show-all-buffers t
-      exwm-manage-force-tiling nil)
+      exwm-manage-force-tiling t)
 
 
 (setq exwm-input-prefix-keys '(?\s- ))
@@ -177,6 +177,8 @@
 (exwm-input-set-key (kbd "s-C") 'cfw:open-org-calendar)
 
 (exwm-input-set-key (kbd "s-x") 'counsel-M-x)
+
+(exwm-input-set-key (kbd "s-t") 'vterm)
 
 (mapcar (lambda (i)
           (exwm-input-set-key (kbd (format "s-%d" i))

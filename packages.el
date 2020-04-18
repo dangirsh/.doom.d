@@ -17,6 +17,7 @@
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
 
 (package! smartscan)
+(package! super-save)
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)

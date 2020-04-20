@@ -293,10 +293,8 @@
 
 (use-package! org-journal
   :after org
-  :custom
-  ;; this must be "customized"  to work
-  (org-journal-dir (concat org-roam-directory "journal"))
   :config
+  (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
   (map! :leader
         (:prefix-map ("n" . "notes")
           (:prefix ("j" . "journal")

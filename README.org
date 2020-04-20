@@ -543,10 +543,8 @@ I use org as a primary interface. It currently manages:
 #+BEGIN_SRC emacs-lisp
 (use-package! org-journal
   :after org
-  :custom
-  ;; this must be "customized"  to work
-  (org-journal-dir (concat org-roam-directory "journal"))
   :config
+  (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
   (map! :leader
         (:prefix-map ("n" . "notes")
           (:prefix ("j" . "journal")
@@ -560,6 +558,7 @@ I use org as a primary interface. It currently manages:
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))
+
 #+END_SRC
 
 *** Org-roam

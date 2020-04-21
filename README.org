@@ -91,7 +91,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     emacs-lisp
 	     (haskell +dante)
 	     ;; (julia +lsp)
-	     julia
+	     ;; julia
 	     markdown
 	     nix
 	     (org
@@ -137,6 +137,14 @@ Any desired package not declared in a Doom module must be declared here.
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
+
+;; Julia
+(package! julia-mode :pin "1c122f1dff")
+
+;; Use the branch that supports the vterm backend
+;; https://github.com/tpapp/julia-repl/pull/84
+(package! julia-repl
+  :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
 #+end_src
 
 * Package Configuration
@@ -705,14 +713,22 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
 
 ** Julia
 
-Most of this is handled by the julia Doom module.
+Doom's Julia module is opinionated. I'd like full control, so I'm configuring
+Julia myself here.
 
 #+BEGIN_SRC emacs-lisp
-;; (after! julia-repl
-;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
-#+END_SRC
+(use-package! julia
+  :interpreter "julia")
 
-*** TODO Load order issue. Currently [[it@gitlab.com:dan.girsh/matrix-and-jitsi-with-nixos.git][patched julia-repl directly]]
+;; (defun my/julia-repl-hook ()
+;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+(use-package! julia-repl
+  :config
+  (require 'vterm)
+  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+#+END_SRC
 
 See: https://github.com/tpapp/julia-repl/pull/84
 

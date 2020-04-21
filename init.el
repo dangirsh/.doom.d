@@ -46,7 +46,7 @@
 	     (magit +forge)
 	     pass
 	     pdf
-       ;; lsp
+       lsp
 
 	     :lang
 	     common-lisp
@@ -54,7 +54,7 @@
 	     emacs-lisp
 	     (haskell +dante)
 	     ;; (julia +lsp)
-	     julia
+	     ;; julia
 	     markdown
 	     nix
 	     (org

@@ -21,3 +21,13 @@
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
+
+;; Julia
+(package! julia-mode :pin "1c122f1dff")
+
+;; Use the branch that supports the vterm backend
+;; https://github.com/tpapp/julia-repl/pull/84
+(package! julia-repl
+  :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+
+(package! lsp-julia :recipe (:host github :repo "non-jedi/lsp-julia"))

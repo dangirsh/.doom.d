@@ -295,16 +295,16 @@
   :after org
   :config
   (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
+  (customize-set-variable 'org-journal-file-format "private-%Y-%m-%d.org")
+  (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
+  (customize-set-variable 'org-journal-time-prefix "* ")
+  (customize-set-variable 'org-journal-time-format "")
+  (customize-set-variable 'org-journal-carryover-items nil)
+  (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
           (:prefix ("j" . "journal")
             :desc "Today" "t" #'org-journal-today)))
-  (setq org-journal-date-prefix "#+TITLE: "
-        org-journal-time-prefix "* "
-        org-journal-time-format ""
-        org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-carryover-items nil
-        org-journal-date-format "%Y-%m-%d")
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))
@@ -424,8 +424,23 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
-;; (after! julia-repl
+(use-package! julia
+  :interpreter "julia")
+
+;; (defun my/julia-repl-hook ()
 ;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+(use-package! julia-repl
+  :config
+  (require 'vterm)
+  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+(use-package! lsp-julia
+  :after lsp-clients
+  :preface
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.0")
+  (when (featurep! +lsp)
+    (add-hook 'julia-mode-local-vars-hook #'lsp!)))
 
 (use-package! jupyter
   :init

@@ -553,16 +553,16 @@ I use org as a primary interface. It currently manages:
   :after org
   :config
   (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
+  (customize-set-variable 'org-journal-file-format "private-%Y-%m-%d.org")
+  (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
+  (customize-set-variable 'org-journal-time-prefix "* ")
+  (customize-set-variable 'org-journal-time-format "")
+  (customize-set-variable 'org-journal-carryover-items nil)
+  (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
           (:prefix ("j" . "journal")
             :desc "Today" "t" #'org-journal-today)))
-  (setq org-journal-date-prefix "#+TITLE: "
-        org-journal-time-prefix "* "
-        org-journal-time-format ""
-        org-journal-file-format "private-%Y-%m-%d.org"
-        org-journal-carryover-items nil
-        org-journal-date-format "%Y-%m-%d")
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))

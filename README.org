@@ -708,9 +708,13 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
 Most of this is handled by the julia Doom module.
 
 #+BEGIN_SRC emacs-lisp
-(after! julia-repl
-  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+;; (after! julia-repl
+;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 #+END_SRC
+
+*** TODO Load order issue. Currently [[it@gitlab.com:dan.girsh/matrix-and-jitsi-with-nixos.git][patched julia-repl directly]]
+
+See: https://github.com/tpapp/julia-repl/pull/84
 
 ** Jupyter
 

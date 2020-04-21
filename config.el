@@ -424,8 +424,8 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
-(after! julia-repl
-  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+;; (after! julia-repl
+;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 
 (use-package! jupyter
   :init

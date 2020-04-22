@@ -322,7 +322,12 @@ Set hardware-specific delay. Tweak this if:
     (key-chord-define-global "a;" 'execute-extended-command)
     (key-chord-define-global "xf" 'find-file)
 
-    (key-chord-define-global "l;" 'repeat))
+    (key-chord-define-global "l;" 'repeat)
+
+    (key-chord-define-global "jk" 'vterm-copy-mode)
+
+
+    )
 #+end_src
 
 ** Hardware Settings

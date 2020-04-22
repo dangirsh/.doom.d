@@ -722,8 +722,11 @@ Doom's Julia module is opinionated. I'd like full control, so I'm configuring
 Julia myself here.
 
 #+BEGIN_SRC emacs-lisp
+(defvar inferior-julia-program-name "julia")
+
 (use-package! julia
-  :interpreter "julia")
+  :interpreter "julia"
+  :hook (julia-mode . julia-repl-mode))
 
 ;; (defun my/julia-repl-hook ()
 ;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))

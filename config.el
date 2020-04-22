@@ -116,7 +116,12 @@
   (key-chord-define-global "a;" 'execute-extended-command)
   (key-chord-define-global "xf" 'find-file)
 
-  (key-chord-define-global "l;" 'repeat))
+  (key-chord-define-global "l;" 'repeat)
+
+  (key-chord-define-global "jk" 'vterm-copy-mode)
+
+
+  )
 
 (defun fix-keyboard ()
   (interactive)
@@ -424,8 +429,11 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
+(defvar inferior-julia-program-name "julia")
+
 (use-package! julia
-  :interpreter "julia")
+  :interpreter "julia"
+  :hook (julia-mode . julia-repl-mode))
 
 ;; (defun my/julia-repl-hook ()
 ;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
@@ -434,13 +442,6 @@
   :config
   (require 'vterm)
   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
-
-(use-package! lsp-julia
-  :after lsp-clients
-  :preface
-  (setq lsp-julia-default-environment "~/.julia/environments/v1.0")
-  (when (featurep! +lsp)
-    (add-hook 'julia-mode-local-vars-hook #'lsp!)))
 
 (use-package! jupyter
   :init

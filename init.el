@@ -46,7 +46,7 @@
 	     (magit +forge)
 	     pass
 	     pdf
-       lsp
+       ;; lsp
 
 	     :lang
 	     common-lisp

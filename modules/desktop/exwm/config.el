@@ -303,9 +303,11 @@
 (setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
 
 (defun my/default-screen-layout ()
+  (interactive)
   (call-process "bash" nil 0 nil "-c" my/default-screenlayout-file))
 
 (defun my/monitor-screen-layout ()
+  (interactive)
   (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))
 
 (exwm-enable)

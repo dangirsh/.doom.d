@@ -290,7 +290,7 @@ Set hardware-specific delay. Tweak this if:
        ("<SPC>" . rgrep)
        ("o" . ibuffer)
        ("s" . save-buffer)
-       ("t" . eshell-here)
+       ("t" . vterm)
        ("w" . google-this-noconfirm)
        ("x" . sp-splice-sexp)
        ("/" . find-name-dired)))
@@ -323,9 +323,6 @@ Set hardware-specific delay. Tweak this if:
     (key-chord-define-global "xf" 'find-file)
 
     (key-chord-define-global "l;" 'repeat)
-
-    (key-chord-define-global "jk" 'vterm-copy-mode)
-
 
     )
 #+end_src

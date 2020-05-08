@@ -20,7 +20,8 @@
 	     zen
 
 	     :editor
-	     file-templates
+       ;; Nice, but messes with org-journal
+	     ;; file-templates
 	     fold
 	     lispy
 	     multiple-cursors
@@ -63,6 +64,7 @@
 	      +jupyter
 	      )
 	     sh
+       ;; python
 
 	     :app
 	     calendar

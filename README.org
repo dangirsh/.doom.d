@@ -148,6 +148,8 @@ Any desired package not declared in a Doom module must be declared here.
 ;; https://github.com/tpapp/julia-repl/pull/84
 (package! julia-repl
   :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+
+;; (package! eglot-jl)
 #+end_src
 
 * Package Configuration
@@ -187,9 +189,10 @@ clients, file templates and snippets.
 
 ** Visual Settings
 
+
 #+begin_src emacs-lisp
 
-(setq doom-font (font-spec :family "Hack" :size 20)
+(setq doom-font (font-spec :family "Hack" :size 16)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -210,6 +213,7 @@ clients, file templates and snippets.
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
   (load-theme 'doom-acario-dark t)
+  ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -735,16 +739,29 @@ Julia myself here.
 
 (use-package! julia-repl
   :config
+  ; See: https://github.com/tpapp/julia-repl/pull/84
   (require 'vterm)
   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 
 ;; https://github.com/gcv/julia-snail
 (use-package julia-snail
   :hook (julia-mode . julia-snail-mode))
+
+;; (use-package eglot-jl
+;;   :hook (julia-mode . eglot)
+;;   :config
+;;   (eglot-jl-init))
 #+END_SRC
 
-See: https://github.com/tpapp/julia-repl/pull/84
 
+
+
+
+** Haskell
+
+#+BEGIN_SRC emacs-lisp
+(setq haskell-mode-stylish-haskell-path "brittany")
+#+END_SRC
 ** Jupyter
 
 #+BEGIN_SRC emacs-lisp
@@ -810,7 +827,8 @@ space of all valid inputs. It's well-supported in Doom.
         dired-recursive-copies (quote always)
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
-        wdired-allow-to-change-permissions t))
+        wdired-allow-to-change-permissions t
+        dired-omit-mode 0))
 
 (use-package! dired-narrow
               :commands (dired-narrow-fuzzy)

@@ -8,7 +8,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 20)
+(setq doom-font (font-spec :family "Hack" :size 16)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -29,6 +29,7 @@
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
   (load-theme 'doom-acario-dark t)
+  ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -84,7 +85,7 @@
      ("<SPC>" . rgrep)
      ("o" . ibuffer)
      ("s" . save-buffer)
-     ("t" . eshell-here)
+     ("t" . vterm)
      ("w" . google-this-noconfirm)
      ("x" . sp-splice-sexp)
      ("/" . find-name-dired)))
@@ -117,9 +118,6 @@
   (key-chord-define-global "xf" 'find-file)
 
   (key-chord-define-global "l;" 'repeat)
-
-  (key-chord-define-global "jk" 'vterm-copy-mode)
-
 
   )
 
@@ -317,7 +315,7 @@
 (use-package! org-roam
   :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
   :hook
-  (after-init . org-roam-mode)
+  (org-mode . org-roam-mode)
   :custom-face
   (org-roam-link ((t (:inherit org-link))))
   :init
@@ -331,7 +329,9 @@
         :desc "org-roam-capture" "c" #'org-roam-capture)
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private"))
+        org-roam-graph-exclude-matcher "private")
+  ;; hack until https://github.com/jethrokuan/org-roam/issues/522 is fixed
+  (delete-file org-roam-db-location))
 
 (use-package! company-org-roam
               :when (featurep! :completion company)
@@ -440,8 +440,20 @@
 
 (use-package! julia-repl
   :config
+  ; See: https://github.com/tpapp/julia-repl/pull/84
   (require 'vterm)
   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+;; https://github.com/gcv/julia-snail
+(use-package julia-snail
+  :hook (julia-mode . julia-snail-mode))
+
+;; (use-package eglot-jl
+;;   :hook (julia-mode . eglot)
+;;   :config
+;;   (eglot-jl-init))
+
+(setq haskell-mode-stylish-haskell-path "brittany")
 
 (use-package! jupyter
   :init
@@ -494,7 +506,8 @@
         dired-recursive-copies (quote always)
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
-        wdired-allow-to-change-permissions t))
+        wdired-allow-to-change-permissions t
+        dired-omit-mode 0))
 
 (use-package! dired-narrow
               :commands (dired-narrow-fuzzy)

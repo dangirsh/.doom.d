@@ -1450,6 +1450,9 @@ mkdir -p ./modules/desktop/exwm
 
 (exwm-input-set-key (kbd "s-t") 'vterm)
 
+(exwm-input-set-key (kbd "s-<f7>") 'my/monitor-screen-layout)
+(exwm-input-set-key (kbd "s-<f8>") 'my/laptop-screen-layout)
+
 (mapcar (lambda (i)
           (exwm-input-set-key (kbd (format "s-%d" i))
                               `(lambda ()
@@ -1469,7 +1472,8 @@ mkdir -p ./modules/desktop/exwm
                   (exwm-input-set-local-simulation-keys
                    `(([?\s-w] . [?\C-w])
                      ([?\M-w] . [?\C-c])
-                     ([?\C-y] . [?\C-v])))
+                     ([?\C-y] . [?\C-v])
+                     ([?\C-w] . [?\C-x])))
                   (exwm-layout-hide-mode-line))
               (exwm-layout-show-mode-line))))
 

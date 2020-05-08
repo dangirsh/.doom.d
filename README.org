@@ -142,6 +142,7 @@ Any desired package not declared in a Doom module must be declared here.
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
+(package! julia-snail)
 
 ;; Use the branch that supports the vterm backend
 ;; https://github.com/tpapp/julia-repl/pull/84
@@ -735,6 +736,9 @@ Julia myself here.
   (require 'vterm)
   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 
+;; https://github.com/gcv/julia-snail
+(use-package julia-snail
+  :hook (julia-mode . julia-snail-mode))
 #+END_SRC
 
 See: https://github.com/tpapp/julia-repl/pull/84

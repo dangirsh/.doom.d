@@ -101,6 +101,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	      +jupyter
 	      )
 	     sh
+       ;; python
 
 	     :app
 	     calendar

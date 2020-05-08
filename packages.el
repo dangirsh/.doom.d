@@ -24,8 +24,11 @@
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
+(package! julia-snail)
 
 ;; Use the branch that supports the vterm backend
 ;; https://github.com/tpapp/julia-repl/pull/84
 (package! julia-repl
   :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+
+;; (package! eglot-jl)

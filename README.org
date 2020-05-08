@@ -580,7 +580,7 @@ I use org as a primary interface. It currently manages:
 (use-package! org-roam
   :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
   :hook
-  (after-init . org-roam-mode)
+  (org-mode . org-roam-mode)
   :custom-face
   (org-roam-link ((t (:inherit org-link))))
   :init
@@ -594,7 +594,9 @@ I use org as a primary interface. It currently manages:
         :desc "org-roam-capture" "c" #'org-roam-capture)
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private"))
+        org-roam-graph-exclude-matcher "private")
+  ;; hack until https://github.com/jethrokuan/org-roam/issues/522 is fixed
+  (delete-file org-roam-db-location))
 
 (use-package! company-org-roam
               :when (featurep! :completion company)

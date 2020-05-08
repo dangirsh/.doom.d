@@ -18,8 +18,8 @@ and whenever it changes.
 Emacs is my window manager via [[https://github.com/ch11ng/exwm/][EXWM]]. The primary downside to using EXWM is that
 people think you've lost your mind. See the [[*Emacs X Window Management (EXWM)][relevant config section]] for more details.
 
-Thanks to tools like Nix and Guix, it's possible to declaratively specify my
-entire system configuration in this file. That's a WIP.
+Thanks to tools like Nix, it's possible to declaratively specify my entire
+system configuration in this file. That's a WIP.
 
 Inspirations:
 

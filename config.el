@@ -240,12 +240,12 @@
 (use-package! org-noter
   :after org
   :config
+  ;; helpful in EXWM, where there are no frames
+  (customize-set-variable 'org-noter-always-create-frame nil)
   (setq org-noter-notes-window-location 'vertical-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
-        ;; helpful in EXWM, where there are no frames
-        org-noter-always-create-frame nil)
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
 
 ;; Note that this pulls in Helm :/
 ;; https://github.com/jkitchin/org-ref/issues/202
@@ -329,15 +329,13 @@
         :desc "org-roam-capture" "c" #'org-roam-capture)
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private")
-  ;; hack until https://github.com/jethrokuan/org-roam/issues/522 is fixed
-  (delete-file org-roam-db-location))
+        org-roam-graph-exclude-matcher "private"))
 
-(use-package! company-org-roam
-              :when (featurep! :completion company)
-              :after org-roam
-              :config
-              (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
+(use-package company-org-roam
+  :when (featurep! :completion company)
+  :after org-roam
+  :config
+  (set-company-backend! 'org-roam-mode 'company-org-roam))
 
 (setq org-roam-capture-templates
       '(("d" "default" plain (function org-roam--capture-get-point)

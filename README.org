@@ -48,22 +48,16 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     (ivy +prescient)
 
 	     :ui
-	     doom
-	     doom-dashboard
+       doom
 	     hl-todo
 	     modeline
 	     nav-flash
-	     ophints
-	     vc-gutter
 	     zen
 
 	     :editor
        ;; Nice, but messes with org-journal
-	     ;; file-templates
-	     fold
 	     lispy
 	     multiple-cursors
-	     snippets
 	     word-wrap
 
 	     :emacs
@@ -72,7 +66,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     vc
 
 	     :term
-	     eshell
        vterm
 
 	     :checkers
@@ -85,7 +78,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     (magit +forge)
 	     pass
 	     pdf
-       ;; lsp
 
 	     :lang
 	     common-lisp
@@ -102,7 +94,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	      +jupyter
 	      )
 	     sh
-       ;; python
 
 	     :app
 	     calendar

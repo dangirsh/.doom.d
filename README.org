@@ -28,6 +28,7 @@ Inspirations:
 - https://ambrevar.xyz/emacs-everywhere/
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
 - https://github.com/LemonBreezes/.doom.d/blob/master/config.org
+- https://zzamboni.org/post/my-emacs-configuration-with-commentary/
 
 * Declare which Doom Modules to Load
 

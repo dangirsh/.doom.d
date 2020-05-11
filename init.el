@@ -10,22 +10,16 @@
 	     (ivy +prescient)
 
 	     :ui
-	     doom
-	     doom-dashboard
+       doom
 	     hl-todo
 	     modeline
 	     nav-flash
-	     ophints
-	     vc-gutter
 	     zen
 
 	     :editor
        ;; Nice, but messes with org-journal
-	     ;; file-templates
-	     fold
 	     lispy
 	     multiple-cursors
-	     snippets
 	     word-wrap
 
 	     :emacs
@@ -34,7 +28,6 @@
 	     vc
 
 	     :term
-	     eshell
        vterm
 
 	     :checkers
@@ -47,7 +40,6 @@
 	     (magit +forge)
 	     pass
 	     pdf
-       ;; lsp
 
 	     :lang
 	     common-lisp
@@ -64,7 +56,6 @@
 	      +jupyter
 	      )
 	     sh
-       ;; python
 
 	     :app
 	     calendar

@@ -592,11 +592,11 @@ I use org as a primary interface. It currently manages:
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         org-roam-graph-exclude-matcher "private"))
 
-(use-package! company-org-roam
-              :when (featurep! :completion company)
-              :after org-roam
-              :config
-              (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
+(use-package company-org-roam
+  :when (featurep! :completion company)
+  :after org-roam
+  :config
+  (set-company-backend! 'org-roam-mode 'company-org-roam))
 #+end_src
 
 **** Capture Templates

@@ -590,9 +590,7 @@ I use org as a primary interface. It currently manages:
         :desc "org-roam-capture" "c" #'org-roam-capture)
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private")
-  ;; hack until https://github.com/jethrokuan/org-roam/issues/522 is fixed
-  (delete-file org-roam-db-location))
+        org-roam-graph-exclude-matcher "private"))
 
 (use-package! company-org-roam
               :when (featurep! :completion company)

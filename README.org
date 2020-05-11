@@ -19,7 +19,7 @@ Emacs is my window manager via [[https://github.com/ch11ng/exwm/][EXWM]]. The pr
 people think you've lost your mind. See the [[*Emacs X Window Management (EXWM)][relevant config section]] for more details.
 
 Thanks to tools like Nix, it's possible to declaratively specify my entire
-system configuration in this file. That's a WIP.
+system configuration in this file. That's a [[https://github.com/mindlike/nixos-config][WIP]].
 
 Inspirations:
 

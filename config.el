@@ -84,6 +84,7 @@
      ("b" . my/set-brightness)
      ("<SPC>" . rgrep)
      ("o" . ibuffer)
+     ("p" . my/publish-dangirsh.org)
      ("s" . save-buffer)
      ("t" . vterm)
      ("w" . google-this-noconfirm)
@@ -427,6 +428,9 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
+;; (use-package! nix-haskell-mode
+;;   :hook (haskell-mode . nix-haskell-mode))
+
 (defvar inferior-julia-program-name "julia")
 
 (use-package! julia
@@ -611,7 +615,8 @@
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo
 
- "<print>"  'my/screenshot)
+ "<print>"  'my/screenshot
+)
 
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)

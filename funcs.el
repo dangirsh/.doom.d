@@ -199,3 +199,42 @@ narrowed."
         (concat "Saved as script: " buffer-file-name))))
 
 (add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
+
+;; https://llazarek.com/2018/10/images-in-org-mode.html
+(defun my/org-link-file-path-at-point ()
+  "Get the path of the file referred to by the link at point."
+  (let* ((org-element (org-element-context))
+         (is-subscript-p (equal (org-element-type org-element) 'subscript))
+         (is-link-p (equal (org-element-type org-element) 'link))
+         (is-file-p (equal (org-element-property :type org-element) "file")))
+    (when is-subscript-p
+      (user-error "Org thinks you're in a subscript. Move the point and try again."))
+    (unless (and is-link-p is-file-p)
+      (user-error "Not on file link"))
+    (expand-file-name (org-element-property :path org-element))))
+
+
+(defun my/org-resize-image-at-point (&optional arg)
+  "Resize the image linked at point."
+  (interactive)
+  (let ((img (my/org-link-file-path-at-point))
+        (percent (read-number "Resize to what percentage of current size? ")))
+    (start-process "mogrify" nil "/usr/bin/mogrify"
+                   "-resize"
+                   (format "%s%%" percent)
+                   img)))
+
+
+(defun my/run-in-fresh-compilation (cmd &optional dir)
+
+  (defun local-compile-buffer-namer (ignored)
+    (generate-new-buffer-name cmd))
+
+  (let* ((compilation-buffer-name-function #'local-compile-buffer-namer)
+         (compilation-ask-about-save nil)
+         (full-cmd (if dir (concat "cd " dir " && " cmd) cmd)))
+    (compile full-cmd)))
+
+(defun my/publish-dangirsh.org ()
+  (interactive)
+  (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))

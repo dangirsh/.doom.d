@@ -48,6 +48,7 @@
 	     (haskell +dante)
 	     ;; (julia +lsp)
 	     ;; julia
+       latex
 	     markdown
 	     nix
 	     (org

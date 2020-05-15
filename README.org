@@ -289,6 +289,7 @@ Set hardware-specific delay. Tweak this if:
        ("b" . my/set-brightness)
        ("<SPC>" . rgrep)
        ("o" . ibuffer)
+       ("p" . my/publish-dangirsh.org)
        ("s" . save-buffer)
        ("t" . vterm)
        ("w" . google-this-noconfirm)
@@ -1248,6 +1249,21 @@ narrowed."
                    "-resize"
                    (format "%s%%" percent)
                    img)))
+
+
+(defun my/run-in-fresh-compilation (cmd &optional dir)
+
+  (defun local-compile-buffer-namer (ignored)
+    (generate-new-buffer-name cmd))
+
+  (let* ((compilation-buffer-name-function #'local-compile-buffer-namer)
+         (compilation-ask-about-save nil)
+         (full-cmd (if dir (concat "cd " dir " && " cmd) cmd)))
+    (compile full-cmd)))
+
+(defun my/publish-dangirsh.org ()
+  (interactive)
+  (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
 #+end_src
 * Emacs X Window Management (EXWM)
 

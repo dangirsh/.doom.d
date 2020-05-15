@@ -19,15 +19,15 @@
 (display-time-mode 1)
 
 
-(setq exwm-manage-configurations
-      '(((string= exwm-class-name "Google-chrome")
-         workspace 0)
-        ((string= exwm-class-name "Firefox")
-         workspace 1)
-        ((string= exwm-instance-name "terminator")
-         workspace 8)
-        ((string= exwm-instance-name "keybase")
-         workspace 9)))
+;; (setq exwm-manage-configurations
+;;       '(((string= exwm-class-name "Google-chrome")
+;;          workspace 0)
+;;         ((string= exwm-class-name "Firefox")
+;;          workspace 1)
+;;         ((string= exwm-instance-name "terminator")
+;;          workspace 8)
+;;         ((string= exwm-instance-name "keybase")
+;;          workspace 9)))
 
 
 (defun my/launch (command)

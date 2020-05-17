@@ -1033,6 +1033,8 @@ to ace-window.
     ad-do-it))
 
 (setq projectile-mode-line "Projectile")
+
+(setq password-store-password-length 20)
 #+end_src
 
 #+RESULTS:

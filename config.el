@@ -488,7 +488,11 @@
   ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
   (setq ivy-use-virtual-buffers t
         counsel-find-file-at-point t
-        ivy-wrap nil)
+        ivy-wrap nil
+        ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+        ivy-posframe-height-alist '((t . 20))
+        ivy-posframe-parameters '((internal-border-width . 1))
+        ivy-posframe-width 120)
   (add-hook 'eshell-mode-hook
             (lambda ()
               (eshell-cmpl-initialize)
@@ -496,8 +500,7 @@
   (add-to-dk-keymap
    '(("g" . +ivy/project-search)
      ("h" . +ivy/projectile-find-file)
-     ("i" . counsel-semantic-or-imenu)
-     ("j" . ivy-switch-buffer))))
+     ("i" . counsel-semantic-or-imenu))))
 
 (after! dired
   (setq dired-listing-switches "-aBhl  --group-directories-first"

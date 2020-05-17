@@ -799,7 +799,11 @@ space of all valid inputs. It's well-supported in Doom.
   ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
   (setq ivy-use-virtual-buffers t
         counsel-find-file-at-point t
-        ivy-wrap nil)
+        ivy-wrap nil
+        ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+        ivy-posframe-height-alist '((t . 20))
+        ivy-posframe-parameters '((internal-border-width . 1))
+        ivy-posframe-width 120)
   (add-hook 'eshell-mode-hook
             (lambda ()
               (eshell-cmpl-initialize)
@@ -809,6 +813,7 @@ space of all valid inputs. It's well-supported in Doom.
      ("h" . +ivy/projectile-find-file)
      ("i" . counsel-semantic-or-imenu)
      ("j" . ivy-switch-buffer))))
+
 #+END_SRC
 
 ** Dired
@@ -1413,12 +1418,6 @@ mkdir -p ./modules/desktop/exwm
   (message "Added to clipboard."))
 
 (setq exwm-workspace-minibuffer-position 'nil)
-
-(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-      ivy-posframe-height-alist '((t . 20))
-      ivy-posframe-parameters '((internal-border-width . 1)))
-(setq ivy-posframe-width 120)
-
 
 (exwm-input-set-key (kbd "s-:") #'eval-expression)
 

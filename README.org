@@ -1018,6 +1018,21 @@ to ace-window.
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
+
+
+;; Help out Projectile for remote files via TRAMP
+;; https://sideshowcoder.com/2017/10/24/projectile-and-tramp/
+(defadvice projectile-on (around exlude-tramp activate)
+  "This should disable projectile when visiting a remote file"
+  (unless  (--any? (and it (file-remote-p it))
+                   (list
+                    (buffer-file-name)
+                    list-buffers-directory
+                    default-directory
+                    dired-directory))
+    ad-do-it))
+
+(setq projectile-mode-line "Projectile")
 #+end_src
 
 #+RESULTS:

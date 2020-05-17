@@ -22,8 +22,6 @@
 (package! google-this)
 (package! wrap-region)
 
-(package! nix-haskell-mode)
-
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
 (package! julia-snail)

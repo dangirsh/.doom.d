@@ -7,7 +7,7 @@
 
 	     :completion
 	     (company +childframe)
-	     (ivy +prescient)
+	     (ivy +prescient +childframe)
 
 	     :ui
        doom

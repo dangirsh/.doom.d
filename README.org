@@ -29,6 +29,7 @@ Inspirations:
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
 - https://github.com/LemonBreezes/.doom.d/blob/master/config.org
 - https://zzamboni.org/post/my-emacs-configuration-with-commentary/
+- https://justin.abrah.ms/dotfiles/emacs.html
 
 * Declare which Doom Modules to Load
 
@@ -820,7 +821,7 @@ space of all valid inputs. It's well-supported in Doom.
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t
-        dired-omit-mode 0))
+        dired-omit-mode nil))
 
 (use-package! dired-narrow
               :commands (dired-narrow-fuzzy)

@@ -45,7 +45,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 
 	     :completion
 	     (company +childframe)
-	     (ivy +prescient)
+	     (ivy +prescient +childframe)
 
 	     :ui
        doom
@@ -1265,10 +1265,11 @@ narrowed."
   (interactive)
   (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
 #+end_src
-* Emacs X Window Management (EXWM)
+* COMMENT Emacs X Window Management (EXWM)
 
-Yes, Emacs is my window manager.
+I love EXWM, but retreated back to XMonad. I had issues with both Emacs and Firefox causing the main thread to block, which (in EXWM) hangs the entire system.
 
+** About
 Pros:
 
 - System-wide UI consistency
@@ -1395,7 +1396,10 @@ mkdir -p ./modules/desktop/exwm
 
 (setq exwm-workspace-minibuffer-position 'nil)
 
-(setq ivy-posframe-parameters '((parent-frame nil)))
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+      ivy-posframe-height-alist '((t . 20))
+      ivy-posframe-parameters '((internal-border-width . 1)))
+(setq ivy-posframe-width 120)
 
 
 (exwm-input-set-key (kbd "s-:") #'eval-expression)
@@ -1632,7 +1636,7 @@ mkdir -p ./modules/desktop/exwm
   (interactive)
   (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))
 
-(exwm-enable)
+;; (exwm-enable)
 
 ;; (use-package! exwm-mff
 ;;   :config

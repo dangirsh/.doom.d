@@ -428,9 +428,6 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
-;; (use-package! nix-haskell-mode
-;;   :hook (haskell-mode . nix-haskell-mode))
-
 (defvar inferior-julia-program-name "julia")
 
 (use-package! julia
@@ -509,7 +506,7 @@
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t
-        dired-omit-mode 0))
+        dired-omit-mode nil))
 
 (use-package! dired-narrow
               :commands (dired-narrow-fuzzy)
@@ -615,8 +612,7 @@
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo
 
- "<print>"  'my/screenshot
-)
+ "<print>"  'my/screenshot)
 
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
@@ -648,3 +644,20 @@
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
+
+
+;; Help out Projectile for remote files via TRAMP
+;; https://sideshowcoder.com/2017/10/24/projectile-and-tramp/
+(defadvice projectile-on (around exlude-tramp activate)
+  "This should disable projectile when visiting a remote file"
+  (unless  (--any? (and it (file-remote-p it))
+                   (list
+                    (buffer-file-name)
+                    list-buffers-directory
+                    default-directory
+                    dired-directory))
+    ad-do-it))
+
+(setq projectile-mode-line "Projectile")
+
+(setq password-store-password-length 20)

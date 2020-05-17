@@ -77,7 +77,10 @@
 
 (setq exwm-workspace-minibuffer-position 'nil)
 
-(setq ivy-posframe-parameters '((parent-frame nil)))
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+      ivy-posframe-height-alist '((t . 20))
+      ivy-posframe-parameters '((internal-border-width . 1)))
+(setq ivy-posframe-width 120)
 
 
 (exwm-input-set-key (kbd "s-:") #'eval-expression)
@@ -314,7 +317,7 @@
   (interactive)
   (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))
 
-(exwm-enable)
+;; (exwm-enable)
 
 ;; (use-package! exwm-mff
 ;;   :config

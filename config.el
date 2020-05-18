@@ -244,7 +244,7 @@
   :after org
   :config
   ;; helpful in EXWM, where there are no frames
-  (customize-set-variable 'org-noter-always-create-frame nil)
+  ;; (customize-set-variable 'org-noter-always-create-frame nil)
   (setq org-noter-notes-window-location 'vertical-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -573,11 +573,6 @@
         "C-s" 'isearch-forward-regexp))
 
 (use-package! dmenu)
-
-(use-package! ace-window
-  :config
-  (map! "C-M-SPC" #'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;; Save whenever focus changes
 (use-package! super-save

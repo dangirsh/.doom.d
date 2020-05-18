@@ -41,8 +41,8 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 
 (doom! :input
 
-	     :desktop
-	     exwm
+	     ;; :desktop
+	     ;; exwm
 
 	     :completion
 	     (company +childframe)

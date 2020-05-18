@@ -15,7 +15,7 @@
 
 (defun neurosys/open-config-file ()
   (interactive)
-  (find-file "/home/dan/repos/neurosys/README.org"))
+  (find-file (concat neurosys/base-dir "README.org")))
 
 (map!
    :map org-mode-map

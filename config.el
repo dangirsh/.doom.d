@@ -667,3 +667,7 @@
 (setq projectile-mode-line "Projectile")
 
 (setq password-store-password-length 20)
+
+;; https://stackoverflow.com/questions/11239201/can-i-limit-the-length-of-the-compilation-buffer-in-emacs
+(add-hook 'compilation-filter-hook 'comint-truncate-buffer)
+(setq comint-buffer-maximum-size 2000)

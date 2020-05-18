@@ -40,7 +40,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-
 	     ;; :desktop
 	     ;; exwm
 
@@ -136,6 +135,7 @@ Any desired package not declared in a Doom module must be declared here.
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
+(package! vterm-toggle)
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
@@ -297,7 +297,7 @@ Set hardware-specific delay. Tweak this if:
        ("o" . ibuffer)
        ("p" . my/publish-dangirsh.org)
        ("s" . save-buffer)
-       ("t" . vterm)
+       ("t" . vterm-toggle-cd)
        ("w" . google-this-noconfirm)
        ("x" . sp-splice-sexp)
        ("/" . find-name-dired)))
@@ -754,7 +754,6 @@ Julia myself here.
 
 
 
-
 ** Haskell
 
 #+BEGIN_SRC emacs-lisp
@@ -842,6 +841,18 @@ space of all valid inputs. It's well-supported in Doom.
 ;; Directly edit permisison bits!
 (setq wdired-allow-to-change-permissions t)
 #+END_SRC
+
+** Terminal
+
+=emacs-vterm= is nice, and the =vterm= Doom module already configures it.
+
+One missing piece is automatically creating a SSH'd terminal in TRAMP contexts. That's handled by =vterm-toggle-cd= in the =vterm-toggle= package.
+
+#+begin_src emacs-lisp
+(use-package! vterm-toggle 
+              :config
+              (setq vterm-toggle-fullscreen-p nil))
+#+end_src
 
 ** Search Utilities
 

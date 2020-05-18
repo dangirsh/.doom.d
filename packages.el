@@ -21,6 +21,7 @@
 (package! org-ref)
 (package! google-this)
 (package! wrap-region)
+(package! vterm-toggle)
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")

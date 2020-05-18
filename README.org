@@ -44,6 +44,9 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     ;; :desktop
 	     ;; exwm
 
+       :personal
+       neurosys
+
 	     :completion
 	     (company +childframe)
 	     (ivy +prescient +childframe)
@@ -284,7 +287,9 @@ Set hardware-specific delay. Tweak this if:
       (add-to-keymap sl-keymap bindings))
 
     (add-to-dk-keymap
-     '(("k" . doom/kill-this-buffer-in-all-windows)
+     '(("c" . my/open-literate-private-config-file)
+       ("v" . neurosys/open-config-file)
+       ("k" . doom/kill-this-buffer-in-all-windows)
        ("n" . narrow-or-widen-dwim)
        ("d" . dired-jump)
        ("b" . my/set-brightness)
@@ -1280,6 +1285,19 @@ narrowed."
   (interactive)
   (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
 #+end_src
+
+* Neurosys
+
+Elisp related to my [[nerusos][neurosys]].
+
+#+begin_src emacs-lisp :tangle ./modules/personal/neurosys/config.el
+(map!
+   :map org-mode-map
+   :localleader
+   (:prefix ("s" . "neurosys")
+     :desc "Deploy" "d" #'neurosys/deploy-to-host))
+#+end_src
+
 * COMMENT Emacs X Window Management (EXWM)
 
 I love EXWM, but retreated back to XMonad. I had issues with both Emacs and Firefox causing the main thread to block, which (in EXWM) hangs the entire system.
@@ -1504,7 +1522,6 @@ mkdir -p ./modules/desktop/exwm
 (exwm-input-set-key (kbd "s-w") 'delete-window)
 (exwm-input-set-key (kbd "s-q") 'kill-this-buffer)
 
-(exwm-input-set-key (kbd "s-c") 'my/goto-literate-private-config-file)
 (exwm-input-set-key (kbd "s-C") 'cfw:open-org-calendar)
 
 (exwm-input-set-key (kbd "s-x") 'counsel-M-x)

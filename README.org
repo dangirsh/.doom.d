@@ -1,6 +1,32 @@
 #+TITLE: Doom Configuration
 #+PROPERTY: header-args :tangle-mode (identity #o444)
 
+* About
+
+This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
+
+I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many
+situations, it replaces CLIs or GUIs with well-designed keyboard-driven
+interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
+
+I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration. This is a literate org file,
+which specifies and documents the entirety of my Doom configuration. If you link
+this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
+and whenever it changes.
+
+If you're reading this in a browser, consider opening it in Emacs Org mode for
+the full experience.
+
+Inspirations:
+
+- http://doc.rix.si/cce/cce.html
+- https://github.com/jethrokuan/dots/tree/master/.doom.d
+- https://ambrevar.xyz/emacs-everywhere/
+- [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
+- https://github.com/LemonBreezes/.doom.d/blob/master/config.org
+- https://zzamboni.org/post/my-emacs-configuration-with-commentary/
+- https://justin.abrah.ms/dotfiles/emacs.html
+
 * Table of Contents :QUOTE:TOC_4:
 #+BEGIN_QUOTE
 - [[#about][About]]
@@ -57,32 +83,6 @@
     - [[#misc-1][Misc]]
   - [[#keybindings][Keybindings]]
 #+END_QUOTE
-
-* About
-
-This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
-
-I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many
-situations, it replaces CLIs or GUIs with well-designed keyboard-driven
-interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
-
-I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration. This is a literate org file,
-which specifies and documents the entirety of my Doom configuration. If you link
-this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
-and whenever it changes.
-
-If you're reading this in a browser, consider opening it in Emacs Org mode for
-the full experience.
-
-Inspirations:
-
-- http://doc.rix.si/cce/cce.html
-- https://github.com/jethrokuan/dots/tree/master/.doom.d
-- https://ambrevar.xyz/emacs-everywhere/
-- [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
-- https://github.com/LemonBreezes/.doom.d/blob/master/config.org
-- https://zzamboni.org/post/my-emacs-configuration-with-commentary/
-- https://justin.abrah.ms/dotfiles/emacs.html
 
 * Declare which Doom Modules to Load
 

@@ -1,5 +1,6 @@
 #+TITLE: Doom Configuration
 #+PROPERTY: header-args :tangle-mode (identity #o444)
+#+OPTIONS: toc:4
 
 * About
 

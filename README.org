@@ -1057,7 +1057,7 @@ to ace-window.
 #+begin_src emacs-lisp :tangle funcs.el
 ;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
 
-(defun my/goto-literate-private-config-file ()
+(defun my/open-literate-private-config-file ()
   "Open the private config.org file."
   (interactive)
   (find-file (expand-file-name "config.org" doom-private-dir)))
@@ -1298,10 +1298,23 @@ narrowed."
 #+end_src
 
 * Neurosys
+:PROPERTIES:
+:header-args: :tangle ./modules/personal/neurosys/config.el
+:END:
 
 Elisp related to my [[nerusos][neurosys]].
 
-#+begin_src emacs-lisp :tangle ./modules/personal/neurosys/config.el
+** Helpers
+
+#+begin_src emacs-lisp
+(defun neurosys/open-config-file ()
+  (interactive)
+  (find-file "/home/dan/repos/neurosys/README.org"))
+#+end_src
+
+** Keybindings
+
+#+begin_src emacs-lisp
 (map!
    :map org-mode-map
    :localleader

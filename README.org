@@ -3,7 +3,7 @@
 
 * About
 
-This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]].
+This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
 
 I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many
 situations, it replaces CLIs or GUIs with well-designed keyboard-driven
@@ -14,7 +14,7 @@ which specifies and documents the entirety of my Doom configuration. If you link
 this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
 and whenever it changes.
 
-If you're reading this in a browser, consdier opening it in Emacs Org mode for
+If you're reading this in a browser, consider opening it in Emacs Org mode for
 the full experience.
 
 Inspirations:

@@ -14,6 +14,10 @@
       (compile "nixos-rebuild switch")))
   (switch-to-buffer-other-window "*compilation*"))
 
+(defun neurosys/deploy-to-nixos-dev ()
+  (interactive)
+  (neurosys/deploy-to-host "root@nixos-dev" "/home/dan/"))
+
 (defun neurosys/open-config-file ()
   (interactive)
   (find-file (concat neurosys/base-dir "README.org")))
@@ -22,4 +26,6 @@
    :map org-mode-map
    :localleader
    (:prefix ("s" . "neurosys")
-     :desc "Deploy" "d" #'neurosys/deploy-to-host))
+     :desc "Deploy" "D" #'neurosys/deploy-to-host)
+   (:prefix ("s" . "neurosys")
+     :desc "Deploy" "d" #'neurosys/deploy-to-nixos-dev))

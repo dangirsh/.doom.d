@@ -1,7 +1,8 @@
 #+TITLE: Doom Configuration
 #+PROPERTY: header-args :tangle-mode (identity #o444)
 
-* Table of Contents :TOC_3: :QUOTE:
+* Table of Contents :QUOTE:TOC_4:
+#+BEGIN_QUOTE
 - [[#about][About]]
 - [[#declare-which-doom-modules-to-load][Declare which Doom Modules to Load]]
 - [[#package-declarationss][Package declarationss]]
@@ -20,11 +21,13 @@
     - [[#keyboard][Keyboard]]
     - [[#toggle-touchpad][Toggle Touchpad]]
     - [[#display-brightness][Display Brightness]]
+      - [[#switch-to-interfacing-with-a-brightness-manager][Switch to interfacing with a brightness manager.]]
   - [[#org-1][Org]]
     - [[#org-noter][Org-noter]]
     - [[#org-ref][Org-ref]]
     - [[#org-journal][Org-journal]]
     - [[#org-roam][Org-roam]]
+      - [[#capture-templates][Capture Templates]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
     - [[#multiple-cursors][Multiple Cursors]]
@@ -53,6 +56,7 @@
     - [[#upgrading-02][Upgrading]]
     - [[#misc-1][Misc]]
   - [[#keybindings][Keybindings]]
+#+END_QUOTE
 
 * About
 

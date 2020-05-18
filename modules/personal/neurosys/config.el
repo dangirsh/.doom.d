@@ -21,11 +21,3 @@
 (defun neurosys/open-config-file ()
   (interactive)
   (find-file (concat neurosys/base-dir "README.org")))
-
-(map!
-   :map org-mode-map
-   :localleader
-   (:prefix ("s" . "neurosys")
-     :desc "Deploy" "D" #'neurosys/deploy-to-host)
-   (:prefix ("s" . "neurosys")
-     :desc "Deploy" "d" #'neurosys/deploy-to-nixos-dev))

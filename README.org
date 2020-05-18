@@ -1396,15 +1396,15 @@ NOTE: These can be combined with =nixos-rebuild switch --update=
 
 ** Keybindings
 
-#+begin_src emacs-lisp
-(map!
-   :map org-mode-map
-   :localleader
-   (:prefix ("s" . "neurosys")
-     :desc "Deploy" "D" #'neurosys/deploy-to-host)
-   (:prefix ("s" . "neurosys")
-     :desc "Deploy" "d" #'neurosys/deploy-to-nixos-dev))
-#+end_src
+# #+begin_src emacs-lisp
+# (map!
+#    :map org-mode-map
+#    :localleader
+#    (:prefix ("s" . "neurosys")
+#      :desc "Deploy" "D" #'neurosys/deploy-to-host)
+#    (:prefix ("s" . "neurosys")
+#      :desc "Deploy" "d" #'neurosys/deploy-to-nixos-dev))
+# #+end_src
 
 * COMMENT Emacs X Window Management (EXWM)
 

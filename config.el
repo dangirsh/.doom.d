@@ -574,6 +574,11 @@
 
 (use-package! dmenu)
 
+(use-package! ace-window
+  :config
+  (map! "C-M-SPC" #'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
 ;; Save whenever focus changes
 (use-package! super-save
   :ensure t

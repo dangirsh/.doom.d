@@ -1,7 +1,7 @@
 #+TITLE: Doom Configuration
 #+PROPERTY: header-args :tangle-mode (identity #o444)
 
-* Table of Contents :TOC_3:
+* Table of Contents :TOC_3: :QUOTE:
 - [[#about][About]]
 - [[#declare-which-doom-modules-to-load][Declare which Doom Modules to Load]]
 - [[#package-declarationss][Package declarationss]]

@@ -1320,14 +1320,15 @@ Elisp related to my [[nerusos][neurosys]].
 *** Deployment
 
 #+begin_src emacs-lisp
-(defun neurosys/deploy-to-host (host)
-  (interactive "sHost:")
-  (let* ((host-root (format "/ssh:%s:/" host)))
+(defun neurosys/deploy-to-host (host host-home-raw)
+  (interactive "sHost: \nsHost home: ")
+  (let ((host-root (format "/ssh:%s:/" host))
+        ;; mind the trailing slash, since we're passing it to rsync
+        (host-home (file-name-as-directory host-home-raw)))
     (save-window-excursion
       (org-babel-tangle)
       (my/run-in-fresh-compilation
-       (format (concat neurosys/base-dir "rsync.sh")
-               " %s" host))
+       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home))
       ;; TODO: Is there cleaner way to compile over TRAMP?
       (find-file host-root)
       (compile "nixos-rebuild switch")))

@@ -19,6 +19,7 @@
 (package! smartscan)
 (package! super-save)
 (package! org-ref)
+(package! toc-org)
 (package! google-this)
 (package! wrap-region)
 (package! vterm-toggle)

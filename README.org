@@ -942,14 +942,6 @@ to ace-window.
   (super-save-mode +1))
 #+END_SRC
 
-** Load Secrets
-
-#+BEGIN_SRC emacs-lisp
-(setq my/secrets-file (concat doom-private-dir "secrets.el"))
-(when (file-exists-p my/secrets-file)
-  (load-file my/secrets-file))
-#+END_SRC
-
 ** Misc Keybindings
 
 #+BEGIN_SRC emacs-lisp

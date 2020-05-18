@@ -1,6 +1,5 @@
 banners/
 .ob-jupyter
 snippets
-secrets.el
 notes.org
 eshell-history

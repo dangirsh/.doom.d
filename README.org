@@ -3,8 +3,7 @@
 
 * About
 
-If you're reading this in a browser, consdier opening it in Emacs Org mode for
-the full experience.
+This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]].
 
 I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many
 situations, it replaces CLIs or GUIs with well-designed keyboard-driven
@@ -15,11 +14,8 @@ which specifies and documents the entirety of my Doom configuration. If you link
 this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
 and whenever it changes.
 
-Emacs is my window manager via [[https://github.com/ch11ng/exwm/][EXWM]]. The primary downside to using EXWM is that
-people think you've lost your mind. See the [[*Emacs X Window Management (EXWM)][relevant config section]] for more details.
-
-Thanks to tools like Nix, it's possible to declaratively specify my entire
-system configuration in this file. That's a [[https://github.com/mindlike/nixos-config][WIP]].
+If you're reading this in a browser, consdier opening it in Emacs Org mode for
+the full experience.
 
 Inspirations:
 
@@ -1302,7 +1298,7 @@ narrowed."
   (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
 #+end_src
 
-* Neurosys
+* Neurosys Module
 :PROPERTIES:
 :header-args: :tangle ./modules/personal/neurosys/config.el
 :END:

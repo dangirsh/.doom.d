@@ -1,6 +1,5 @@
 #+TITLE: Doom Configuration
 #+PROPERTY: header-args :tangle-mode (identity #o444)
-#+OPTIONS: toc:4
 
 * About
 
@@ -27,6 +26,60 @@ Inspirations:
 - https://github.com/LemonBreezes/.doom.d/blob/master/config.org
 - https://zzamboni.org/post/my-emacs-configuration-with-commentary/
 - https://justin.abrah.ms/dotfiles/emacs.html
+
+* Table of Contents :TOC_3:
+- [[#about][About]]
+- [[#declare-which-doom-modules-to-load][Declare which Doom Modules to Load]]
+- [[#package-declarationss][Package declarationss]]
+- [[#package-configuration][Package Configuration]]
+  - [[#header][Header]]
+  - [[#global-constants][Global Constants]]
+    - [[#contact-info][Contact info]]
+    - [[#org][Org]]
+  - [[#load-helper-functions][Load helper functions]]
+  - [[#visual-settings][Visual Settings]]
+  - [[#key-chord-config][Key Chord Config]]
+    - [[#enable-the-key-chord-package][Enable the key chord package]]
+    - [[#setup-for-binding-chords-as-leaders][Setup for binding chords as leaders]]
+    - [[#define-global-key-chords][Define global key-chords]]
+  - [[#hardware-settings][Hardware Settings]]
+    - [[#keyboard][Keyboard]]
+    - [[#toggle-touchpad][Toggle Touchpad]]
+    - [[#display-brightness][Display Brightness]]
+  - [[#org-1][Org]]
+    - [[#org-noter][Org-noter]]
+    - [[#org-ref][Org-ref]]
+    - [[#org-journal][Org-journal]]
+    - [[#org-roam][Org-roam]]
+  - [[#effective-editing][Effective Editing]]
+    - [[#structure-editing][Structure Editing]]
+    - [[#multiple-cursors][Multiple Cursors]]
+    - [[#undo-tree][Undo Tree]]
+  - [[#julia][Julia]]
+  - [[#haskell][Haskell]]
+  - [[#jupyter][Jupyter]]
+  - [[#ivy][Ivy]]
+  - [[#dired][Dired]]
+  - [[#terminal][Terminal]]
+  - [[#search-utilities][Search Utilities]]
+    - [[#better-grep][Better Grep]]
+    - [[#scanning-occurances-within-a-buffer][Scanning occurances within a buffer]]
+  - [[#version-control][Version Control]]
+    - [[#magit][Magit]]
+  - [[#better-pdf-support][Better PDF support]]
+  - [[#lauching-external-programs][Lauching External Programs]]
+  - [[#jumping-between-windows][Jumping between windows]]
+  - [[#autosave][Autosave]]
+  - [[#misc-keybindings][Misc Keybindings]]
+  - [[#misc][Misc]]
+- [[#utility-functions][Utility functions.]]
+- [[#neurosys-module][Neurosys Module]]
+  - [[#globals][Globals]]
+  - [[#helpers][Helpers]]
+    - [[#deployment][Deployment]]
+    - [[#upgrading-02][Upgrading]]
+    - [[#misc-1][Misc]]
+  - [[#keybindings][Keybindings]]
 
 * Declare which Doom Modules to Load
 
@@ -130,6 +183,7 @@ Any desired package not declared in a Doom module must be declared here.
 (package! smartscan)
 (package! super-save)
 (package! org-ref)
+(package! toc-org)
 (package! google-this)
 (package! wrap-region)
 (package! vterm-toggle)
@@ -158,13 +212,6 @@ Set =lexical-binding= for this file.
 #+end_src
 
 ** Global Constants
-*** Org
-
-#+begin_src emacs-lisp
-(setq org-directory "~/Sync/"
-      org-roam-directory "/home/dan/Sync/org-roam/")
-#+end_src
-
 *** Contact info
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -173,6 +220,13 @@ clients, file templates and snippets.
 #+begin_src emacs-lisp
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
+#+end_src
+
+*** Org
+
+#+begin_src emacs-lisp
+(setq org-directory "~/Sync/"
+      org-roam-directory "/home/dan/Sync/org-roam/")
 #+end_src
 
 ** Load helper functions
@@ -485,6 +539,9 @@ I use org as a primary interface. It currently manages:
       (ansi-color-apply-on-region (point-min) (point-max))))
 
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors))
+
+(use-package! toc-org
+  :hook (org-mode . toc-org-mode))
 #+end_src
 
 *** Org-noter

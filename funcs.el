@@ -1,6 +1,6 @@
 ;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
 
-(defun my/goto-literate-private-config-file ()
+(defun my/open-literate-private-config-file ()
   "Open the private config.org file."
   (interactive)
   (find-file (expand-file-name "config.org" doom-private-dir)))

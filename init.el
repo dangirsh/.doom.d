@@ -2,8 +2,8 @@
 
 (doom! :input
 
-	     :desktop
-	     exwm
+	     ;; :desktop
+	     ;; exwm
 
 	     :completion
 	     (company +childframe)

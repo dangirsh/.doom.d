@@ -500,7 +500,8 @@
   (add-to-dk-keymap
    '(("g" . +ivy/project-search)
      ("h" . +ivy/projectile-find-file)
-     ("i" . counsel-semantic-or-imenu))))
+     ("i" . counsel-semantic-or-imenu)
+     ("j" . ivy-switch-buffer))))
 
 (after! dired
   (setq dired-listing-switches "-aBhl  --group-directories-first"
@@ -577,10 +578,6 @@
   :ensure t
   :config
   (super-save-mode +1))
-
-(setq my/secrets-file (concat doom-private-dir "secrets.el"))
-(when (file-exists-p my/secrets-file)
-  (load-file my/secrets-file))
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

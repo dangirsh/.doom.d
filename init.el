@@ -1,9 +1,11 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-
 	     ;; :desktop
 	     ;; exwm
+
+       :personal
+       neurosys
 
 	     :completion
 	     (company +childframe)

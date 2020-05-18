@@ -78,7 +78,9 @@
     (add-to-keymap sl-keymap bindings))
 
   (add-to-dk-keymap
-   '(("k" . doom/kill-this-buffer-in-all-windows)
+   '(("c" . my/open-literate-private-config-file)
+     ("v" . neurosys/open-config-file)
+     ("k" . doom/kill-this-buffer-in-all-windows)
      ("n" . narrow-or-widen-dwim)
      ("d" . dired-jump)
      ("b" . my/set-brightness)
@@ -86,7 +88,7 @@
      ("o" . ibuffer)
      ("p" . my/publish-dangirsh.org)
      ("s" . save-buffer)
-     ("t" . vterm)
+     ("t" . vterm-toggle-cd)
      ("w" . google-this-noconfirm)
      ("x" . sp-splice-sexp)
      ("/" . find-name-dired)))
@@ -520,6 +522,10 @@
 
 ;; Directly edit permisison bits!
 (setq wdired-allow-to-change-permissions t)
+
+(use-package! vterm-toggle 
+              :config
+              (setq vterm-toggle-fullscreen-p nil))
 
 (use-package! deadgrep
               :if (executable-find "rg")

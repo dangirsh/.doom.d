@@ -1,10 +1,10 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq org-directory "~/Sync/"
-      org-roam-directory "/home/dan/Sync/org-roam/")
-
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
+
+(setq org-directory "~/Sync/"
+      org-roam-directory "/home/dan/Sync/org-roam/")
 
 (load-file (concat doom-private-dir "funcs.el"))
 
@@ -239,6 +239,9 @@
       (ansi-color-apply-on-region (point-min) (point-max))))
 
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors))
+
+(use-package! toc-org
+  :hook (org-mode . toc-org-mode))
 
 (use-package! org-noter
   :after org

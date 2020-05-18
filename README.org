@@ -1329,6 +1329,10 @@ Elisp related to my [[nerusos][neurosys]].
       (find-file host-root)
       (compile "nixos-rebuild switch")))
   (switch-to-buffer-other-window "*compilation*"))
+
+(defun neurosys/deploy-to-nixos-dev ()
+  (interactive)
+  (neurosys/deploy-to-host "root@nixos-dev" "/home/dan/"))
 #+end_src
 
 *** TODO Upgrading [0/2]
@@ -1353,7 +1357,9 @@ NOTE: These can be combined with =nixos-rebuild switch --update=
    :map org-mode-map
    :localleader
    (:prefix ("s" . "neurosys")
-     :desc "Deploy" "d" #'neurosys/deploy-to-host))
+     :desc "Deploy" "D" #'neurosys/deploy-to-host)
+   (:prefix ("s" . "neurosys")
+     :desc "Deploy" "d" #'neurosys/deploy-to-nixos-dev))
 #+end_src
 
 * COMMENT Emacs X Window Management (EXWM)

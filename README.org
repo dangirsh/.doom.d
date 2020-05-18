@@ -1333,12 +1333,19 @@ Elisp related to my [[nerusos][neurosys]].
   (switch-to-buffer-other-window "*compilation*"))
 #+end_src
 
+*** TODO Upgrading [0/2]
+
+- [ ] Update channels with =nix-channel --update=
+- [ ] Rebuild packages with =nixos-rebuild switch=
+
+NOTE: These can be combined with =nixos-rebuild switch --update=
+
 *** Misc
 
 #+begin_src emacs-lisp
 (defun neurosys/open-config-file ()
   (interactive)
-  (find-file "/home/dan/repos/neurosys/README.org"))
+  (find-file (concat neurosys/base-dir "README.org")))
 #+end_src
 
 ** Keybindings

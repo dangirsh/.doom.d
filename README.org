@@ -817,7 +817,6 @@ Julia myself here.
 
 
 
-
 ** Haskell
 
 #+BEGIN_SRC emacs-lisp
@@ -1044,9 +1043,7 @@ to ace-window.
  "C-S-z" 'undo-fu-only-redo
 
  "C-/"   'undo-fu-only-undo
- "C-?" 'undo-fu-only-redo
-
- "<print>"  'my/screenshot)
+ "C-?" 'undo-fu-only-redo)
 
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
@@ -1623,22 +1620,6 @@ mkdir -p ./modules/desktop/exwm
   (interactive)
   (my/launch "amixer sset Master 5%-"))
 
-
-;; TODO Prompt for location after taking the shot
-(defun my/screenshot ()
-  (interactive)
-  (shell-command
-   (concat "bash -c 'FILENAME=/home/dan/screenshots/$(date +'%Y-%m-%d-%H:%M:%S').png && maim -s $FILENAME'")))
-
-
-(defun my/screen-to-clipboard ()
-  (interactive)
-  (shell-command
-   (concat "bash -c 'FILENAME=/home/dan/screenshots/$(date +'%Y-%m-%d-%H:%M:%S').png && maim -s $FILENAME"
-           " && xclip $FILENAME -selection clipboard "
-           "-t image/png &> /dev/null && rm $FILENAME'"))
-  (message "Added to clipboard."))
-
 (setq exwm-workspace-minibuffer-position 'nil)
 
 (exwm-input-set-key (kbd "s-:") #'eval-expression)
@@ -1707,7 +1688,7 @@ mkdir -p ./modules/desktop/exwm
 (exwm-input-set-key (kbd "s-M-O") #'my/lock-screen)
 (exwm-input-set-key (kbd "s-<up>") #'my/volume-up)
 (exwm-input-set-key (kbd "s-<down>") #'my/volume-down)
-(exwm-input-set-key (kbd "s-<print>") #'my/screen-to-clipboard)
+;; (exwm-input-set-key (kbd "s-<print>") #'my/screen-to-clipboard)
 
 (exwm-input-set-key (kbd "s-R") #'doom/reload)
 (exwm-input-set-key (kbd "s-Q") #'kill-emacs)

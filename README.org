@@ -470,6 +470,8 @@ I use org as a primary interface. It currently manages:
         org-confirm-shell-link-function nil
         org-use-speed-commands t
         org-catch-invisible-edits 'show
+        ;; Use with consel-org-goto (gh .)
+        org-goto-interface 'outline-path-completion
         org-preview-latex-image-directory "/tmp/ltximg/"))
 
 (after! org
@@ -1794,17 +1796,6 @@ mkdir -p ./modules/desktop/exwm
 
 (require 'exwm-randr)
 (exwm-randr-enable)
-
-(setq my/laptop-screenlayout-file "/home/dan/.screenlayout/laptop.sh")
-(setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
-
-(defun my/laptop-screen-layout ()
-  (interactive)
-  (call-process "bash" nil 0 nil "-c" my/laptop-screenlayout-file))
-
-(defun my/monitor-screen-layout ()
-  (interactive)
-  (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))
 
 ;; (exwm-enable)
 

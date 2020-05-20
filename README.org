@@ -75,6 +75,8 @@ Inspirations:
   - [[#misc-keybindings][Misc Keybindings]]
   - [[#misc][Misc]]
 - [[#utility-functions][Utility functions.]]
+  - [[#resume][Resume]]
+  - [[#screen-layout][Screen Layout]]
 - [[#neurosys-module][Neurosys Module]]
   - [[#globals][Globals]]
   - [[#helpers][Helpers]]
@@ -342,6 +344,7 @@ Set hardware-specific delay. Tweak this if:
     (add-to-dk-keymap
      '(("c" . my/open-literate-private-config-file)
        ("v" . neurosys/open-config-file)
+       ("r" . my/edit-resume)
        ("k" . doom/kill-this-buffer-in-all-windows)
        ("n" . narrow-or-widen-dwim)
        ("d" . dired-jump)
@@ -1097,13 +1100,19 @@ to ace-window.
 ;; https://stackoverflow.com/questions/11239201/can-i-limit-the-length-of-the-compilation-buffer-in-emacs
 (add-hook 'compilation-filter-hook 'comint-truncate-buffer)
 (setq comint-buffer-maximum-size 2000)
+
+(setq recentf-max-saved-items 10000)
 #+end_src
 
 #+RESULTS:
 : t
 
 * Utility functions.
-#+begin_src emacs-lisp :tangle funcs.el
+:PROPERTIES:
+:header-args: :tangle funcs.el
+:END:
+
+#+begin_src emacs-lisp
 ;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
 
 (defun my/open-literate-private-config-file ()
@@ -1344,6 +1353,31 @@ narrowed."
 (defun my/publish-dangirsh.org ()
   (interactive)
   (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
+
+
+#+end_src
+
+** Resume
+
+#+begin_src emacs-lisp
+(defun my/edit-resume ()
+  (interactive)
+  (find-file "~/Sync/resume/resume.tex"))
+#+end_src
+
+** Screen Layout
+
+#+begin_src emacs-lisp
+(setq my/laptop-screenlayout-file "/home/dan/.screenlayout/laptop.sh")
+(setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
+
+(defun my/laptop-screen-layout ()
+  (interactive)
+  (call-process "bash" nil 0 nil "-c" my/laptop-screenlayout-file))
+
+(defun my/monitor-screen-layout ()
+  (interactive)
+  (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))
 #+end_src
 
 * Neurosys Module

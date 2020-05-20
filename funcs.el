@@ -238,3 +238,18 @@ narrowed."
 (defun my/publish-dangirsh.org ()
   (interactive)
   (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
+
+(defun my/edit-resume ()
+  (interactive)
+  (find-file "~/Sync/resume/resume.tex"))
+
+(setq my/laptop-screenlayout-file "/home/dan/.screenlayout/laptop.sh")
+(setq my/monitor-screenlayout-file "/home/dan/.screenlayout/main.sh")
+
+(defun my/laptop-screen-layout ()
+  (interactive)
+  (call-process "bash" nil 0 nil "-c" my/laptop-screenlayout-file))
+
+(defun my/monitor-screen-layout ()
+  (interactive)
+  (call-process "bash" nil 0 nil "-c" my/monitor-screenlayout-file))

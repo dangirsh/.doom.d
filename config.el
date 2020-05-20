@@ -56,73 +56,74 @@
   (interactive)
   (simulate-seq "\M-c"))
 
-  (after! key-chord
+(after! key-chord
 
-    (key-chord-define-global "fj" 'send-doom-leader)
-    (key-chord-define-global "gh" 'send-doom-local-leader)
+  (key-chord-define-global "fj" 'send-doom-leader)
+  (key-chord-define-global "gh" 'send-doom-local-leader)
 
-    (setq dk-keymap (make-sparse-keymap))
-    (setq sl-keymap (make-sparse-keymap))
+  (setq dk-keymap (make-sparse-keymap))
+  (setq sl-keymap (make-sparse-keymap))
 
-    (key-chord-define-global "dk" dk-keymap)
-    (key-chord-define-global "sl" sl-keymap)
+  (key-chord-define-global "dk" dk-keymap)
+  (key-chord-define-global "sl" sl-keymap)
 
-    (defun add-to-keymap (keymap bindings)
-      (dolist (binding bindings)
-	      (define-key keymap (kbd (car binding)) (cdr binding))))
+  (defun add-to-keymap (keymap bindings)
+    (dolist (binding bindings)
+	    (define-key keymap (kbd (car binding)) (cdr binding))))
 
-    (defun add-to-dk-keymap (bindings)
-      (add-to-keymap dk-keymap bindings))
+  (defun add-to-dk-keymap (bindings)
+    (add-to-keymap dk-keymap bindings))
 
-    (defun add-to-sl-keymap (bindings)
-      (add-to-keymap sl-keymap bindings))
+  (defun add-to-sl-keymap (bindings)
+    (add-to-keymap sl-keymap bindings))
 
-    (add-to-dk-keymap
-     '(("c" . my/open-literate-private-config-file)
-       ("v" . neurosys/open-config-file)
-       ("k" . doom/kill-this-buffer-in-all-windows)
-       ("n" . narrow-or-widen-dwim)
-       ("d" . dired-jump)
-       ("b" . my/set-brightness)
-       ("<SPC>" . rgrep)
-       ("o" . ibuffer)
-       ("p" . my/publish-dangirsh.org)
-       ("s" . save-buffer)
-       ("t" . +vterm/here)
-       ("w" . google-this-noconfirm)
-       ("x" . sp-splice-sexp)
-       ("/" . find-name-dired)))
+  (add-to-dk-keymap
+   '(("c" . my/open-literate-private-config-file)
+     ("v" . neurosys/open-config-file)
+     ("r" . my/edit-resume)
+     ("k" . doom/kill-this-buffer-in-all-windows)
+     ("n" . narrow-or-widen-dwim)
+     ("d" . dired-jump)
+     ("b" . my/set-brightness)
+     ("<SPC>" . rgrep)
+     ("o" . ibuffer)
+     ("p" . my/publish-dangirsh.org)
+     ("s" . save-buffer)
+     ("t" . +vterm/here)
+     ("w" . google-this-noconfirm)
+     ("x" . sp-splice-sexp)
+     ("/" . find-name-dired)))
 
-    (key-chord-define-global ",." 'end-of-buffer)
-    (key-chord-define-global "xz" 'beginning-of-buffer)
-    (key-chord-define-global "xc" 'beginning-of-buffer)
+  (key-chord-define-global ",." 'end-of-buffer)
+  (key-chord-define-global "xz" 'beginning-of-buffer)
+  (key-chord-define-global "xc" 'beginning-of-buffer)
 
-    (key-chord-define-global "qw" 'delete-window)
-    (key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global "qw" 'delete-window)
+  (key-chord-define-global "qp" 'delete-other-windows)
 
-    (key-chord-define-global "fk" 'other-window)
+  (key-chord-define-global "fk" 'other-window)
 
-    (key-chord-define-global "jd" 'rev-other-window)
+  (key-chord-define-global "jd" 'rev-other-window)
 
-    (key-chord-define-global "hh" 'helpful-at-point)
-    (key-chord-define-global "hk" 'helpful-key)
-    (key-chord-define-global "hv" 'helpful-variable)
-    (key-chord-define-global "hf" 'helpful-function)
+  (key-chord-define-global "hh" 'helpful-at-point)
+  (key-chord-define-global "hk" 'helpful-key)
+  (key-chord-define-global "hv" 'helpful-variable)
+  (key-chord-define-global "hf" 'helpful-function)
 
-    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
-    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+  (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+  (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
-    (key-chord-define-global "fv" 'comment-line)
+  (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+  (key-chord-define-global "fv" 'comment-line)
 
-    (key-chord-define-global "kl" 'er/expand-region)
+  (key-chord-define-global "kl" 'er/expand-region)
 
-    (key-chord-define-global "a;" 'execute-extended-command)
-    (key-chord-define-global "xf" 'find-file)
+  (key-chord-define-global "a;" 'execute-extended-command)
+  (key-chord-define-global "xf" 'find-file)
 
-    (key-chord-define-global "l;" 'repeat)
+  (key-chord-define-global "l;" 'repeat)
 
-    )
+  )
 
 (defun fix-keyboard ()
   (interactive)
@@ -165,6 +166,8 @@
         org-confirm-shell-link-function nil
         org-use-speed-commands t
         org-catch-invisible-edits 'show
+        ;; Use with consel-org-goto (gh .)
+        org-goto-interface 'outline-path-completion
         org-preview-latex-image-directory "/tmp/ltximg/"))
 
 (after! org
@@ -671,3 +674,5 @@
 ;; https://stackoverflow.com/questions/11239201/can-i-limit-the-length-of-the-compilation-buffer-in-emacs
 (add-hook 'compilation-filter-hook 'comint-truncate-buffer)
 (setq comint-buffer-maximum-size 2000)
+
+(setq recentf-max-saved-items 10000)

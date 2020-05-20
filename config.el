@@ -92,7 +92,8 @@
      ("t" . +vterm/here)
      ("w" . google-this-noconfirm)
      ("x" . sp-splice-sexp)
-     ("/" . find-name-dired)))
+     ("/" . find-name-dired)
+     ("." . pop-global-mark)))
 
   (key-chord-define-global ",." 'end-of-buffer)
   (key-chord-define-global "xz" 'beginning-of-buffer)
@@ -241,7 +242,9 @@
     (let ((inhibit-read-only t))
       (ansi-color-apply-on-region (point-min) (point-max))))
 
-  (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors))
+  (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors)
+
+  (advice-add 'org-meta-return :override #'my/org-meta-return))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -284,7 +287,7 @@
                nil
                "NOTER_DOCUMENT"
                (get-pdf-filename (org-entry-get
-			                            (point) "Custom_ID")))) )
+                                  (point) "Custom_ID")))) )
 
   (defun org-ref-noter-at-point ()
     (interactive)
@@ -618,9 +621,7 @@
  "C-S-z" 'undo-fu-only-redo
 
  "C-/"   'undo-fu-only-undo
- "C-?" 'undo-fu-only-redo
-
- "<print>"  'my/screenshot)
+ "C-?" 'undo-fu-only-redo)
 
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)

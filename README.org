@@ -356,7 +356,8 @@ Set hardware-specific delay. Tweak this if:
        ("t" . +vterm/here)
        ("w" . google-this-noconfirm)
        ("x" . sp-splice-sexp)
-       ("/" . find-name-dired)))
+       ("/" . find-name-dired)
+       ("." . pop-global-mark)))
 
     (key-chord-define-global ",." 'end-of-buffer)
     (key-chord-define-global "xz" 'beginning-of-buffer)

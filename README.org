@@ -56,6 +56,7 @@ Inspirations:
     - [[#org-journal][Org-journal]]
     - [[#org-roam][Org-roam]]
       - [[#capture-templates][Capture Templates]]
+    - [[#org-cliplink][Org-cliplink]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
     - [[#multiple-cursors][Multiple Cursors]]
@@ -190,6 +191,7 @@ Any desired package not declared in a Doom module must be declared here.
 (package! smartscan)
 (package! super-save)
 (package! org-ref)
+(package! org-cliplink)
 (package! toc-org)
 (package! google-this)
 (package! wrap-region)
@@ -689,6 +691,14 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
          :head "#+TITLE: ${title}\n"
          :unnarrowed t
          :immediate-finish t)))
+#+end_src
+
+*** Org-cliplink
+
+Automatically pulls the titles from pages from a URL, then inserts a corresponding org-link.
+
+#+begin_src emacs-lisp
+(use-package! org-cliplink)
 #+end_src
 
 ** Effective Editing

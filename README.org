@@ -1356,9 +1356,10 @@ narrowed."
 
 (defun my/publish-dangirsh.org ()
   (interactive)
-  (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/"))
-
-
+  (let ((neurosys-org-file "/home/dan/repos/dangirsh.org/site/projects/neurosys.org"))
+    ;; Hack: copy in the file - had issues hardlinking it.
+    (copy-file (concat neurosys/base-dir "README.org") neurosys-org-file t)
+    (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
 #+end_src
 
 ** Resume

@@ -8,7 +8,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 24)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -28,7 +28,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-dark t)
+  ;; (load-theme 'doom-acario-dark t)
   ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
@@ -61,70 +61,68 @@
   (key-chord-define-global "fj" 'send-doom-leader)
   (key-chord-define-global "gh" 'send-doom-local-leader)
 
-  (setq dk-keymap (make-sparse-keymap))
-  (setq sl-keymap (make-sparse-keymap))
+(setq dk-keymap (make-sparse-keymap))
+(setq sl-keymap (make-sparse-keymap))
 
-  (key-chord-define-global "dk" dk-keymap)
-  (key-chord-define-global "sl" sl-keymap)
+(key-chord-define-global "dk" dk-keymap)
+(key-chord-define-global "sl" sl-keymap)
 
-  (defun add-to-keymap (keymap bindings)
-    (dolist (binding bindings)
-	    (define-key keymap (kbd (car binding)) (cdr binding))))
+(defun add-to-keymap (keymap bindings)
+  (dolist (binding bindings)
+	  (define-key keymap (kbd (car binding)) (cdr binding))))
 
-  (defun add-to-dk-keymap (bindings)
-    (add-to-keymap dk-keymap bindings))
+(defun add-to-dk-keymap (bindings)
+  (add-to-keymap dk-keymap bindings))
 
-  (defun add-to-sl-keymap (bindings)
-    (add-to-keymap sl-keymap bindings))
+(defun add-to-sl-keymap (bindings)
+  (add-to-keymap sl-keymap bindings))
 
-  (add-to-dk-keymap
-   '(("c" . my/open-literate-private-config-file)
-     ("v" . neurosys/open-config-file)
-     ("r" . my/edit-resume)
-     ("k" . doom/kill-this-buffer-in-all-windows)
-     ("n" . narrow-or-widen-dwim)
-     ("d" . dired-jump)
-     ("b" . my/set-brightness)
-     ("<SPC>" . rgrep)
-     ("o" . ibuffer)
-     ("p" . my/publish-dangirsh.org)
-     ("s" . save-buffer)
-     ("t" . +vterm/here)
-     ("w" . google-this-noconfirm)
-     ("x" . sp-splice-sexp)
-     ("/" . find-name-dired)
-     ("." . pop-global-mark)))
+(add-to-dk-keymap
+ '(("c" . my/open-literate-private-config-file)
+   ("v" . neurosys/open-config-file)
+   ("r" . my/edit-resume)
+   ("k" . doom/kill-this-buffer-in-all-windows)
+   ("n" . narrow-or-widen-dwim)
+   ("d" . dired-jump)
+   ("b" . my/set-brightness)
+   ("<SPC>" . rgrep)
+   ("o" . ibuffer)
+   ("p" . my/publish-dangirsh.org)
+   ("s" . save-buffer)
+   ("t" . +vterm/here)
+   ("w" . google-this-noconfirm)
+   ("x" . sp-splice-sexp)
+   ("/" . find-name-dired)
+   ("." . pop-global-mark)))
 
-  (key-chord-define-global ",." 'end-of-buffer)
-  (key-chord-define-global "xz" 'beginning-of-buffer)
-  (key-chord-define-global "xc" 'beginning-of-buffer)
+(key-chord-define-global ",." 'end-of-buffer)
+(key-chord-define-global "xz" 'beginning-of-buffer)
+(key-chord-define-global "xc" 'beginning-of-buffer)
 
-  (key-chord-define-global "qw" 'delete-window)
-  (key-chord-define-global "qp" 'delete-other-windows)
+(key-chord-define-global "qw" 'delete-window)
+(key-chord-define-global "qp" 'delete-other-windows)
 
-  (key-chord-define-global "fk" 'other-window)
+(key-chord-define-global "fk" 'other-window)
 
-  (key-chord-define-global "jd" 'rev-other-window)
+(key-chord-define-global "jd" 'rev-other-window)
 
-  (key-chord-define-global "hh" 'helpful-at-point)
-  (key-chord-define-global "hk" 'helpful-key)
-  (key-chord-define-global "hv" 'helpful-variable)
-  (key-chord-define-global "hf" 'helpful-function)
+(key-chord-define-global "hh" 'helpful-at-point)
+(key-chord-define-global "hk" 'helpful-key)
+(key-chord-define-global "hv" 'helpful-variable)
+(key-chord-define-global "hf" 'helpful-function)
 
-  (key-chord-define-global "vn" 'split-window-vertically-and-switch)
-  (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+(key-chord-define-global "vn" 'split-window-vertically-and-switch)
+(key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-  (key-chord-define-global "jm" 'my/duplicate-line-or-region)
-  (key-chord-define-global "fv" 'comment-line)
+(key-chord-define-global "jm" 'my/duplicate-line-or-region)
+(key-chord-define-global "fv" 'comment-line)
 
-  (key-chord-define-global "kl" 'er/expand-region)
+(key-chord-define-global "kl" 'er/expand-region)
 
-  (key-chord-define-global "a;" 'execute-extended-command)
-  (key-chord-define-global "xf" 'find-file)
+(key-chord-define-global "a;" 'execute-extended-command)
+(key-chord-define-global "xf" 'find-file)
 
-  (key-chord-define-global "l;" 'repeat)
-
-  )
+(key-chord-define-global "l;" 'repeat))
 
 (defun fix-keyboard ()
   (interactive)
@@ -357,6 +355,13 @@
          :unnarrowed t
          :immediate-finish t)))
 
+(use-package! org-download
+  :config
+  ;; take an image that is already on the clipboard 
+  (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+
+(use-package! org-cliplink)
+
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -503,7 +508,7 @@
         ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
         ivy-posframe-height-alist '((t . 20))
         ivy-posframe-parameters '((internal-border-width . 1))
-        ivy-posframe-width 120)
+        ivy-posframe-width 100)
   (add-hook 'eshell-mode-hook
             (lambda ()
               (eshell-cmpl-initialize)
@@ -622,7 +627,6 @@
 
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo)
-
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 (global-set-key [remap goto-line] 'goto-line-with-feedback)

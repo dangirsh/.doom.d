@@ -19,6 +19,8 @@
 (package! smartscan)
 (package! super-save)
 (package! org-ref)
+(package! org-download)
+(package! org-cliplink)
 (package! toc-org)
 (package! google-this)
 (package! wrap-region)

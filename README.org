@@ -45,6 +45,9 @@ Inspirations:
     - [[#enable-the-key-chord-package][Enable the key chord package]]
     - [[#setup-for-binding-chords-as-leaders][Setup for binding chords as leaders]]
     - [[#define-global-key-chords][Define global key-chords]]
+      - [[#add-keymaps-and-bind-them-to-keychords][Add keymaps and bind them to keychords]]
+      - [[#the-dk-map][the "dk" map]]
+      - [[#global-bindings][Global bindings]]
   - [[#hardware-settings][Hardware Settings]]
     - [[#keyboard][Keyboard]]
     - [[#toggle-touchpad][Toggle Touchpad]]
@@ -56,6 +59,7 @@ Inspirations:
     - [[#org-journal][Org-journal]]
     - [[#org-roam][Org-roam]]
       - [[#capture-templates][Capture Templates]]
+    - [[#org-download][Org-download]]
     - [[#org-cliplink][Org-cliplink]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
@@ -191,6 +195,7 @@ Any desired package not declared in a Doom module must be declared here.
 (package! smartscan)
 (package! super-save)
 (package! org-ref)
+(package! org-download)
 (package! org-cliplink)
 (package! toc-org)
 (package! google-this)
@@ -248,7 +253,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 24)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -268,7 +273,7 @@ clients, file templates and snippets.
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-dark t)
+  ;; (load-theme 'doom-acario-dark t)
   ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
@@ -328,7 +333,15 @@ Set hardware-specific delay. Tweak this if:
 
     (key-chord-define-global "fj" 'send-doom-leader)
     (key-chord-define-global "gh" 'send-doom-local-leader)
+#+end_src
 
+**** Add keymaps and bind them to keychords
+
+One of my proudest moments....
+
+https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
+
+#+begin_src emacs-lisp
     (setq dk-keymap (make-sparse-keymap))
     (setq sl-keymap (make-sparse-keymap))
 
@@ -344,6 +357,11 @@ Set hardware-specific delay. Tweak this if:
 
     (defun add-to-sl-keymap (bindings)
       (add-to-keymap sl-keymap bindings))
+#+end_src
+
+**** the "dk" map
+
+#+begin_src emacs-lisp
 
     (add-to-dk-keymap
      '(("c" . my/open-literate-private-config-file)
@@ -362,7 +380,11 @@ Set hardware-specific delay. Tweak this if:
        ("x" . sp-splice-sexp)
        ("/" . find-name-dired)
        ("." . pop-global-mark)))
+#+end_src
 
+**** Global bindings
+
+#+begin_src emacs-lisp
     (key-chord-define-global ",." 'end-of-buffer)
     (key-chord-define-global "xz" 'beginning-of-buffer)
     (key-chord-define-global "xc" 'beginning-of-buffer)
@@ -390,9 +412,7 @@ Set hardware-specific delay. Tweak this if:
     (key-chord-define-global "a;" 'execute-extended-command)
     (key-chord-define-global "xf" 'find-file)
 
-    (key-chord-define-global "l;" 'repeat)
-
-    )
+    (key-chord-define-global "l;" 'repeat))
 #+end_src
 
 ** Hardware Settings
@@ -693,6 +713,17 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
          :immediate-finish t)))
 #+end_src
 
+*** Org-download
+
+For inserting images into Org-mode
+
+#+begin_src emacs-lisp
+(use-package! org-download
+  :config
+  ;; take an image that is already on the clipboard 
+  (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+#+end_src
+
 *** Org-cliplink
 
 Automatically pulls the titles from pages from a URL, then inserts a corresponding org-link.
@@ -826,7 +857,6 @@ Julia myself here.
 ;;   :config
 ;;   (eglot-jl-init))
 #+END_SRC
-
 
 
 ** Haskell
@@ -1056,7 +1086,6 @@ to ace-window.
 
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo)
-
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 (global-set-key [remap goto-line] 'goto-line-with-feedback)

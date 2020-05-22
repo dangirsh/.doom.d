@@ -19,19 +19,20 @@ and whenever it changes.
 If you're reading this in a browser, consider opening it in Emacs Org mode for
 the full experience.
 
-Inspirations:
+** Inspirations:
 
-- http://doc.rix.si/cce/cce.html
-- https://github.com/jethrokuan/dots/tree/master/.doom.d
-- https://ambrevar.xyz/emacs-everywhere/
+- [[https://github.com/jethrokuan/dots/tree/master/.doom.d][Jethro Kuan's dotfiles]]
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
-- https://github.com/LemonBreezes/.doom.d/blob/master/config.org
-- https://zzamboni.org/post/my-emacs-configuration-with-commentary/
-- https://justin.abrah.ms/dotfiles/emacs.html
+- [[https://ambrevar.xyz/emacs-everywhere/][Pierre Neidhardt: Emacs Everywhere]]
+- [[http://doc.rix.si/cce/cce.html][Ryan Rix's Complete Computing Environment (CCE)]]
+- [[https://github.com/LemonBreezes/.doom.d/blob/master/config.org][LemonBreezes' Literate Doom Config]]
+- [[https://zzamboni.org/post/my-emacs-configuration-with-commentary/][Diego Zamboni's Literate Emacs Config]]
+- [[https://justin.abrah.ms/dotfiles/emacs.html][Justin Abrahms' Literate Emacs Config]]
 
 * Table of Contents :QUOTE:TOC_4:
 #+BEGIN_QUOTE
 - [[#about][About]]
+  - [[#inspirations][Inspirations:]]
 - [[#declare-which-doom-modules-to-load][Declare which Doom Modules to Load]]
 - [[#package-declarationss][Package declarationss]]
 - [[#package-configuration][Package Configuration]]

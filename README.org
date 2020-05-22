@@ -872,7 +872,7 @@ space of all valid inputs. It's well-supported in Doom.
         ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
         ivy-posframe-height-alist '((t . 20))
         ivy-posframe-parameters '((internal-border-width . 1))
-        ivy-posframe-width 120)
+        ivy-posframe-width 100)
   (add-hook 'eshell-mode-hook
             (lambda ()
               (eshell-cmpl-initialize)

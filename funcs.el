@@ -115,7 +115,7 @@ With negative N, comment out original line and use the absolute value."
 Then, add a bibtex entry for the new file in the default bib
 file. Then, create a new org-ref note heading for it (see
 org-ref-create-notes-hook in packages.el to see it also creates
-an property for org-noter). Finally, insert a descriptive link to
+a property for org-noter). Finally, insert a descriptive link to
 the note heading at point, using the paper title as the link
 text.
 "

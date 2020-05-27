@@ -8,9 +8,9 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 24)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-      doom-serif-font (font-spec :family "Libre Baskerville"))
+;; (setq doom-font (font-spec :family "Hack" :size 16)
+;;       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+;;       doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (when (file-exists-p "~/.doom.d/banners")
   (setq +doom-dashboard-banner-padding '(0 . 2)
@@ -23,19 +23,23 @@
 (set-face-background 'vertical-border "grey")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
-(use-package! doom-themes
+;; (use-package! doom-themes
+;;   :config
+;;   ;; Global settings (defaults)
+;;   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+;;         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
+;;   ;; (load-theme 'doom-acario-dark t)
+;;   ;; (load-theme 'doom-one-light t)
+
+;;   ;; Enable flashing mode-line on errors
+;;   (doom-themes-visual-bell-config)
+
+;;   ;; Corrects (and improves) org-mode's native fontification.
+;;   (doom-themes-org-config))
+
+(use-package! poet-theme
   :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
-        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-dark t)
-  ;; (load-theme 'doom-one-light t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+  (load-theme 'poet))
 
 (use-package! key-chord
   :config
@@ -127,7 +131,7 @@
 (defun fix-keyboard ()
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 50"))
+  (shell-command "xset r rate 160 60"))
 
 (fix-keyboard)
 
@@ -167,7 +171,10 @@
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"))
+        org-preview-latex-image-directory "/tmp/ltximg/"
+        )
+  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}"))
+
 
 (after! org
 
@@ -312,7 +319,7 @@
   (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
   (customize-set-variable 'org-journal-time-prefix "* ")
   (customize-set-variable 'org-journal-time-format "")
-  (customize-set-variable 'org-journal-carryover-items nil)
+  (customize-set-variable 'org-journal-carryover-items t)
   (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")

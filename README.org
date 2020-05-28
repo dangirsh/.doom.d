@@ -211,9 +211,9 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 
-;; (setq doom-font (font-spec :family "Hack" :size 16)
-;;       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-;;       doom-serif-font (font-spec :family "Libre Baskerville"))
+(setq doom-font (font-spec :family "Hack" :size 26)
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+      doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (when (file-exists-p "~/.doom.d/banners")
   (setq +doom-dashboard-banner-padding '(0 . 2)
@@ -231,23 +231,26 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 
-;; (use-package! doom-themes
-;;   :config
-;;   ;; Global settings (defaults)
-;;   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
-;;         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-;;   ;; (load-theme 'doom-acario-dark t)
-;;   ;; (load-theme 'doom-one-light t)
-
-;;   ;; Enable flashing mode-line on errors
-;;   (doom-themes-visual-bell-config)
-
-;;   ;; Corrects (and improves) org-mode's native fontification.
-;;   (doom-themes-org-config))
-
-(use-package! poet-theme
+(use-package! doom-themes
   :config
-  (load-theme 'poet))
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
+  (load-theme 'doom-solarized-light t)
+  ;; (load-theme 'doom-one-light t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+
+;; Waiting on https://github.com/hlissner/emacs-doom-themes/issues/252
+;; Currently, some things like italics and some links in org fail to render correctly.
+;; (use-package! poet-theme
+;;   :config
+;;   (load-theme 'poet))
 #+end_src
 
 ** Key Chord Config

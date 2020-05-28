@@ -240,8 +240,8 @@
                             :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d@/!)")
-          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+        '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
+          (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -296,14 +296,19 @@
                (get-pdf-filename (org-entry-get
                                   (point) "Custom_ID")))) )
 
-  (defun org-ref-noter-at-point ()
+  (defun my/org-ref-noter-at-point ()
     (interactive)
     (let* ((results (org-ref-get-bibtex-key-and-file))
            (key (car results))
-           (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+           (pdf-file (funcall org-ref-get-pdf-filename-function key))
+           (orig-bibtex-dialect bibtex-dialect))
       (if (file-exists-p pdf-file)
           (save-window-excursion
+            ;; using the local flag for bibtex-set-dialect doesn't work
+            ;; likely because org-ref-open-notes-at-point loses the buffer context
+            (bibtex-set-dialect 'BibTeX)
             (org-ref-open-notes-at-point)
+            (bibtex-set-dialect orig-bibtex-dialect)
             (find-file-other-window pdf-file)
             (org-noter))
         (message "no pdf found for %s" key))))
@@ -311,7 +316,7 @@
   (map! :leader
         :map org-mode-map
         :desc "org-noter from ref"
-        "n p" 'org-ref-noter-at-point))
+        "n p" 'my/org-ref-noter-at-point))
 
 (use-package! org-journal
   :after org

@@ -120,7 +120,7 @@ the note heading at point, using the paper title as the link
 text.
 "
   (interactive "sarxiv number: ")
-  (let ( (bibtex-dialect 'BibTeX))
+  (let ((bibtex-dialect 'BibTeX))
     (org-ref-save-all-bibtex-buffers)
     (save-window-excursion
       (arxiv-get-pdf-add-bibtex-entry arxiv-number

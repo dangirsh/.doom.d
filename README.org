@@ -469,9 +469,7 @@ I use org as a primary interface. It currently manages:
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"
-        )
-  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}"))
+        org-preview-latex-image-directory "/tmp/ltximg/"))
 
 
 (after! org
@@ -481,6 +479,8 @@ I use org as a primary interface. It currently manages:
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
   ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
   ;;              ))
+
+  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
   (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
                                                       (:display . "text/plain")

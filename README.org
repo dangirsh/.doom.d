@@ -522,10 +522,7 @@ I use org as a primary interface. It currently manages:
   (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
 
-  (setq org-agenda-files (directory-files org-roam-directory  t ".*.org")
-        org-refile-targets `((,(append (my/open-org-files-list) org-agenda-files) :maxlevel . 7))
-        ;; https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-        org-refile-use-outline-path 'file
+  (setq org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps nil
         org-refile-allow-creating-parent-nodes 'confirm)
 
@@ -629,7 +626,7 @@ I use org as a primary interface. It currently manages:
   (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
   (customize-set-variable 'org-journal-time-prefix "* ")
   (customize-set-variable 'org-journal-time-format "")
-  (customize-set-variable 'org-journal-carryover-items t)
+  (customize-set-variable 'org-journal-carryover-items "TODO=\"TODO\"")
   (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
@@ -706,18 +703,23 @@ The =org-capture-templates= templates used here:
 
 
 #+begin_src emacs-lisp
-(setq org-roam-todo-file (concat org-roam-directory "todo.org"))
-(setq org-agenda-files `(,org-roam-todo-file))
+(after! org-roam
+  (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
+  (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
+  (setq org-refile-targets `((,(append (my/open-org-files-list) my/org-roam-files) :maxlevel . 7)))
+  (setq org-agenda-files `(,my/org-roam-todo-file))
 
+  (defun my/org-roam-get-title (path)
+    (save-window-excursion
+      ;; A simple find-file didn't work when the original was narrowed
+      (with-temp-buffer
+        (insert-file-contents path)
+        (org-mode)
+        (car (org-roam--extract-titles-title)))))
 
-(defun my/org-roam-get-title (path)
-  (save-window-excursion
-    (find-file path)
-    (car (org-roam--extract-titles-title))))
-
-(setq org-capture-templates
-      `(("t" "org-roam todo" entry (file org-roam-todo-file)
-         "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i")))
+  (setq org-capture-templates
+        `(("t" "org-roam todo" entry (file my/org-roam-todo-file)
+           "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))))
 #+end_src
 
 *** Org-download

@@ -8,9 +8,9 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-;; (setq doom-font (font-spec :family "Hack" :size 16)
-;;       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-;;       doom-serif-font (font-spec :family "Libre Baskerville"))
+(setq doom-font (font-spec :family "Hack" :size 26)
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+      doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (when (file-exists-p "~/.doom.d/banners")
   (setq +doom-dashboard-banner-padding '(0 . 2)
@@ -23,23 +23,26 @@
 (set-face-background 'vertical-border "grey")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
-;; (use-package! doom-themes
-;;   :config
-;;   ;; Global settings (defaults)
-;;   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
-;;         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-;;   ;; (load-theme 'doom-acario-dark t)
-;;   ;; (load-theme 'doom-one-light t)
-
-;;   ;; Enable flashing mode-line on errors
-;;   (doom-themes-visual-bell-config)
-
-;;   ;; Corrects (and improves) org-mode's native fontification.
-;;   (doom-themes-org-config))
-
-(use-package! poet-theme
+(use-package! doom-themes
   :config
-  (load-theme 'poet))
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
+  (load-theme 'doom-solarized-light t)
+  ;; (load-theme 'doom-one-light t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+
+;; Waiting on https://github.com/hlissner/emacs-doom-themes/issues/252
+;; Currently, some things like italics and some links in org fail to render correctly.
+;; (use-package! poet-theme
+;;   :config
+;;   (load-theme 'poet))
 
 (use-package! key-chord
   :config
@@ -113,7 +116,9 @@
 (key-chord-define-global "hh" 'helpful-at-point)
 (key-chord-define-global "hk" 'helpful-key)
 (key-chord-define-global "hv" 'helpful-variable)
-(key-chord-define-global "hf" 'helpful-function)
+
+;; no bueno: e.g. "pathfinder", "highfidelity"
+;; (key-chord-define-global "hf" 'helpful-function)
 
 (key-chord-define-global "vn" 'split-window-vertically-and-switch)
 (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
@@ -171,9 +176,7 @@
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"
-        )
-  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}"))
+        org-preview-latex-image-directory "/tmp/ltximg/"))
 
 
 (after! org
@@ -183,6 +186,8 @@
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
   ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
   ;;              ))
+
+  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
   (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
                                                       (:display . "text/plain")
@@ -224,10 +229,7 @@
   (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
 
-  (setq org-agenda-files (directory-files org-roam-directory  t ".*.org")
-        org-refile-targets `((,(append (my/open-org-files-list) org-agenda-files) :maxlevel . 7))
-        ;; https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-        org-refile-use-outline-path 'file
+  (setq org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps nil
         org-refile-allow-creating-parent-nodes 'confirm)
 
@@ -319,7 +321,7 @@
   (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
   (customize-set-variable 'org-journal-time-prefix "* ")
   (customize-set-variable 'org-journal-time-format "")
-  (customize-set-variable 'org-journal-carryover-items t)
+  (customize-set-variable 'org-journal-carryover-items "TODO=\"TODO\"")
   (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
@@ -361,6 +363,24 @@
          :head "#+TITLE: ${title}\n"
          :unnarrowed t
          :immediate-finish t)))
+
+(after! org-roam
+  (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
+  (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
+  (setq org-refile-targets `((,(append (my/open-org-files-list) my/org-roam-files) :maxlevel . 7)))
+  (setq org-agenda-files `(,my/org-roam-todo-file))
+
+  (defun my/org-roam-get-title (path)
+    (save-window-excursion
+      ;; A simple find-file didn't work when the original was narrowed
+      (with-temp-buffer
+        (insert-file-contents path)
+        (org-mode)
+        (car (org-roam--extract-titles-title)))))
+
+  (setq org-capture-templates
+        `(("t" "org-roam todo" entry (file my/org-roam-todo-file)
+           "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))))
 
 (use-package! org-download
   :config

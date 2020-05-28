@@ -668,10 +668,9 @@ I use org as a primary interface. It currently manages:
 #+end_src
 
 **** Capture Templates
+***** Fix Default
 
-This is used when new files in org-roam are created. The default doesn't have
-=:immediate-finish= set, which makes an annoying empty file buffer pop-up any time
-a new entity is created in org-roam. Setting it here smooths out the experience.
+This is used when new files in org-roam are created. The default doesn't have =:immediate-finish= set, which makes an annoying empty file buffer pop-up any time a new entity is created in org-roam. Setting it here smooths out the experience.
 
 Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
 
@@ -683,6 +682,39 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
          :head "#+TITLE: ${title}\n"
          :unnarrowed t
          :immediate-finish t)))
+#+end_src
+
+***** TODOs + org-agenda integration
+
+In real Roam, TODO tags can be conveniently interspersed in any file. Then, filtering backlinks on the TODO page is the agenda view.
+
+Unfortunately, this workflow doesn't work for org-roam, since org-agenda is implemented too ineffeciently to handle thousands of agenda files.
+
+My fix, as recommended [[https://github.com/org-roam/org-roam/issues/144#issuecomment-592726052][here]], is to put capture todos to a single file, but auto-insert links back to the context of the todo. Then, any TODOs for a page should be visible in the backlinks of that page. This is an inversion of the setup available in Roam.
+
+The =org-capture-templates= templates used here:
+
+| Template | Doc                          |
+|----------+------------------------------|
+| %?       | Heading                      |
+| %T       | Timestamp                    |
+| %F       | File path of original buffer |
+| %i       | Body                         |
+
+
+#+begin_src emacs-lisp
+(setq org-roam-todo-file (concat org-roam-directory "todo.org"))
+(setq org-agenda-files `(,org-roam-todo-file))
+
+
+(defun my/org-roam-get-title (path)
+  (save-window-excursion
+    (find-file path)
+    (car (org-roam--extract-titles-title))))
+
+(setq org-capture-templates
+      `(("t" "org-roam todo" entry (file org-roam-todo-file)
+         "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i")))
 #+end_src
 
 *** Org-download
@@ -1372,6 +1404,7 @@ narrowed."
     ;; Hack: copy in the file - had issues hardlinking it.
     (copy-file (concat neurosys/base-dir "README.org") neurosys-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
+
 #+end_src
 
 ** Resume

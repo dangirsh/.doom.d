@@ -366,7 +366,9 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
     (key-chord-define-global "hh" 'helpful-at-point)
     (key-chord-define-global "hk" 'helpful-key)
     (key-chord-define-global "hv" 'helpful-variable)
-    (key-chord-define-global "hf" 'helpful-function)
+
+    ;; no bueno: e.g. "pathfinder", "highfidelity"
+    ;; (key-chord-define-global "hf" 'helpful-function)
 
     (key-chord-define-global "vn" 'split-window-vertically-and-switch)
     (key-chord-define-global "hj" 'split-window-horizontally-and-switch)

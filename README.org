@@ -1347,6 +1347,17 @@ narrowed."
                   (buffer-file-name buffer))
                 (org-buffer-list 'files t))))
 
+(defun my/org-latex-toggle-recent ()
+  (when (looking-back (rx "$ "))
+    (save-excursion
+      (backward-char 1)
+      (org-toggle-latex-fragment))))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-cdlatex-mode)
+            (add-hook 'post-self-insert-hook #'my/org-latex-toggle-recent 'append 'local)))
+
 (defun my/save-shebanged-file-as-executable ()
   (and (save-excursion
          (save-restriction

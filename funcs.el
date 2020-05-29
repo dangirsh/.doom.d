@@ -75,18 +75,6 @@
     (insert (concat "ls"))
     (eshell-send-input)))
 
-(defun treemax-save-shebanged-file-as-executable ()
-  (and (save-excursion
-         (save-restriction
-           (widen)
-           (goto-char (point-min))
-           (save-match-data
-             (looking-at "^#!"))))
-       (not (file-executable-p buffer-file-name))
-       (shell-command (concat "chmod +x " buffer-file-name))
-       (message
-        (concat "Saved as script: " buffer-file-name))))
-
 ;; https://www.emacswiki.org/emacs/CopyingWholeLines
 (defun my/duplicate-line-or-region (&optional n)
   "Duplicate current line, or region if active.
@@ -185,6 +173,17 @@ narrowed."
         (mapcar (lambda (buffer)
                   (buffer-file-name buffer))
                 (org-buffer-list 'files t))))
+
+(defun my/org-latex-toggle-recent ()
+  (when (looking-back (rx "$ "))
+    (save-excursion
+      (backward-char 1)
+      (org-toggle-latex-fragment))))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-cdlatex-mode)
+            (add-hook 'post-self-insert-hook #'my/org-latex-toggle-recent 'append 'local)))
 
 (defun my/save-shebanged-file-as-executable ()
   (and (save-excursion

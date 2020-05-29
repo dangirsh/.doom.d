@@ -50,7 +50,7 @@
 	     (haskell +dante)
 	     ;; (julia +lsp)
 	     ;; julia
-       latex
+       (latex +latexmk +cdlatex)
 	     markdown
 	     nix
 	     (org

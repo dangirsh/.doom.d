@@ -566,7 +566,7 @@ I use org as a primary interface. It currently manages:
   :hook (org-mode . toc-org-mode))
 #+end_src
 
-*** Org-noter
+*** org-noter: Syncing notes to PDFs
 
 #+BEGIN_SRC emacs-lisp
 (use-package! org-noter
@@ -580,7 +580,7 @@ I use org as a primary interface. It currently manages:
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
 #+END_SRC
 
-*** Org-ref
+*** org-ref: Managing citations
 
 #+BEGIN_SRC emacs-lisp
 ;; Note that this pulls in Helm :/
@@ -636,7 +636,7 @@ I use org as a primary interface. It currently manages:
         "n p" 'my/org-ref-noter-at-point))
 #+END_SRC
 
-*** Org-journal
+*** org-journal: Managing daily journal files
 
 #+BEGIN_SRC emacs-lisp
 (use-package! org-journal
@@ -659,7 +659,9 @@ I use org as a primary interface. It currently manages:
 
 #+END_SRC
 
-*** Org-roam
+*** org-roam: A Zettelkasten based on RoamResearch
+
+aka my exocortex
 
 #+begin_src emacs-lisp
 (use-package! org-roam
@@ -743,9 +745,8 @@ The =org-capture-templates= templates used here:
            "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))))
 #+end_src
 
-*** Org-download
 
-For inserting images into Org-mode
+*** org-download: Inserting images into org-mode
 
 #+begin_src emacs-lisp
 (use-package! org-download
@@ -754,7 +755,7 @@ For inserting images into Org-mode
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
 #+end_src
 
-*** Org-cliplink
+*** org-cliplink: Better external links
 
 Automatically pulls the titles from pages from a URL, then inserts a corresponding org-link.
 

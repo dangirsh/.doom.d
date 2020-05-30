@@ -3,8 +3,14 @@
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 
-(setq org-directory "~/Sync/"
-      org-roam-directory "/home/dan/Sync/org-roam/")
+(setq my/home-dir "/home/dan/")
+
+(setq my/sync-base-dir (concat my/home-dir "Sync/"))
+(setq my/work-base-dir (concat my/home-dir "Work/"))
+(setq my/media-base-dir (concat my/home-dir "Media/"))
+
+(setq org-directory my/sync-base-dir
+      org-roam-directory (concat my/sync-base-dir "org-roam/"))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
@@ -176,7 +182,8 @@
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"))
+        org-preview-latex-image-directory "/tmp/ltximg/"
+        org-capture-templates '()))
 
 
 (after! org
@@ -383,9 +390,8 @@
         (org-mode)
         (car (org-roam--extract-titles-title)))))
 
-  (setq org-capture-templates
-        `(("t" "org-roam todo" entry (file my/org-roam-todo-file)
-           "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))))
+  (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
+                                      "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 
 (use-package! org-download
   :config
@@ -393,6 +399,14 @@
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
 
 (use-package! org-cliplink)
+
+(use-package! org-drill
+  :after org
+  :config
+  (add-to-list 'org-capture-templates
+               `("d" "drill Item" entry
+                 (file ,(concat org-directory "drill.org"))
+                 "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
 (use-package! lispy
   :config

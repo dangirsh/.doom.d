@@ -38,7 +38,8 @@ the full experience.
   - [[#header][Header]]
   - [[#global-constants][Global Constants]]
     - [[#contact-info][Contact info]]
-    - [[#org][Org]]
+    - [[#directories][Directories]]
+      - [[#org][Org]]
   - [[#load-helper-functions][Load helper functions]]
   - [[#visual-settings][Visual Settings]]
     - [[#theme][Theme]]
@@ -55,13 +56,14 @@ the full experience.
     - [[#display-brightness][Display Brightness]]
       - [[#switch-to-interfacing-with-a-brightness-manager][Switch to interfacing with a brightness manager.]]
   - [[#org-1][Org]]
-    - [[#org-noter][Org-noter]]
-    - [[#org-ref][Org-ref]]
-    - [[#org-journal][Org-journal]]
-    - [[#org-roam][Org-roam]]
+    - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
+    - [[#org-ref-managing-citations][org-ref: Managing citations]]
+    - [[#org-journal-managing-daily-journal-files][org-journal: Managing daily journal files]]
+    - [[#org-roam-a-zettelkasten-based-on-roamresearch][org-roam: A Zettelkasten based on RoamResearch]]
       - [[#capture-templates][Capture Templates]]
-    - [[#org-download][Org-download]]
-    - [[#org-cliplink][Org-cliplink]]
+    - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
+    - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
+    - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
     - [[#multiple-cursors][Multiple Cursors]]
@@ -762,6 +764,23 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 #+begin_src emacs-lisp
 (use-package! org-cliplink)
 #+end_src
+
+
+*** org-drill: Spaced Repetition
+
+I tried integrating with Anki first, since I thought it would be useful to go over the cards on mobile. It was a mess, so now I'm trying the native Org approach.
+
+#+begin_src emacs-lisp
+(use-package! org-drill
+  :after org
+  :config
+  (add-to-list 'org-capture-templates
+               `("d" "drill Item" entry
+                 (file ,(concat org-directory "drill.org"))
+                 "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
+#+end_src
+
+
 
 ** Effective Editing
 *** Structure Editing
@@ -1603,6 +1622,7 @@ Any desired package not declared in a Doom module must be declared here. This se
           :recipe (:host github :repo "jethrokuan/org-roam"))
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
+(package! org-drill)
 
 (package! smartscan)
 (package! super-save)

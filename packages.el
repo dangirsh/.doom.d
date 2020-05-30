@@ -15,6 +15,7 @@
           :recipe (:host github :repo "jethrokuan/org-roam"))
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
+(package! org-drill)
 
 (package! smartscan)
 (package! super-save)

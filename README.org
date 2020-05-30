@@ -485,7 +485,8 @@ I use org as a primary interface. It currently manages:
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"))
+        org-preview-latex-image-directory "/tmp/ltximg/"
+        org-capture-templates '()))
 
 
 (after! org
@@ -740,9 +741,8 @@ The =org-capture-templates= templates used here:
         (org-mode)
         (car (org-roam--extract-titles-title)))))
 
-  (setq org-capture-templates
-        `(("t" "org-roam todo" entry (file my/org-roam-todo-file)
-           "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))))
+  (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
+                                      "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 #+end_src
 
 

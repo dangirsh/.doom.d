@@ -193,12 +193,28 @@ clients, file templates and snippets.
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 #+end_src
 
-*** Org
+*** Directories
 
 #+begin_src emacs-lisp
-(setq org-directory "~/Sync/"
-      org-roam-directory "/home/dan/Sync/org-roam/")
+(setq my/home-dir "/home/dan/")
+
+(setq my/sync-base-dir (concat my/home-dir "Sync/"))
+(setq my/work-base-dir (concat my/home-dir "Work/"))
+(setq my/media-base-dir (concat my/home-dir "Media/"))
 #+end_src
+
+#+RESULTS:
+: /home/dan/Media/
+
+**** Org
+
+#+begin_src emacs-lisp
+(setq org-directory my/sync-base-dir
+      org-roam-directory (concat my/sync-base-dir "org-roam/"))
+#+end_src
+
+#+RESULTS:
+: /home/dan/Sync/org-roam/
 
 ** Load helper functions
 

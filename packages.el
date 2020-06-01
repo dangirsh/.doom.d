@@ -12,10 +12,12 @@
 (package! company-posframe)
 (package! org-noter)
 (package! org-roam
-          :recipe (:host github :repo "jethrokuan/org-roam"))
+  :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! org-roam-server)
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
 (package! org-drill)
+;; (package! org-sticky-header)
 
 (package! smartscan)
 (package! super-save)
@@ -26,7 +28,7 @@
 (package! google-this)
 (package! wrap-region)
 
-(package! poet-theme)
+;; (package! poet-theme)
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")

@@ -677,6 +677,7 @@ aka my exocortex
   :custom-face
   (org-roam-link ((t (:inherit org-link))))
   :init
+  (require 'org-roam-protocol)
   (map! :leader
         :prefix "n"
         :desc "org-roam" "l" #'org-roam
@@ -756,7 +757,7 @@ The =org-capture-templates= templates used here:
         (car (org-roam--extract-titles-title)))))
 
   (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
-                                      "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                      "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 #+end_src
 
 

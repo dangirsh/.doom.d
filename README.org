@@ -1648,7 +1648,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! google-this)
 (package! wrap-region)
 
-(package! poet-theme)
+;; (package! poet-theme)
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")

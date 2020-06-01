@@ -688,6 +688,15 @@ aka my exocortex
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         org-roam-graph-exclude-matcher "private"))
 
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8080
+        org-roam-server-authenticate nil
+        org-roam-server-label-truncate t
+        org-roam-server-label-truncate-length 60
+        org-roam-server-label-wrap-length 20))
+
 (use-package company-org-roam
   :when (featurep! :completion company)
   :after org-roam
@@ -1634,7 +1643,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! company-posframe)
 (package! org-noter)
 (package! org-roam
-          :recipe (:host github :repo "jethrokuan/org-roam"))
+  :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! org-roam-server)
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
 (package! org-drill)

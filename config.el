@@ -69,75 +69,75 @@
   (interactive)
   (simulate-seq "\M-c"))
 
-(after! key-chord
+  (after! key-chord
 
-  (key-chord-define-global "fj" 'send-doom-leader)
-  (key-chord-define-global "gh" 'send-doom-local-leader)
+    (key-chord-define-global "fj" 'send-doom-leader)
+    (key-chord-define-global "gh" 'send-doom-local-leader)
 
-(setq dk-keymap (make-sparse-keymap))
-(setq sl-keymap (make-sparse-keymap))
+    (setq dk-keymap (make-sparse-keymap))
+    (setq sl-keymap (make-sparse-keymap))
 
-(key-chord-define-global "dk" dk-keymap)
-(key-chord-define-global "sl" sl-keymap)
+    (key-chord-define-global "dk" dk-keymap)
+    (key-chord-define-global "sl" sl-keymap)
 
-(defun add-to-keymap (keymap bindings)
-  (dolist (binding bindings)
-	  (define-key keymap (kbd (car binding)) (cdr binding))))
+    (defun add-to-keymap (keymap bindings)
+      (dolist (binding bindings)
+	      (define-key keymap (kbd (car binding)) (cdr binding))))
 
-(defun add-to-dk-keymap (bindings)
-  (add-to-keymap dk-keymap bindings))
+    (defun add-to-dk-keymap (bindings)
+      (add-to-keymap dk-keymap bindings))
 
-(defun add-to-sl-keymap (bindings)
-  (add-to-keymap sl-keymap bindings))
+    (defun add-to-sl-keymap (bindings)
+      (add-to-keymap sl-keymap bindings))
 
-(add-to-dk-keymap
- '(("c" . my/open-literate-private-config-file)
-   ("v" . neurosys/open-config-file)
-   ("r" . my/edit-resume)
-   ("k" . doom/kill-this-buffer-in-all-windows)
-   ("n" . narrow-or-widen-dwim)
-   ("d" . dired-jump)
-   ("b" . my/set-brightness)
-   ("<SPC>" . rgrep)
-   ("o" . ibuffer)
-   ("p" . my/publish-dangirsh.org)
-   ("s" . save-buffer)
-   ("t" . +vterm/here)
-   ("w" . google-this-noconfirm)
-   ("x" . sp-splice-sexp)
-   ("/" . find-name-dired)
-   ("." . pop-global-mark)))
+    (add-to-dk-keymap
+     '(("c" . my/open-literate-private-config-file)
+       ("v" . neurosys/open-config-file)
+       ("r" . my/edit-resume)
+       ("k" . doom/kill-this-buffer-in-all-windows)
+       ("n" . narrow-or-widen-dwim)
+       ("d" . dired-jump)
+       ("b" . my/set-brightness)
+       ("<SPC>" . rgrep)
+       ("o" . ibuffer)
+       ("p" . my/publish-dangirsh.org)
+       ("s" . save-buffer)
+       ("t" . +vterm/here)
+       ("w" . google-this-noconfirm)
+       ("x" . sp-splice-sexp)
+       ("/" . find-name-dired)
+       ("." . pop-global-mark)))
 
-(key-chord-define-global ",." 'end-of-buffer)
-(key-chord-define-global "xz" 'beginning-of-buffer)
-(key-chord-define-global "xc" 'beginning-of-buffer)
+    (key-chord-define-global ",." 'end-of-buffer)
+    (key-chord-define-global "xz" 'beginning-of-buffer)
+    (key-chord-define-global "xc" 'beginning-of-buffer)
 
-(key-chord-define-global "qw" 'delete-window)
-(key-chord-define-global "qp" 'delete-other-windows)
+    (key-chord-define-global "qw" 'delete-window)
+    (key-chord-define-global "qp" 'delete-other-windows)
 
-(key-chord-define-global "fk" 'other-window)
+    (key-chord-define-global "fk" 'other-window)
 
-(key-chord-define-global "jd" 'rev-other-window)
+    (key-chord-define-global "jd" 'rev-other-window)
 
-(key-chord-define-global "hh" 'helpful-at-point)
-(key-chord-define-global "hk" 'helpful-key)
-(key-chord-define-global "hv" 'helpful-variable)
+    (key-chord-define-global "hh" 'helpful-at-point)
+    (key-chord-define-global "hk" 'helpful-key)
+    (key-chord-define-global "hv" 'helpful-variable)
 
-;; no bueno: e.g. "pathfinder", "highfidelity"
-;; (key-chord-define-global "hf" 'helpful-function)
+    ;; no bueno: e.g. "pathfinder", "highfidelity"
+    ;; (key-chord-define-global "hf" 'helpful-function)
 
-(key-chord-define-global "vn" 'split-window-vertically-and-switch)
-(key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-(key-chord-define-global "jm" 'my/duplicate-line-or-region)
-(key-chord-define-global "fv" 'comment-line)
+    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+    (key-chord-define-global "fv" 'comment-line)
 
-(key-chord-define-global "kl" 'er/expand-region)
+    (key-chord-define-global "kl" 'er/expand-region)
 
-(key-chord-define-global "a;" 'execute-extended-command)
-(key-chord-define-global "xf" 'find-file)
+    (key-chord-define-global "a;" 'execute-extended-command)
+    (key-chord-define-global "xf" 'find-file)
 
-(key-chord-define-global "l;" 'repeat))
+    (key-chord-define-global "l;" 'repeat))
 
 (defun fix-keyboard ()
   (interactive)
@@ -260,6 +260,9 @@
 
   (advice-add 'org-meta-return :override #'my/org-meta-return))
 
+;; (use-package! org-sticky-header
+;;   :hook (org-mode . org-sticky-header-mode))
+
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
 
@@ -350,6 +353,7 @@
   :custom-face
   (org-roam-link ((t (:inherit org-link))))
   :init
+  (require 'org-roam-protocol)
   (map! :leader
         :prefix "n"
         :desc "org-roam" "l" #'org-roam
@@ -361,6 +365,15 @@
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         org-roam-graph-exclude-matcher "private"))
+
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8080
+        org-roam-server-authenticate nil
+        org-roam-server-label-truncate t
+        org-roam-server-label-truncate-length 60
+        org-roam-server-label-wrap-length 20))
 
 (use-package company-org-roam
   :when (featurep! :completion company)
@@ -391,7 +404,7 @@
         (car (org-roam--extract-titles-title)))))
 
   (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
-                                      "* TODO %?  %T #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                      "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 
 (use-package! org-download
   :config
@@ -640,6 +653,9 @@
   :ensure t
   :config
   (super-save-mode +1))
+
+(setq swiper-use-visual-line nil)
+(setq swiper-use-visual-line-p (lambda (a) nil))
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

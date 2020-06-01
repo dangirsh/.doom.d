@@ -58,6 +58,7 @@
 	      +hugo
 	      +jupyter
 	      )
+	     rust
 	     sh
 
 	     :app

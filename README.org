@@ -82,6 +82,8 @@ the full experience.
   - [[#lauching-external-programs][Lauching External Programs]]
   - [[#jumping-between-windows][Jumping between windows]]
   - [[#autosave][Autosave]]
+  - [[#performance-tweaks][Performance Tweaks]]
+    - [[#swiper][Swiper]]
   - [[#misc-keybindings][Misc Keybindings]]
   - [[#misc][Misc]]
 - [[#utility-functions][Utility functions.]]
@@ -1101,6 +1103,19 @@ to ace-window.
   :config
   (super-save-mode +1))
 #+END_SRC
+
+** Performance Tweaks
+
+*** Swiper
+
+Seems like a good solution to swiper being slow is to [[https://oremacs.com/2019/04/07/swiper-isearch/][just use swiper-isearch]], but I find swiper's handling of multiple results on a line more convenient most of the time.
+
+Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/swiper_is_extreamly_slow/euamwwt?utm_source=share&utm_medium=web2x][this Reddit comment]] to make swiper ignore visual line mode. Seems to help for now.
+
+#+begin_src emacs-lisp
+(setq swiper-use-visual-line nil)
+(setq swiper-use-visual-line-p (lambda (a) nil))
+#+end_src
 
 ** Misc Keybindings
 

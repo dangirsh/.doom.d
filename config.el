@@ -652,11 +652,10 @@
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-;; Save whenever focus changes
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
+(use-package! real-auto-save
+  :hook
+  (prog-mode . real-auto-save-mode)
+  (org-mode . real-auto-save-mode))
 
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))

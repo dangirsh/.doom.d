@@ -1169,8 +1169,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
  "M-SPC" 'avy-goto-word-or-subword-1
 
- "C-s" 'swiper
- "C-M-s" 'swiper-isearch
+ "C-s" 'swiper-isearch
+ ;; "C-M-s" 'swiper-isearch
 
  "C-S-d" 'my/duplicate-line-or-region
  "C-c <left>" 'winner-undo

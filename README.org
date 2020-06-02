@@ -1132,16 +1132,6 @@ to ace-window.
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 #+end_src
 
-** Autosave
-
-#+BEGIN_SRC emacs-lisp
-;; Save whenever focus changes
-(use-package! super-save
-  :ensure t
-  :config
-  (super-save-mode +1))
-#+END_SRC
-
 ** Performance Tweaks
 
 *** Swiper

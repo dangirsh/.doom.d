@@ -7,7 +7,8 @@
 
 (defun my/rot13-and-kill-region ()
   (interactive)
-  (kill-new (rot13 (buffer-substring (region-beginning) (region-end)))))
+  (kill-new (rot13
+             (buffer-substring (region-beginning) (region-end)))))
 
 (defun my/org-export-subtree-as-markdown-and-copy ()
   (interactive)
@@ -236,9 +237,11 @@ narrowed."
 
 (defun my/publish-dangirsh.org ()
   (interactive)
-  (let ((neurosys-org-file "/home/dan/repos/dangirsh.org/site/projects/neurosys.org"))
-    ;; Hack: copy in the file - had issues hardlinking it.
+  (let ((neurosys-org-file "/home/dan/repos/dangirsh.org/site/projects/neurosys.org")
+        (doom-org-file "/home/dan/repos/dangirsh.org/site/projects/doom-config.org"))
+    ;; Hack: copy in the files - had issues hardlinking it.
     (copy-file (concat neurosys/base-dir "README.org") neurosys-org-file t)
+    (copy-file (concat doom-private-dir "config.org") doom-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
 
 (defun my/edit-resume ()
@@ -304,6 +307,7 @@ This function is heavily adapted from `org-between-regexps-p'."
                (not (re-search-backward block-begin-re (1+ beg) :noerror))
                ;; Return value.
                (cons beg end))))))
+
   (defun my/org-meta-return (&optional arg)
     "Insert a new heading or wrap a region in a table.
 Calls `org-insert-heading', `org-insert-item',

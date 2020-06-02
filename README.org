@@ -1136,16 +1136,11 @@ to ace-window.
 
 ** Autosave
 
-The package =super-save= does a good job of this, but I found it laggy.
-
-For now, I've added some simple hooks to save when focus changes.
-
 #+begin_src emacs-lisp
-;; Save whenever focus changes
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
+(use-package! real-auto-save
+  :hook
+  (prog-mode . real-auto-save-mode)
+  (org-mode . real-auto-save-mode))
 #+end_src
 
 ** Performance Tweaks
@@ -1688,6 +1683,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! org-roam-server)
 (package! phi-search)
 (package! ob-rust)
+(package! real-auto-save)
 (package! smartscan)
 (package! toc-org)
 (package! undo-tree)

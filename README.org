@@ -1499,11 +1499,12 @@ narrowed."
 
 (defun my/publish-dangirsh.org ()
   (interactive)
-  (let ((neurosys-org-file "/home/dan/repos/dangirsh.org/site/projects/neurosys.org"))
-    ;; Hack: copy in the file - had issues hardlinking it.
+  (let ((neurosys-org-file "/home/dan/repos/dangirsh.org/site/projects/neurosys.org")
+        (doom-org-file "/home/dan/repos/dangirsh.org/site/projects/doom-config.org"))
+    ;; Hack: copy in the files - had issues hardlinking it.
     (copy-file (concat neurosys/base-dir "README.org") neurosys-org-file t)
+    (copy-file (concat doom-private-dir "config.org") doom-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
-
 #+end_src
 
 ** Resume

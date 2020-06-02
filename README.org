@@ -925,6 +925,36 @@ Julia myself here.
 #+BEGIN_SRC emacs-lisp
 (setq haskell-mode-stylish-haskell-path "brittany")
 #+END_SRC
+** Rust
+
+Enabled the =rust= module.
+
+*** Racer Setup
+
+#+begin_example sh
+rustup component add rust-src
+#+end_example
+
+#+begin_example sh
+rustup toolchain add nightly
+#+end_example
+
+#+begin_example sh
+cargo +nightly install racer
+#+end_example
+
+*** Org-babel setup
+
+#+begin_src emacs-lisp
+(use-package! ob-rust)
+#+end_src
+
+=cargo-script= required for org-babel blocks (otherwise each requires a =main= function)
+
+#+begin_example sh
+cargo install cargo-script
+#+end_example
+
 ** Jupyter
 
 #+BEGIN_SRC emacs-lisp

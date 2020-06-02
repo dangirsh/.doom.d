@@ -547,9 +547,9 @@ I use org as a primary interface. It currently manages:
 
   (setq org-format-latex-options
         (quote (:foreground default
-                            :background default
-                            :scale 2.0
-                            :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+                :background default
+                :scale 2.0
+                :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
@@ -830,8 +830,8 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 (use-package! wrap-region
   :hook
-  (org-mode-hook . wrap-region-mode)
-  (latex-mode-hook . wrap-region-mode)
+  (org-mode . wrap-region-mode)
+  (latex-mode . wrap-region-mode)
   :config
   (wrap-region-add-wrappers
    '(("*" "*" nil (org-mode))
@@ -843,8 +843,8 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 (use-package! aggressive-indent
   :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (common-lisp-mode . aggressive-indent-mode))
 #+END_SRC
 
 *** Multiple Cursors
@@ -1239,7 +1239,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
 (defun my/rot13-and-kill-region ()
   (interactive)
-  (kill-new (rot13 (buffer-substring (region-beginning) (region-end)))))
+  (kill-new (rot13
+             (buffer-substring (region-beginning) (region-end)))))
 
 (defun my/org-export-subtree-as-markdown-and-copy ()
   (interactive)
@@ -1545,6 +1546,7 @@ This function is heavily adapted from `org-between-regexps-p'."
                (not (re-search-backward block-begin-re (1+ beg) :noerror))
                ;; Return value.
                (cons beg end))))))
+
   (defun my/org-meta-return (&optional arg)
     "Insert a new heading or wrap a region in a table.
 Calls `org-insert-heading', `org-insert-item',
@@ -1630,34 +1632,29 @@ Any desired package not declared in a Doom module must be declared here. This se
 #+begin_src emacs-lisp :tangle packages.el
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
-(package! aggressive-indent)
 (package! ace-window)
-(package! key-chord)
-(package! helpful)
-(package! phi-search)
-(package! undo-tree)
-(package! dired-narrow)
-(package! deadgrep)
-(package! dmenu)
+(package! aggressive-indent)
+(package! company-org-roam :recipe (:host github :repo "jethrokuan/company-org-roam"))
 (package! company-posframe)
-(package! org-noter)
-(package! org-roam
-  :recipe (:host github :repo "jethrokuan/org-roam"))
-(package! org-roam-server)
-(package! company-org-roam
-  :recipe (:host github :repo "jethrokuan/company-org-roam"))
-(package! org-drill)
-
-(package! smartscan)
-(package! super-save)
-(package! org-ref)
-(package! org-download)
-(package! org-cliplink)
-(package! toc-org)
+(package! deadgrep)
+(package! dired-narrow)
+(package! dmenu)
 (package! google-this)
+(package! helpful)
+(package! key-chord)
+(package! org-cliplink)
+(package! org-download)
+(package! org-drill)
+(package! org-noter)
+(package! org-ref)
+(package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! org-roam-server)
+(package! phi-search)
+(package! ob-rust)
+(package! smartscan)
+(package! toc-org)
+(package! undo-tree)
 (package! wrap-region)
-
-;; (package! poet-theme)
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")

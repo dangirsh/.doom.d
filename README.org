@@ -491,7 +491,8 @@ I use org as a primary interface. It currently manages:
 
 
 (after! org
-
+  ;; FIXME: Don't know why this isn't loaded automatically...
+  (require 'ob-async)
   ;; (add-hook 'ob-async-pre-execute-src-block-hook
   ;;           '(lambda ()
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")

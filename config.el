@@ -187,7 +187,8 @@
 
 
 (after! org
-
+  ;; FIXME: Don't know why this isn't loaded automatically...
+  (require 'ob-async)
   ;; (add-hook 'ob-async-pre-execute-src-block-hook
   ;;           '(lambda ()
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
@@ -195,6 +196,10 @@
   ;;              ))
 
   (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
+
+  ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/04/Redirecting-stderr-in-org-mode-shell-blocks/
+  (setq org-babel-default-header-args:sh
+        '((:prologue . "exec 2>&1") (:epilogue . ":")))
 
   (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
                                                       (:display . "text/plain")
@@ -242,9 +247,9 @@
 
   (setq org-format-latex-options
         (quote (:foreground default
-                            :background default
-                            :scale 2.0
-                            :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+                :background default
+                :scale 2.0
+                :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
@@ -259,9 +264,6 @@
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors)
 
   (advice-add 'org-meta-return :override #'my/org-meta-return))
-
-;; (use-package! org-sticky-header
-;;   :hook (org-mode . org-sticky-header-mode))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -455,8 +457,8 @@
 
 (use-package! wrap-region
   :hook
-  (org-mode-hook . wrap-region-mode)
-  (latex-mode-hook . wrap-region-mode)
+  (org-mode . wrap-region-mode)
+  (latex-mode . wrap-region-mode)
   :config
   (wrap-region-add-wrappers
    '(("*" "*" nil (org-mode))
@@ -468,8 +470,8 @@
 
 (use-package! aggressive-indent
   :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode)
-  (common-lisp-mode-hook . aggressive-indent-mode))
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (common-lisp-mode . aggressive-indent-mode))
 
 (use-package! multiple-cursors
               :init
@@ -528,6 +530,8 @@
 ;;   (eglot-jl-init))
 
 (setq haskell-mode-stylish-haskell-path "brittany")
+
+(use-package! ob-rust)
 
 (use-package! jupyter
   :init
@@ -648,12 +652,6 @@
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-;; Save whenever focus changes
-(use-package! super-save
-  :ensure t
-  :config
-  (super-save-mode +1))
-
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
 
@@ -668,8 +666,8 @@
 
  "M-SPC" 'avy-goto-word-or-subword-1
 
- "C-s" 'swiper
- "C-M-s" 'swiper-isearch
+ "C-s" 'swiper-isearch
+ ;; "C-M-s" 'swiper-isearch
 
  "C-S-d" 'my/duplicate-line-or-region
  "C-c <left>" 'winner-undo

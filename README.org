@@ -225,10 +225,8 @@ clients, file templates and snippets.
 
 ** Visual Settings
 
-
 #+begin_src emacs-lisp
-
-(setq doom-font (font-spec :family "Hack" :size 26)
+(setq doom-font (font-spec :family "Hack" :size 16)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -886,7 +884,6 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 #+END_SRC
-
 
 ** Julia
 

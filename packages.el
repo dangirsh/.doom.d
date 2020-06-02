@@ -19,6 +19,7 @@
 (package! org-roam-server)
 (package! phi-search)
 (package! ob-rust)
+(package! real-auto-save)
 (package! smartscan)
 (package! toc-org)
 (package! undo-tree)

@@ -390,6 +390,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
     ;; (key-chord-define-global "hf" 'helpful-function)
 
     (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+    (key-chord-define-global "vm" 'split-window-vertically-and-switch)  ; ergodox
     (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
     (key-chord-define-global "jm" 'my/duplicate-line-or-region)

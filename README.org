@@ -141,6 +141,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     :tools
 	     ;; direnv
 	     (eval +overlay)
+       docker
 	     lookup
 	     (magit +forge)
 	     pass
@@ -555,7 +556,7 @@ I use org as a primary interface. It currently manages:
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
-          (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
+          (sequence "WAITING(w)" "BLOCKED(b)" "HOLD(h)" "|" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()

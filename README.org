@@ -486,8 +486,7 @@ I use org as a primary interface. It currently manages:
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"
-        org-capture-templates '()))
+        org-preview-latex-image-directory "/tmp/ltximg/"))
 
 
 (after! org
@@ -498,6 +497,9 @@ I use org as a primary interface. It currently manages:
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
   ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
   ;;              ))
+
+  (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "listen.org"))
+                                        "* TODO %?\n%i"))
 
   (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 

@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 32)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -127,6 +127,7 @@
     ;; (key-chord-define-global "hf" 'helpful-function)
 
     (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+    (key-chord-define-global "vm" 'split-window-vertically-and-switch)  ; ergodox
     (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
     (key-chord-define-global "jm" 'my/duplicate-line-or-region)
@@ -182,8 +183,7 @@
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"
-        org-capture-templates '()))
+        org-preview-latex-image-directory "/tmp/ltximg/"))
 
 
 (after! org
@@ -194,6 +194,9 @@
   ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
   ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
   ;;              ))
+
+  (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "listen.org"))
+                                        "* TODO %?\n%i"))
 
   (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
@@ -253,7 +256,7 @@
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
-          (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
+          (sequence "WAITING(w)" "BLOCKED(b)" "HOLD(h)" "|" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -273,7 +276,7 @@
   :config
   ;; helpful in EXWM, where there are no frames
   ;; (customize-set-variable 'org-noter-always-create-frame nil)
-  (setq org-noter-notes-window-location 'vertical-split
+  (setq org-noter-notes-window-location 'horizontal-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
@@ -394,7 +397,7 @@
 (after! org-roam
   (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
   (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
-  (setq org-refile-targets `((,(append (my/open-org-files-list) my/org-roam-files) :maxlevel . 7)))
+  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
   (setq org-agenda-files `(,my/org-roam-todo-file))
 
   (defun my/org-roam-get-title (path)
@@ -406,7 +409,7 @@
         (car (org-roam--extract-titles-title)))))
 
   (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
-                                      "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 
 (use-package! org-download
   :config

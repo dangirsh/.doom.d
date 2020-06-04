@@ -5,18 +5,18 @@
 
 * About
 
-This is a submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
-
-I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many situations, it replaces CLIs or GUIs with well-designed keyboard-driven interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
-
-I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration. This is a literate org file, which specifies and documents the entirety of my Doom configuration. If you link this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup
-and whenever it changes.
-
-If you're reading this in a browser, consider opening it in Emacs Org mode for the full experience.
-
 #+begin_quote
 “I'm rarely happier than when spending an entire day programming my computer to perform automatically a task that would otherwise take me a good ten seconds to do by hand.” - Douglas Adams
 #+end_quote
+
+This is the =.doom.d= submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
+
+I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many situations, it replaces CLIs or GUIs with well-designed keyboard-driven interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
+
+I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs configuration. This is a literate org file, which specifies and documents the entirety of my Doom configuration. If you link this file to =~/.doom.d/config.org=, Doom will automatically tangle it on startup and whenever it changes.
+
+If you're reading this in a browser, consider opening it in Emacs Org mode for the full experience.
+
 
 ** Inspirations:
 

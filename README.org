@@ -227,7 +227,7 @@ clients, file templates and snippets.
 ** Visual Settings
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 32)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -581,7 +581,7 @@ I use org as a primary interface. It currently manages:
   :config
   ;; helpful in EXWM, where there are no frames
   ;; (customize-set-variable 'org-noter-always-create-frame nil)
-  (setq org-noter-notes-window-location 'vertical-split
+  (setq org-noter-notes-window-location 'horizontal-split
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
@@ -736,17 +736,17 @@ The =org-capture-templates= templates used here:
 
 | Template | Doc                          |
 |----------+------------------------------|
-| %?       | Heading                      |
-| %T       | Timestamp                    |
+| %?       | Initial cursor position      |
 | %F       | File path of original buffer |
 | %i       | Body                         |
+| %a       | Link back to context         |
 
 
 #+begin_src emacs-lisp
 (after! org-roam
   (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
   (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
-  (setq org-refile-targets `((,(append (my/open-org-files-list) my/org-roam-files) :maxlevel . 7)))
+  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
   (setq org-agenda-files `(,my/org-roam-todo-file))
 
   (defun my/org-roam-get-title (path)
@@ -758,7 +758,7 @@ The =org-capture-templates= templates used here:
         (car (org-roam--extract-titles-title)))))
 
   (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
-                                      "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 #+end_src
 
 

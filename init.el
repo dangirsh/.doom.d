@@ -38,6 +38,7 @@
 	     :tools
 	     ;; direnv
 	     (eval +overlay)
+       docker
 	     lookup
 	     (magit +forge)
 	     pass

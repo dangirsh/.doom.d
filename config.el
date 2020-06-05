@@ -108,37 +108,40 @@
        ("/" . find-name-dired)
        ("." . pop-global-mark)))
 
-    (key-chord-define-global ",." 'end-of-buffer)
-    (key-chord-define-global "xz" 'beginning-of-buffer)
-    (key-chord-define-global "xc" 'beginning-of-buffer)
+(key-chord-define-global ",." 'end-of-buffer)
+(key-chord-define-global "xz" 'beginning-of-buffer)
+(key-chord-define-global "xc" 'beginning-of-buffer)
 
-    (key-chord-define-global "qw" 'delete-window)
-    (key-chord-define-global "qp" 'delete-other-windows)
+(key-chord-define-global "qw" 'delete-window)
+(key-chord-define-global "qp" 'delete-other-windows)
 
-    (key-chord-define-global "fk" 'other-window)
+(key-chord-define-global "fk" 'other-window)
+(key-chord-define-global "jd" 'rev-other-window)
 
-    (key-chord-define-global "jd" 'rev-other-window)
+(key-chord-define-global "jj" 'previous-buffer)
+(key-chord-define-global "kk" 'next-buffer)
 
-    (key-chord-define-global "hh" 'helpful-at-point)
-    (key-chord-define-global "hk" 'helpful-key)
-    (key-chord-define-global "hv" 'helpful-variable)
 
-    ;; no bueno: e.g. "pathfinder", "highfidelity"
-    ;; (key-chord-define-global "hf" 'helpful-function)
+(key-chord-define-global "hh" 'helpful-at-point)
+(key-chord-define-global "hk" 'helpful-key)
+(key-chord-define-global "hv" 'helpful-variable)
 
-    (key-chord-define-global "vn" 'split-window-vertically-and-switch)
-    (key-chord-define-global "vm" 'split-window-vertically-and-switch)  ; ergodox
-    (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+;; no bueno: e.g. "pathfinder", "highfidelity"
+;; (key-chord-define-global "hf" 'helpful-function)
 
-    (key-chord-define-global "jm" 'my/duplicate-line-or-region)
-    (key-chord-define-global "fv" 'comment-line)
+(key-chord-define-global "vn" 'split-window-vertically-and-switch)
+(key-chord-define-global "vm" 'split-window-vertically-and-switch)  ; ergodox
+(key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-    (key-chord-define-global "kl" 'er/expand-region)
+(key-chord-define-global "jm" 'my/duplicate-line-or-region)
+(key-chord-define-global "fv" 'comment-line)
 
-    (key-chord-define-global "xx" 'execute-extended-command)
-    (key-chord-define-global "xf" 'find-file)
+(key-chord-define-global "kl" 'er/expand-region)
 
-    (key-chord-define-global "l;" 'repeat))
+(key-chord-define-global "xx" 'execute-extended-command)
+(key-chord-define-global "xf" 'find-file)
+
+(key-chord-define-global "l;" 'repeat))
 
 (defun fix-keyboard ()
   (interactive)

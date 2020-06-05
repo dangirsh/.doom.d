@@ -140,12 +140,14 @@ text.
 (defun my/night-mode ()
   (interactive)
   (load-theme 'doom-one t)
+  (doom/reload-theme)
   (my/set-brightness 10)
   (my/set-redshift 1500))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-solarized-light t)
+  (doom/reload-theme)
   (my/set-brightness 1000)
   (my/set-redshift 6000))
 

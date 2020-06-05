@@ -398,7 +398,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
     (key-chord-define-global "kl" 'er/expand-region)
 
-    (key-chord-define-global "a;" 'execute-extended-command)
+    (key-chord-define-global "xx" 'execute-extended-command)
     (key-chord-define-global "xf" 'find-file)
 
     (key-chord-define-global "l;" 'repeat))
@@ -583,7 +583,7 @@ I use org as a primary interface. It currently manages:
   :config
   ;; helpful in EXWM, where there are no frames
   ;; (customize-set-variable 'org-noter-always-create-frame nil)
-  (setq org-noter-notes-window-location 'horizontal-split
+  (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
@@ -1405,11 +1405,13 @@ text.
 
 (defun my/night-mode ()
   (interactive)
+  (load-theme 'doom-one t)
   (my/set-brightness 10)
   (my/set-redshift 1500))
 
 (defun my/day-mode ()
   (interactive)
+  (load-theme 'doom-solarized-light t)
   (my/set-brightness 1000)
   (my/set-redshift 6000))
 

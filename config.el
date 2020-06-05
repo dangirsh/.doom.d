@@ -135,7 +135,7 @@
 
     (key-chord-define-global "kl" 'er/expand-region)
 
-    (key-chord-define-global "a;" 'execute-extended-command)
+    (key-chord-define-global "xx" 'execute-extended-command)
     (key-chord-define-global "xf" 'find-file)
 
     (key-chord-define-global "l;" 'repeat))
@@ -276,7 +276,7 @@
   :config
   ;; helpful in EXWM, where there are no frames
   ;; (customize-set-variable 'org-noter-always-create-frame nil)
-  (setq org-noter-notes-window-location 'horizontal-split
+  (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))

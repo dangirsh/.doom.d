@@ -382,8 +382,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 (key-chord-define-global "fk" 'other-window)
 (key-chord-define-global "jd" 'rev-other-window)
 
-(key-chord-define-global "jj" 'previous-buffer)
-(key-chord-define-global "kk" 'next-buffer)
+(key-chord-define-global "JJ" 'previous-buffer)
+(key-chord-define-global "KK" 'next-buffer)
 
 
 (key-chord-define-global "hh" 'helpful-at-point)

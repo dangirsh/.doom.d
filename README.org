@@ -599,6 +599,15 @@ I use org as a primary interface. It currently manages:
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
 #+END_SRC
 
+*** org-recoll: Interface to Recoll - PDF content search
+
+[[https://github.com/alraban/org-recoll][GitHub - alraban/org-recoll: A lightweight emacs org-mode wrapper for the rec...]]
+
+#+begin_src emacs-lisp
+(use-package! org-recoll
+  :after org)
+#+end_src
+
 *** org-ref: Managing citations
 
 #+BEGIN_SRC emacs-lisp

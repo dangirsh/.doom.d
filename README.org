@@ -134,7 +134,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     vc
 
 	     :term
-       vterm
+       ;; vterm
 
 	     :checkers
 	     syntax
@@ -228,7 +228,7 @@ clients, file templates and snippets.
 ** Visual Settings
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 32)
+(setq doom-font (font-spec :family "Hack" :size 16)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -292,7 +292,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.03))
+        key-chord-two-keys-delay 0.02))
 #+end_src
 
 *** Setup for binding chords as leaders
@@ -718,7 +718,19 @@ aka my exocortex
   (key-chord-define-global "[[" #'org-roam-insert)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         org-roam-graph-exclude-matcher "private"))
+#+end_src
 
+**** Deft: Note search
+
+#+begin_src emacs-lisp
+(setq deft-directory org-roam-directory)
+(setq deft-recursive t)
+
+#+end_src
+
+**** org-roam-server: Graph visualization / navigation
+
+#+begin_src emacs-lisp
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
@@ -950,9 +962,10 @@ Julia myself here.
 
 (use-package! julia-repl
   :config
-  ; See: https://github.com/tpapp/julia-repl/pull/84
-  (require 'vterm)
-  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+                                        ; See: https://github.com/tpapp/julia-repl/pull/84
+  ;; (require 'vterm)
+  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
+  )
 
 ;; https://github.com/gcv/julia-snail
 (use-package julia-snail

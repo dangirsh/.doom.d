@@ -596,7 +596,14 @@ I use org as a primary interface. It currently manages:
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
+
+  (defadvice! better-org-noter--get-or-read-document-property (orig-fn &rest args)
+    :around 'org-noter--get-or-read-document-property
+    (let ((default-directory (if (boundp 'my/noter-default-directory)
+                                 my/noter-default-directory
+                               default-directory) ))
+      (apply orig-fn args))))
 #+END_SRC
 
 *** org-recoll: Interface to Recoll - PDF content search

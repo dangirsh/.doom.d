@@ -12,6 +12,7 @@
 	     (ivy +prescient +childframe)
 
 	     :ui
+       deft
        doom
 	     hl-todo
 	     modeline
@@ -30,7 +31,7 @@
 	     vc
 
 	     :term
-       vterm
+       ;; vterm
 
 	     :checkers
 	     syntax

@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 32)
+(setq doom-font (font-spec :family "Hack" :size 16)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -54,7 +54,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.03))
+        key-chord-two-keys-delay 0.02))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -105,7 +105,7 @@
        ("t" . +vterm/here)
        ("w" . google-this-noconfirm)
        ("x" . sp-splice-sexp)
-       ("/" . find-name-dired)
+       ("/" . counsel-recoll)
        ("." . pop-global-mark)))
 
 (key-chord-define-global ",." 'end-of-buffer)
@@ -118,8 +118,8 @@
 (key-chord-define-global "fk" 'other-window)
 (key-chord-define-global "jd" 'rev-other-window)
 
-(key-chord-define-global "jj" 'previous-buffer)
-(key-chord-define-global "kk" 'next-buffer)
+(key-chord-define-global "JJ" 'previous-buffer)
+(key-chord-define-global "KK" 'next-buffer)
 
 
 (key-chord-define-global "hh" 'helpful-at-point)
@@ -141,7 +141,9 @@
 (key-chord-define-global "xx" 'execute-extended-command)
 (key-chord-define-global "xf" 'find-file)
 
-(key-chord-define-global "l;" 'repeat))
+(key-chord-define-global "l;" 'repeat)
+
+)
 
 (defun fix-keyboard ()
   (interactive)
@@ -282,7 +284,17 @@
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org")))
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
+
+  (defadvice! better-org-noter--get-or-read-document-property (orig-fn &rest args)
+    :around 'org-noter--get-or-read-document-property
+    (let ((default-directory (if (boundp 'my/noter-default-directory)
+                                 my/noter-default-directory
+                               default-directory) ))
+      (apply orig-fn args))))
+
+(use-package! org-recoll
+  :after org)
 
 ;; Note that this pulls in Helm :/
 ;; https://github.com/jkitchin/org-ref/issues/202
@@ -374,6 +386,9 @@
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         org-roam-graph-exclude-matcher "private"))
 
+(setq deft-directory org-roam-directory)
+(setq deft-recursive t)
+
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
@@ -383,11 +398,17 @@
         org-roam-server-label-truncate-length 60
         org-roam-server-label-wrap-length 20))
 
-(use-package company-org-roam
+(use-package! company-org-roam
   :when (featurep! :completion company)
   :after org-roam
   :config
   (set-company-backend! 'org-roam-mode 'company-org-roam))
+
+(use-package! org-roam-bibtex
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind (:map org-mode-map
+         (("C-c n a" . orb-note-actions))))
 
 (setq org-roam-capture-templates
       '(("d" "default" plain (function org-roam--capture-get-point)
@@ -416,7 +437,7 @@
 
 (use-package! org-download
   :config
-  ;; take an image that is already on the clipboard 
+  ;; take an image that is already on the clipboard
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
 
 (use-package! org-cliplink)
@@ -522,9 +543,10 @@
 
 (use-package! julia-repl
   :config
-  ; See: https://github.com/tpapp/julia-repl/pull/84
-  (require 'vterm)
-  (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+                                        ; See: https://github.com/tpapp/julia-repl/pull/84
+  ;; (require 'vterm)
+  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
+  )
 
 ;; https://github.com/gcv/julia-snail
 (use-package julia-snail

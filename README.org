@@ -1695,6 +1695,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! org-download)
 (package! org-drill)
 (package! org-noter)
+(package! org-recoll :recipe (:host github :repo "alraban/org-recoll"))
 (package! org-ref)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
 (package! org-roam-server)

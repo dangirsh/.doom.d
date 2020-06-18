@@ -719,6 +719,17 @@ aka my exocortex
   (set-company-backend! 'org-roam-mode 'company-org-roam))
 #+end_src
 
+**** org-roam-bibtex: Manage PDFs, notes, & citations.
+
+#+begin_src emacs-lisp
+(use-package! org-roam-bibtex
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind (:map org-mode-map
+         (("C-c n a" . orb-note-actions))))
+
+#+end_src
+
 **** Capture Templates
 ***** Fix Default
 
@@ -1698,6 +1709,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! org-recoll :recipe (:host github :repo "alraban/org-recoll"))
 (package! org-ref)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! org-roam-bibtex)
 (package! org-roam-server)
 (package! phi-search)
 (package! ob-rust)

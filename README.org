@@ -678,7 +678,7 @@ I use org as a primary interface. It currently manages:
 
 #+END_SRC
 
-*** org-roam: A Zettelkasten based on RoamResearch
+*** org-roam: Graph layer on top of Org
 
 aka my exocortex
 
@@ -711,8 +711,12 @@ aka my exocortex
         org-roam-server-label-truncate t
         org-roam-server-label-truncate-length 60
         org-roam-server-label-wrap-length 20))
+#+end_src
 
-(use-package company-org-roam
+**** company-org-roam: Completions
+
+#+begin_src emacs-lisp
+(use-package! company-org-roam
   :when (featurep! :completion company)
   :after org-roam
   :config
@@ -784,13 +788,12 @@ The =org-capture-templates= templates used here:
                                         "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 #+end_src
 
-
 *** org-download: Inserting images into org-mode
 
 #+begin_src emacs-lisp
 (use-package! org-download
   :config
-  ;; take an image that is already on the clipboard 
+  ;; take an image that is already on the clipboard
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
 #+end_src
 

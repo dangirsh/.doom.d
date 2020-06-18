@@ -405,7 +405,13 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 (key-chord-define-global "xx" 'execute-extended-command)
 (key-chord-define-global "xf" 'find-file)
 
-(key-chord-define-global "l;" 'repeat))
+(key-chord-define-global "l;" 'repeat)
+#+end_src
+
+**** End
+
+#+begin_src emacs-lisp
+)
 #+end_src
 
 ** Hardware Settings

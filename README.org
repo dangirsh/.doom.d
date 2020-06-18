@@ -365,7 +365,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
        ("t" . +vterm/here)
        ("w" . google-this-noconfirm)
        ("x" . sp-splice-sexp)
-       ("/" . find-name-dired)
+       ("/" . counsel-recoll)
        ("." . pop-global-mark)))
 #+end_src
 

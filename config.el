@@ -54,7 +54,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.02))
+        key-chord-two-keys-delay 0.03))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))

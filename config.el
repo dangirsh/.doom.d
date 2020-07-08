@@ -109,7 +109,7 @@
        ("." . pop-global-mark)))
 
 (key-chord-define-global ",." 'end-of-buffer)
-(key-chord-define-global "xz" 'beginning-of-buffer)
+(key-chord-define-global "xz" 'beginning-of-buffer)  ; ergodox
 (key-chord-define-global "xc" 'beginning-of-buffer)
 
 (key-chord-define-global "qw" 'delete-window)
@@ -286,12 +286,14 @@
         org-noter-auto-save-last-location t
         org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
 
-  (defadvice! better-org-noter--get-or-read-document-property (orig-fn &rest args)
-    :around 'org-noter--get-or-read-document-property
-    (let ((default-directory (if (boundp 'my/noter-default-directory)
-                                 my/noter-default-directory
-                               default-directory) ))
-      (apply orig-fn args))))
+  ;; This works for assigning PDF paths, but then breaks when trying to find the tpath later.
+  ;; (defadvice! better-org-noter--get-or-read-document-property (orig-fn &rest args)
+  ;;   :around 'org-noter--get-or-read-document-property
+  ;;   (let ((default-directory (if (boundp 'my/noter-default-directory)
+  ;;                                my/noter-default-directory
+  ;;                              default-directory) ))
+  ;;     (apply orig-fn args)))
+  )
 
 (use-package! org-recoll
   :after org)
@@ -408,7 +410,28 @@
   :after org-roam
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :bind (:map org-mode-map
-         (("C-c n a" . orb-note-actions))))
+         (("C-c n a" . orb-note-actions)))
+  :config
+  (setq bibtex-completion-library-path "~/Sync/pdf/")
+  (setq orb-preformat-keywords
+        '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
+
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${citekey}"
+           :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}
+
+- tags ::
+
+* ${title}
+:PROPERTIES:
+:Custom_ID: ${citekey}
+:URL: ${url}
+:AUTHOR: ${author-or-editor}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
+:NOTER_PAGE:
+:END:"))))
 
 (setq org-roam-capture-templates
       '(("d" "default" plain (function org-roam--capture-get-point)

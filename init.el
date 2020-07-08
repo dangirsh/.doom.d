@@ -12,6 +12,7 @@
 	     (ivy +prescient +childframe)
 
 	     :ui
+       deft
        doom
 	     hl-todo
 	     modeline

@@ -877,6 +877,12 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+end_src
 
 
+** TRAMP
+
+#+begin_src emacs-lisp
+(after! tramp
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+#+end_src
 
 ** Effective Editing
 *** Structure Editing

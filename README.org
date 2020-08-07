@@ -704,8 +704,8 @@ aka my exocortex
 #+begin_src emacs-lisp
 (use-package! org-roam
   :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook
-  (org-mode . org-roam-mode)
+  :hook (org-mode . org-roam-mode)
+  :hook (org-journal-mode . org-roam-mode)
   :custom-face
   (org-roam-link ((t (:inherit org-link))))
   :init

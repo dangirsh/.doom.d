@@ -17,7 +17,6 @@ I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs co
 
 If you're reading this in a browser, consider opening it in Emacs Org mode for the full experience.
 
-
 ** Inspirations:
 
 - [[https://github.com/jethrokuan/dots/tree/master/.doom.d][Jethro Kuan's dotfiles]]
@@ -58,11 +57,14 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
     - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
+  - [[#tramp][TRAMP]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
   - [[#julia][Julia]]
+    - [[#convert-julia-markdown-blocks-to-org-blocks][Convert Julia Markdown Blocks to Org Blocks]]
+    - [[#julia-insert-subscripts][Julia Insert Subscripts]]
   - [[#haskell][Haskell]]
   - [[#rust][Rust]]
     - [[#racer-setup][Racer Setup]]
@@ -75,10 +77,12 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#scanning-occurances-within-a-buffer][Scanning occurances within a buffer]]
   - [[#version-control][Version Control]]
     - [[#magit][Magit]]
-  - [[#better-pdf-support][Better PDF support]]
+  - [[#searching--annotating-pdfs][Searching + Annotating PDFs]]
+    - [[#pdf-tools][pdf-tools]]
   - [[#lauching-external-programs][Lauching External Programs]]
   - [[#jumping-between-windows][Jumping between windows]]
   - [[#autosave][Autosave]]
+  - [[#additional-web-dev-tooling][Additional Web Dev Tooling]]
   - [[#performance-tweaks][Performance Tweaks]]
     - [[#swiper][Swiper]]
   - [[#misc-keybindings][Misc Keybindings]]
@@ -427,8 +431,6 @@ Sets caps to control and sets a snappy key repeat / delay.
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
   (shell-command "xset r rate 160 60"))
-
-(fix-keyboard)
 #+end_src
 
 *** Toggle Touchpad
@@ -627,6 +629,7 @@ I use org as a primary interface. It currently manages:
   :after (org bibtex)
   :init
   (setq org-ref-default-bibliography '("~/Sync/references.bib"))
+  (setq bibtex-completion-bibliography org-ref-default-bibliography)
   :config
   (setq org-latex-pdf-process
         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -689,8 +692,8 @@ I use org as a primary interface. It currently manages:
   (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
-          (:prefix ("j" . "journal")
-            :desc "Today" "t" #'org-journal-today)))
+         (:prefix ("j" . "journal")
+          :desc "Today" "t" #'org-journal-today)))
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))
@@ -992,8 +995,8 @@ Julia myself here.
   )
 
 ;; https://github.com/gcv/julia-snail
-(use-package julia-snail
-  :hook (julia-mode . julia-snail-mode))
+;; (use-package julia-snail
+;;   :hook (julia-mode . julia-snail-mode))
 
 ;; (use-package eglot-jl
 ;;   :hook (julia-mode . eglot)
@@ -1047,14 +1050,14 @@ cargo install cargo-script
   (map!
    :map org-mode-map
    :localleader
-   (:desc "Org Hydra"       "j" #'jupyter-org-hydra/body))
+   (:desc "Jupyter Org Hydra"       "j" #'jupyter-org-hydra/body))
 
   (defun my/insert-julia-src-block ()
     (interactive)
     (jupyter-org-insert-src-block t current-prefix-arg))
 
   ;; Better than `M-c C-, j` or `M-c j =`
-  (key-chord-define-global "j;" #'my/insert-julia-src-block)
+  (key-chord-define-global "jq" #'my/insert-julia-src-block)
   (map!
    :map julia-mode-map
    :localleader
@@ -1185,7 +1188,9 @@ Stunningly useful.
      ("l" . magit-show-refs-head))))
 #+END_SRC
 
-** Better PDF support
+** Searching + Annotating PDFs
+
+*** pdf-tools
 
 #+BEGIN_SRC emacs-lisp
 (after! pdf-tools

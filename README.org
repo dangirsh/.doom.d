@@ -145,7 +145,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     syntax
 
 	     :tools
-	     ;; direnv
+	     direnv
 	     (eval +overlay)
        docker
 	     lookup

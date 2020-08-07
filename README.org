@@ -157,6 +157,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	     common-lisp
 	     data
 	     emacs-lisp
+       javascript
 	     (haskell +dante)
 	     ;; (julia +lsp)
 	     ;; julia
@@ -1228,6 +1229,27 @@ to ace-window.
   (org-mode . real-auto-save-mode))
 #+end_src
 
+** Additional Web Dev Tooling
+
+Including the Doom =javascript= module does most of the work...
+
+#+begin_src emacs-lisp
+(use-package! jest
+  :hook
+  (typescript-mode . jest-minor-mode))
+#+end_src
+
+
+
+** COMMENT Poly Markdown
+
+Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#Weave.jl-Scientific-Reports-Using-Julia-1][Weave.jl]])
+
+#+begin_src emacs-lisp
+(use-package! poly-markdown)
+#+end_src
+
+
 ** Performance Tweaks
 
 *** Swiper
@@ -1762,6 +1784,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! dmenu)
 (package! google-this)
 (package! helpful)
+(package! jest)
 (package! key-chord)
 (package! org-cliplink)
 (package! org-download)

@@ -355,25 +355,26 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 **** the "dk" map
 
 #+begin_src emacs-lisp
-
-    (add-to-dk-keymap
-     '(("c" . my/open-literate-private-config-file)
-       ("v" . neurosys/open-config-file)
-       ("r" . my/edit-resume)
-       ("k" . doom/kill-this-buffer-in-all-windows)
-       ("n" . narrow-or-widen-dwim)
-       ("d" . dired-jump)
-       ("b" . my/set-brightness)
-       ("<SPC>" . rgrep)
-       ("o" . ibuffer)
-       ("p" . my/publish-dangirsh.org)
-       ("s" . save-buffer)
-       ("t" . +vterm/here)
-       ("w" . google-this-noconfirm)
-       ("x" . sp-splice-sexp)
-       ("/" . counsel-recoll)
-       ("." . pop-global-mark)))
+(add-to-dk-keymap
+ '(("c" . my/open-literate-private-config-file)
+   ("v" . neurosys/open-config-file)
+   ("r" . my/edit-resume)
+   ("k" . doom/kill-this-buffer-in-all-windows)
+   ("n" . narrow-or-widen-dwim)
+   ("d" . dired-jump)
+   ("b" . my/set-brightness)
+   ("<SPC>" . rgrep)
+   ("o" . ibuffer)
+   ("p" . my/publish-dangirsh.org)
+   ("s" . save-buffer)
+   ("t" . +vterm/here)
+   ("w" . google-this-noconfirm)
+   ("x" . sp-splice-sexp)
+   ("/" . org-recoll-search)
+   ("." . pop-global-mark)))
 #+end_src
+
+#+RESULTS:
 
 **** Global bindings
 

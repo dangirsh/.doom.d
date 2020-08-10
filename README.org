@@ -602,7 +602,9 @@ I use org as a primary interface. It currently manages:
   :after org
   :config
   ;; helpful in EXWM, where there are no frames
-  ;; (customize-set-variable 'org-noter-always-create-frame nil)
+  (customize-set-variable 'org-noter-always-create-frame t)
+  (customize-set-variable 'org-noter-notes-window-behavior '(start))
+  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t

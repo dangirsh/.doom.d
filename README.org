@@ -527,7 +527,7 @@ I use org as a primary interface. It currently manages:
   (setq org-babel-default-header-args:sh
         '((:prologue . "exec 2>&1") (:epilogue . ":")))
 
-  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
+  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.6")
                                                       (:display . "text/plain")
                                                       (:async . "yes")))
 

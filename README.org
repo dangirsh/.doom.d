@@ -473,6 +473,11 @@ Had issues the first time, but that was years ago.
 
 ** Org
 
+#+begin_quote
+"Notes aren’t a record of my thinking process. They are my thinking process." – Richard Feynman
+#+end_quote
+
+
 I use org as a primary interface. It currently manages:
 
 - My second brain with org-roam & org-journal

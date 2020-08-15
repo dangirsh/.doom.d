@@ -60,6 +60,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#tramp][TRAMP]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
+    - [[#mathpix-ocr-latex-from-images][Mathpix: OCR LaTeX From Images]]
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
   - [[#julia][Julia]]
@@ -947,6 +948,59 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
   (common-lisp-mode . aggressive-indent-mode))
 #+END_SRC
 
+*** Mathpix: OCR LaTeX From Images
+
+The mathpix.el package is failing when using the standard =package!= / =use-package!= setup.
+
+Loading manually from [[file:mathpix.el]] for now.
+
+#+begin_src emacs-lisp
+(defun setup-mathpix ()
+  (load-file "mathpix.el")
+  (require 'mathpix)
+  (customize-set-variable 'mathpix-app-id "dan_girsh_gmail_com_5d68dc")
+  (customize-set-variable 'mathpix-app-key "600336b7b2b932549ce4")
+  (customize-set-variable 'mathpix-screenshot-method "scrot -s %s")
+  (map! "C-x m" 'mathpix-screenshot))
+#+end_src
+
+#+RESULTS:
+: setup-mathpix
+
+#+begin_src emacs-lisp
+(setup-mathpix)
+#+end_src
+
+#+RESULTS:
+
+**** COMMENT Use-package form
+#+begin_src emacs-lisp
+(use-package! mathpix
+  :custom ((mathpix-app-id "app-id")
+           (mathpix-app-key "app-key"))
+  :bind
+  ("C-x m" . mathpix-screenshot))
+#+end_src
+
+***** Failure
+
+#+begin_quote
+ > Installing packages...
+    > Updating recipe repos...
+    → Cloning mathpix... for emacsmirror-mirror...
+x There was an unexpected error:
+  Type: doom-package-error
+  Message:
+    Error with packages
+  Data:
+    "mathpix"
+    (error "Failed to run \"git\"; see buffer *straight-process*")
+  Straight output:
+    Cloning into '/home/dan/.emacs.d/.local/straight/repos/mathpix'...
+    fatal: could not read Username for 'https://github.com': No such device or address
+#+end_quote
+
+
 *** Multiple Cursors
 
 #+BEGIN_SRC emacs-lisp
@@ -1800,6 +1854,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! helpful)
 (package! jest)
 (package! key-chord)
+;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)

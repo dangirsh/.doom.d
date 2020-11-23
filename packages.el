@@ -2,14 +2,15 @@
 ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
-(package! company-org-roam :recipe (:host github :repo "jethrokuan/company-org-roam"))
-(package! company-posframe)
+;; (package! company-posframe)
 (package! deadgrep)
 (package! dired-narrow)
 (package! dmenu)
 (package! google-this)
 (package! helpful)
+(package! jest)
 (package! key-chord)
+;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)
@@ -26,6 +27,8 @@
 (package! toc-org)
 (package! undo-tree)
 (package! wrap-region)
+(package! almost-mono-themes)
+
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
@@ -35,5 +38,8 @@
 ;; https://github.com/tpapp/julia-repl/pull/84
 (package! julia-repl
   :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+
+(package! julia-formatter
+  :recipe (:host github :repo "ki-chi/julia-formatter"))
 
 ;; (package! eglot-jl)

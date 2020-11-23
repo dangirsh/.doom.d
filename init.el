@@ -1,71 +1,75 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-	     ;; :desktop
-	     ;; exwm
+       ;; :desktop
+       ;; exwm
 
        :personal
        neurosys
 
-	     :completion
-	     (company +childframe)
-	     (ivy +prescient +childframe)
+       :completion
+       (company)
+       (ivy +prescient +childframe)
 
-	     :ui
+       :ui
        deft
        doom
-	     hl-todo
-	     modeline
-	     nav-flash
-	     zen
+       hl-todo
+       modeline
+       nav-flash
+       zen
 
-	     :editor
+       :editor
        ;; Nice, but messes with org-journal
-	     lispy
-	     multiple-cursors
-	     word-wrap
+       lispy
+       multiple-cursors
+       word-wrap
 
-	     :emacs
-	     dired
-	     electric
-	     vc
+       :emacs
+       dired
+       electric
+       vc
 
-	     :term
+       :term
        vterm
 
-	     :checkers
-	     syntax
+       :checkers
+       syntax
 
-	     :tools
-	     ;; direnv
-	     (eval +overlay)
+       :tools
+       direnv
+       (eval +overlay)
        docker
-	     lookup
-	     (magit +forge)
-	     pass
-	     pdf
+       lookup
+       (magit +forge)
+       pass
+       pdf
 
-	     :lang
-	     common-lisp
-	     data
-	     emacs-lisp
-	     (haskell +dante)
-	     ;; (julia +lsp)
-	     ;; julia
+       :lang
+       common-lisp
+       data
+       emacs-lisp
+       javascript
+       (haskell +dante)
+       ;; (julia +lsp)
+       ;; julia
        (latex +latexmk +cdlatex)
-	     markdown
-	     nix
-	     (org
-	      +journal
-	      +hugo
-	      +jupyter
-	      )
-	     rust
-	     sh
+       markdown
+       nix
+       (org
+	+journal
+	+hugo
+	+jupyter
+        +roam
+	)
+       rust
+       sh
 
-	     :app
-	     calendar
+       :app
+       calendar
 
-	     :config
-	     literate
-	     (default +bindings +smartparens))
+       :config
+       literate
+       (default +bindings)
+       ;; (default +bindings +smartparens)
+       )

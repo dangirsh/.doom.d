@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 26)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -34,7 +34,8 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-solarized-light t)
+  (load-theme 'leuven t)
+  ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
@@ -49,6 +50,11 @@
 ;; (use-package! poet-theme
 ;;   :config
 ;;   (load-theme 'poet))
+
+;; (use-package almost-mono-themes
+;;   :config
+;;   ;; (load-theme 'almost-mono-black t)
+;;   (load-theme 'almost-mono-white t))
 
 (use-package! key-chord
   :config
@@ -90,23 +96,24 @@
     (defun add-to-sl-keymap (bindings)
       (add-to-keymap sl-keymap bindings))
 
-    (add-to-dk-keymap
-     '(("c" . my/open-literate-private-config-file)
-       ("v" . neurosys/open-config-file)
-       ("r" . my/edit-resume)
-       ("k" . doom/kill-this-buffer-in-all-windows)
-       ("n" . narrow-or-widen-dwim)
-       ("d" . dired-jump)
-       ("b" . my/set-brightness)
-       ("<SPC>" . rgrep)
-       ("o" . ibuffer)
-       ("p" . my/publish-dangirsh.org)
-       ("s" . save-buffer)
-       ("t" . +vterm/here)
-       ("w" . google-this-noconfirm)
-       ("x" . sp-splice-sexp)
-       ("/" . counsel-recoll)
-       ("." . pop-global-mark)))
+(add-to-dk-keymap
+ '(("." . pop-global-mark)
+   ("/" . org-recoll-search)
+   ("<SPC>" . rgrep)
+   ("b" . my/set-brightness)
+   ("c" . my/open-literate-private-config-file)
+   ("d" . dired-jump)
+   ("k" . doom/kill-this-buffer-in-all-windows)
+   ("m" . my/mathpix-screenshot-to-clipboard)
+   ("n" . narrow-or-widen-dwim)
+   ("o" . ibuffer)
+   ("p" . my/publish-dangirsh.org)
+   ("r" . my/edit-resume)
+   ("s" . save-buffer)
+   ("t" . +vterm/here)
+   ("v" . neurosys/open-config-file)
+   ("w" . google-this-noconfirm)
+   ("x" . sp-splice-sexp)))
 
 (key-chord-define-global ",." 'end-of-buffer)
 (key-chord-define-global "xz" 'beginning-of-buffer)  ; ergodox
@@ -150,14 +157,9 @@
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
   (shell-command "xset r rate 160 60"))
 
-(fix-keyboard)
-
 (defun toggle-touchpad ()
   (interactive)
   (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
-
-(add-to-dk-keymap
-   '(("m" . toggle-touchpad)))
 
 (defun my/set-brightness (brightness)
   (interactive "nBrightness level: ")
@@ -170,6 +172,14 @@
      (format "%s" brightness))
     (save-buffer)
     (kill-buffer)))
+
+(defun my/connect-to-bose-700s ()
+  (interactive)
+  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63"))
+
+(defun my/disconnect-to-bose-700s ()
+  (interactive)
+  (shell-command "bluetoothctl -- disconnect 4C:87:5D:27:B8:63"))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -188,7 +198,12 @@
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"))
+        org-preview-latex-image-directory "/tmp/ltximg/")
+  (setq org-file-apps '((auto-mode . emacs)
+                        (directory . emacs)
+                        ("\\.mm\\'" . default)
+                        ("\\.x?html?\\'" . default)
+                        ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
 
 (after! org
@@ -209,13 +224,14 @@
   (setq org-babel-default-header-args:sh
         '((:prologue . "exec 2>&1") (:epilogue . ":")))
 
-  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.5")
+  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.6")
                                                       (:display . "text/plain")
                                                       (:async . "yes")))
 
   (setq org-confirm-babel-evaluate nil
         org-use-property-inheritance t
         org-export-with-sub-superscripts nil
+        org-export-use-babel nil
         org-startup-indented t
         org-pretty-entities nil
         org-use-speed-commands t
@@ -280,7 +296,9 @@
   :after org
   :config
   ;; helpful in EXWM, where there are no frames
-  ;; (customize-set-variable 'org-noter-always-create-frame nil)
+  (customize-set-variable 'org-noter-always-create-frame t)
+  (customize-set-variable 'org-noter-notes-window-behavior '(start))
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -304,6 +322,7 @@
   :after (org bibtex)
   :init
   (setq org-ref-default-bibliography '("~/Sync/references.bib"))
+  (setq bibtex-completion-bibliography org-ref-default-bibliography)
   :config
   (setq org-latex-pdf-process
         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -362,49 +381,36 @@
   (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
   (map! :leader
         (:prefix-map ("n" . "notes")
-          (:prefix ("j" . "journal")
-            :desc "Today" "t" #'org-journal-today)))
+         (:prefix ("j" . "journal")
+          :desc "Today" "t" #'org-journal-today)))
   (defun org-journal-today ()
     (interactive)
     (org-journal-new-entry t)))
 
-(use-package! org-roam
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook
-  (org-mode . org-roam-mode)
-  :custom-face
-  (org-roam-link ((t (:inherit org-link))))
-  :init
-  (require 'org-roam-protocol)
+(after! org-roam
+  (add-hook 'org-journal-mode 'org-roam-mode)
+  ;; Globally accessible commands
   (map! :leader
         :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
-        :desc "org-roam-capture" "c" #'org-roam-capture)
-  (key-chord-define-global "[[" #'org-roam-insert)
+        :desc "org-roam-find-file" "f" #'org-roam-find-file)
+  (set-company-backend! 'org-roam-mode 'company-capf)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private"))
-
-(setq deft-directory org-roam-directory)
-(setq deft-recursive t)
+        +org-roam-open-buffer-on-find-file nil
+        org-roam-graph-exclude-matcher '("todo")))
 
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
         org-roam-server-port 8080
         org-roam-server-authenticate nil
-        org-roam-server-label-truncate t
-        org-roam-server-label-truncate-length 60
-        org-roam-server-label-wrap-length 20))
-
-(use-package! company-org-roam
-  :when (featurep! :completion company)
-  :after org-roam
-  :config
-  (set-company-backend! 'org-roam-mode 'company-org-roam))
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
 
 (use-package! org-roam-bibtex
   :after org-roam
@@ -433,31 +439,6 @@
 :NOTER_PAGE:
 :END:"))))
 
-(setq org-roam-capture-templates
-      '(("d" "default" plain (function org-roam--capture-get-point)
-         "%?"
-         :file-name "%<%Y%m%d%H%M%S>-${slug}"
-         :head "#+TITLE: ${title}\n"
-         :unnarrowed t
-         :immediate-finish t)))
-
-(after! org-roam
-  (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
-  (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
-  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
-  (setq org-agenda-files `(,my/org-roam-todo-file))
-
-  (defun my/org-roam-get-title (path)
-    (save-window-excursion
-      ;; A simple find-file didn't work when the original was narrowed
-      (with-temp-buffer
-        (insert-file-contents path)
-        (org-mode)
-        (car (org-roam--extract-titles-title)))))
-
-  (add-to-list 'org-capture-templates '("t" "org-roam todo" entry (file my/org-roam-todo-file)
-                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
-
 (use-package! org-download
   :config
   ;; take an image that is already on the clipboard
@@ -473,6 +454,9 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
+(after! tramp
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -485,25 +469,27 @@
   :hook
   ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
   :bind (:map lispy-mode-map
-          ("'" . nil)             ; leave tick behaviour alone
-          ("M-n" . nil)
-          ("C-M-m" . nil)))
+         ("'" . nil)             ; leave tick behaviour alone
+         ("M-n" . nil)
+         ("C-M-m" . nil)))
 
-(use-package! smartparens
-  :init
-  (map! :map smartparens-mode-map
-        "C-M-f" #'sp-forward-sexp
-        "C-M-b" #'sp-backward-sexp
-        "C-M-u" #'sp-backward-up-sexp
-        "C-M-d" #'sp-down-sexp
-        "C-M-p" #'sp-backward-down-sexp
-        "C-M-n" #'sp-up-sexp
-        "C-M-s" #'sp-splice-sexp
-        "C-)" #'sp-forward-slurp-sexp
-        "C-}" #'sp-forward-barf-sexp
-        "C-(" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-barf-sexp))
+;; (use-package! smartparens
+;;   :init
+;;   (map! :map smartparens-mode-map
+;;         "C-M-f" #'sp-forward-sexp
+;;         "C-M-b" #'sp-backward-sexp
+;;         "C-M-u" #'sp-backward-up-sexp
+;;         "C-M-d" #'sp-down-sexp
+;;         "C-M-p" #'sp-backward-down-sexp
+;;         "C-M-n" #'sp-up-sexp
+;;         "C-M-s" #'sp-splice-sexp
+;;         ;; conflicts with mc
+;;         ;; "C-)" #'sp-forward-slurp-sexp
+;;         "C-}" #'sp-forward-barf-sexp
+;;         ;; conflicts with mc
+;;         ;; "C-(" #'sp-backward-slurp-sexp
+;;         "C-M-)" #'sp-backward-slurp-sexp
+;;         "C-M-)" #'sp-backward-barf-sexp))
 
 (use-package! wrap-region
   :hook
@@ -522,6 +508,22 @@
   :hook
   (emacs-lisp-mode . aggressive-indent-mode)
   (common-lisp-mode . aggressive-indent-mode))
+
+(defun setup-mathpix ()
+  (load-file (concat doom-private-dir "mathpix.el"))
+  (require 'mathpix)
+  (customize-set-variable 'mathpix-app-id "dan_girsh_gmail_com_5d68dc")
+  (customize-set-variable 'mathpix-app-key "600336b7b2b932549ce4")
+  (customize-set-variable 'mathpix-screenshot-method "scrot -s %s"))
+
+(setup-mathpix)
+
+(defun my/mathpix-screenshot-to-clipboard ()
+  (interactive)
+  (with-temp-buffer
+    (mathpix-screenshot)
+    (kill-new
+     (format "$$\n%s\n$$" (buffer-string)))))
 
 (use-package! multiple-cursors
               :init
@@ -572,13 +574,17 @@
   )
 
 ;; https://github.com/gcv/julia-snail
-(use-package julia-snail
-  :hook (julia-mode . julia-snail-mode))
+;; (use-package julia-snail
+;;   :hook (julia-mode . julia-snail-mode))
 
 ;; (use-package eglot-jl
 ;;   :hook (julia-mode . eglot)
 ;;   :config
 ;;   (eglot-jl-init))
+
+(defun jmd-block-to-jupyter-julia ()
+  (interactive)
+   (kmacro-lambda-form [?\C-  ?\C-e backspace ?\C-c ?\C-, ?j down ?\C-  ?\C-s ?` return left ?\C-w up ?\C-y down ?\C-k] 0 "%d"))
 
 (setq haskell-mode-stylish-haskell-path "brittany")
 
@@ -591,28 +597,32 @@
   (map!
    :map org-mode-map
    :localleader
-   (:desc "Org Hydra"       "j" #'jupyter-org-hydra/body))
+   (:desc "Jupyter Org Hydra"       "j" #'jupyter-org-hydra/body))
 
   (defun my/insert-julia-src-block ()
     (interactive)
     (jupyter-org-insert-src-block t current-prefix-arg))
 
+  ;; I locally modified jupyter-completion-at-point to check for this,
+  ;; since completions regularly crash the julia kernel for me :/
+  (setq my/jupyter-enable-completions nil)
+
   ;; Better than `M-c C-, j` or `M-c j =`
-  (key-chord-define-global "j;" #'my/insert-julia-src-block)
+  (key-chord-define-global "jq" #'my/insert-julia-src-block)
   (map!
    :map julia-mode-map
    :localleader
    (:prefix ("j" . "jupyter")
-     :desc "Run REPL"         "o" #'jupyter-run-repl
-     :desc "Eval function"    "f" #'jupyter-eval-defun
-     :desc "Eval buffer"      "b" #'jupyter-eval-buffer
-     :desc "Eval region"      "r" #'jupyter-eval-region
-     :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
-     :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
-     :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
-     :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
-     :desc "Eval string"      "w" #'jupyter-eval-string
-     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
+    :desc "Run REPL"         "o" #'jupyter-run-repl
+    :desc "Eval function"    "f" #'jupyter-eval-defun
+    :desc "Eval buffer"      "b" #'jupyter-eval-buffer
+    :desc "Eval region"      "r" #'jupyter-eval-region
+    :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
+    :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
+    :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
+    :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
+    :desc "Eval string"      "w" #'jupyter-eval-string
+    :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
 
 (after! ivy
   ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
@@ -708,6 +718,10 @@
   (prog-mode . real-auto-save-mode)
   (org-mode . real-auto-save-mode))
 
+(use-package! jest
+  :hook
+  (typescript-mode . jest-minor-mode))
+
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
 
@@ -773,6 +787,16 @@
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
+
+;; Alternative to calling save-buffers-kill-emacs, since
+;; a) Muscle memory sends me to "kill-emacs" via fj-q-q
+;; b) save-buffers-kill-emacs sometimes fails
+;; This way, we try to save things, but quit in any case.
+(defun my/save-ignore-errors ()
+  (ignore-errors
+    (save-some-buffers)))
+
+(add-hook 'kill-emacs-hook 'my/save-ignore-errors)
 
 
 ;; Help out Projectile for remote files via TRAMP

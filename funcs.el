@@ -135,7 +135,7 @@ text.
 
 (defun my/set-redshift (level)
   (interactive "nRedshift level: ")
-  (shell-command (format "redshift -O %s" level)))
+  (shell-command (format "redshift -P -O %s" level)))
 
 (defun my/night-mode ()
   (interactive)
@@ -326,3 +326,18 @@ context.  When called with an argument, unconditionally call
                                   ((org-in-item-p) #'org-insert-item)
                                   ((my/org-in-any-block-p) #'my/org-split-block)
                                   (t #'org-insert-heading)))))
+
+;; https://emacs.stackexchange.com/questions/50649/jumping-from-a-source-block-to-the-tangled-file
+(defun my/org-babel-tangle-jump ()
+  "Jump to tangle file for the source block at point."
+  (interactive)
+  (let (file org-babel-pre-tangle-hook org-babel-post-tangle-hook)
+    (cl-letf (((symbol-function 'write-region) (lambda (start end filename &rest _ignore)
+                         (setq file filename)))
+          ((symbol-function 'delete-file) #'ignore))
+      (org-babel-tangle '(4)))
+    (when file
+      (setq file (expand-file-name file))
+      (if (file-readable-p file)
+      (find-file file)
+    (error "Cannot open tangle file %S" file)))))

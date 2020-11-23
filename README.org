@@ -48,6 +48,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#keyboard][Keyboard]]
     - [[#toggle-touchpad][Toggle Touchpad]]
     - [[#display-brightness][Display Brightness]]
+    - [[#bluetooth][Bluetooth]]
   - [[#org][Org]]
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
     - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
@@ -65,7 +66,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#undo-tree][Undo Tree]]
   - [[#julia][Julia]]
     - [[#convert-julia-markdown-blocks-to-org-blocks][Convert Julia Markdown Blocks to Org Blocks]]
-    - [[#julia-insert-subscripts][Julia Insert Subscripts]]
   - [[#haskell][Haskell]]
   - [[#rust][Rust]]
     - [[#racer-setup][Racer Setup]]
@@ -110,75 +110,78 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-	     ;; :desktop
-	     ;; exwm
+       ;; :desktop
+       ;; exwm
 
        :personal
        neurosys
 
-	     :completion
-	     (company +childframe)
-	     (ivy +prescient +childframe)
+       :completion
+       (company)
+       (ivy +prescient +childframe)
 
-	     :ui
+       :ui
        deft
        doom
-	     hl-todo
-	     modeline
-	     nav-flash
-	     zen
+       hl-todo
+       modeline
+       nav-flash
+       zen
 
-	     :editor
+       :editor
        ;; Nice, but messes with org-journal
-	     lispy
-	     multiple-cursors
-	     word-wrap
+       lispy
+       multiple-cursors
+       word-wrap
 
-	     :emacs
-	     dired
-	     electric
-	     vc
+       :emacs
+       dired
+       electric
+       vc
 
-	     :term
+       :term
        vterm
 
-	     :checkers
-	     syntax
+       :checkers
+       syntax
 
-	     :tools
-	     direnv
-	     (eval +overlay)
+       :tools
+       direnv
+       (eval +overlay)
        docker
-	     lookup
-	     (magit +forge)
-	     pass
-	     pdf
+       lookup
+       (magit +forge)
+       pass
+       pdf
 
-	     :lang
-	     common-lisp
-	     data
-	     emacs-lisp
+       :lang
+       common-lisp
+       data
+       emacs-lisp
        javascript
-	     (haskell +dante)
-	     ;; (julia +lsp)
-	     ;; julia
+       (haskell +dante)
+       ;; (julia +lsp)
+       ;; julia
        (latex +latexmk +cdlatex)
-	     markdown
-	     nix
-	     (org
-	      +journal
-	      +hugo
-	      +jupyter
-	      )
-	     rust
-	     sh
+       markdown
+       nix
+       (org
+	+journal
+	+hugo
+	+jupyter
+        +roam
+	)
+       rust
+       sh
 
-	     :app
-	     calendar
+       :app
+       calendar
 
-	     :config
-	     literate
-	     (default +bindings +smartparens))
+       :config
+       literate
+       (default +bindings)
+       ;; (default +bindings +smartparens)
+       )
 #+end_src
 
 * Package Configuration
@@ -235,7 +238,7 @@ clients, file templates and snippets.
 ** Visual Settings
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size 26)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -254,13 +257,13 @@ clients, file templates and snippets.
 *** Theme
 
 #+begin_src emacs-lisp
-
 (use-package! doom-themes
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-solarized-light t)
+  (load-theme 'leuven t)
+  ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one-light t)
 
   ;; Enable flashing mode-line on errors
@@ -275,6 +278,11 @@ clients, file templates and snippets.
 ;; (use-package! poet-theme
 ;;   :config
 ;;   (load-theme 'poet))
+
+;; (use-package almost-mono-themes
+;;   :config
+;;   ;; (load-theme 'almost-mono-black t)
+;;   (load-theme 'almost-mono-white t))
 #+end_src
 
 ** Key Chord Config
@@ -357,22 +365,23 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
 #+begin_src emacs-lisp
 (add-to-dk-keymap
- '(("c" . my/open-literate-private-config-file)
-   ("v" . neurosys/open-config-file)
-   ("r" . my/edit-resume)
-   ("k" . doom/kill-this-buffer-in-all-windows)
-   ("n" . narrow-or-widen-dwim)
-   ("d" . dired-jump)
-   ("b" . my/set-brightness)
+ '(("." . pop-global-mark)
+   ("/" . org-recoll-search)
    ("<SPC>" . rgrep)
+   ("b" . my/set-brightness)
+   ("c" . my/open-literate-private-config-file)
+   ("d" . dired-jump)
+   ("k" . doom/kill-this-buffer-in-all-windows)
+   ("m" . my/mathpix-screenshot-to-clipboard)
+   ("n" . narrow-or-widen-dwim)
    ("o" . ibuffer)
    ("p" . my/publish-dangirsh.org)
+   ("r" . my/edit-resume)
    ("s" . save-buffer)
    ("t" . +vterm/here)
+   ("v" . neurosys/open-config-file)
    ("w" . google-this-noconfirm)
-   ("x" . sp-splice-sexp)
-   ("/" . org-recoll-search)
-   ("." . pop-global-mark)))
+   ("x" . sp-splice-sexp)))
 #+end_src
 
 #+RESULTS:
@@ -414,6 +423,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 (key-chord-define-global "xf" 'find-file)
 
 (key-chord-define-global "l;" 'repeat)
+
+
 #+end_src
 
 **** End
@@ -445,9 +456,6 @@ quick way to disable/enable it.
 (defun toggle-touchpad ()
   (interactive)
   (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
-
-(add-to-dk-keymap
-   '(("m" . toggle-touchpad)))
 #+end_src
 
 *** Display Brightness
@@ -471,6 +479,21 @@ Set brightness by writing directly to system brightness file.
 **** TODO Switch to interfacing with a brightness manager.
 
 Had issues the first time, but that was years ago.
+
+*** Bluetooth
+
+#+begin_src emacs-lisp
+(defun my/connect-to-bose-700s ()
+  (interactive)
+  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63"))
+
+(defun my/disconnect-to-bose-700s ()
+  (interactive)
+  (shell-command "bluetoothctl -- disconnect 4C:87:5D:27:B8:63"))
+#+end_src
+
+#+RESULTS:
+: my/connect-to-bose-700s
 
 ** Org
 
@@ -507,7 +530,12 @@ I use org as a primary interface. It currently manages:
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/"))
+        org-preview-latex-image-directory "/tmp/ltximg/")
+  (setq org-file-apps '((auto-mode . emacs)
+                        (directory . emacs)
+                        ("\\.mm\\'" . default)
+                        ("\\.x?html?\\'" . default)
+                        ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
 
 (after! org
@@ -535,6 +563,7 @@ I use org as a primary interface. It currently manages:
   (setq org-confirm-babel-evaluate nil
         org-use-property-inheritance t
         org-export-with-sub-superscripts nil
+        org-export-use-babel nil
         org-startup-indented t
         org-pretty-entities nil
         org-use-speed-commands t
@@ -605,7 +634,7 @@ I use org as a primary interface. It currently manages:
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -715,28 +744,22 @@ I use org as a primary interface. It currently manages:
 aka my exocortex
 
 #+begin_src emacs-lisp
-(use-package! org-roam
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook (org-mode . org-roam-mode)
-  :hook (org-journal-mode . org-roam-mode)
-  :custom-face
-  (org-roam-link ((t (:inherit org-link))))
-  :init
-  (require 'org-roam-protocol)
+(after! org-roam
+  (add-hook 'org-journal-mode 'org-roam-mode)
+  ;; Globally accessible commands
   (map! :leader
         :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
-        :desc "org-roam-capture" "c" #'org-roam-capture)
-  (key-chord-define-global "[[" #'org-roam-insert)
+        :desc "org-roam-find-file" "f" #'org-roam-find-file)
+  (set-company-backend! 'org-roam-mode 'company-capf)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
-        org-roam-graph-exclude-matcher "private"))
+        +org-roam-open-buffer-on-find-file nil
+        org-roam-graph-exclude-matcher '("todo")))
 #+end_src
 
-**** Deft: Note search
+#+RESULTS:
+| todo |
+
+**** COMMENT Deft: Note search
 
 #+begin_src emacs-lisp
 (setq deft-directory org-roam-directory)
@@ -752,19 +775,14 @@ aka my exocortex
   (setq org-roam-server-host "127.0.0.1"
         org-roam-server-port 8080
         org-roam-server-authenticate nil
-        org-roam-server-label-truncate t
-        org-roam-server-label-truncate-length 60
-        org-roam-server-label-wrap-length 20))
-#+end_src
-
-**** company-org-roam: Completions
-
-#+begin_src emacs-lisp
-(use-package! company-org-roam
-  :when (featurep! :completion company)
-  :after org-roam
-  :config
-  (set-company-backend! 'org-roam-mode 'company-org-roam))
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
 #+end_src
 
 **** org-roam-bibtex: Manage PDFs, notes, & citations.
@@ -799,7 +817,10 @@ aka my exocortex
 
 #+end_src
 
-**** Capture Templates
+#+RESULTS:
+: orb-note-actions
+
+**** COMMENT Capture Templates
 ***** Fix Default
 
 This is used when new files in org-roam are created. The default doesn't have =:immediate-finish= set, which makes an annoying empty file buffer pop-up any time a new entity is created in org-roam. Setting it here smooths out the experience.
@@ -816,7 +837,7 @@ Ref: https://github.com/jethrokuan/org-roam/issues/361#issuecomment-604955973
          :immediate-finish t)))
 #+end_src
 
-***** TODOs + org-agenda integration
+***** COMMENT TODOs + org-agenda integration
 
 In real Roam, TODO tags can be conveniently interspersed in any file. Then, filtering backlinks on the TODO page is the agenda view.
 
@@ -909,25 +930,27 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
   :hook
   ((emacs-lisp-mode common-lisp-mode lisp-mode) . lispy-mode)
   :bind (:map lispy-mode-map
-          ("'" . nil)             ; leave tick behaviour alone
-          ("M-n" . nil)
-          ("C-M-m" . nil)))
+         ("'" . nil)             ; leave tick behaviour alone
+         ("M-n" . nil)
+         ("C-M-m" . nil)))
 
-(use-package! smartparens
-  :init
-  (map! :map smartparens-mode-map
-        "C-M-f" #'sp-forward-sexp
-        "C-M-b" #'sp-backward-sexp
-        "C-M-u" #'sp-backward-up-sexp
-        "C-M-d" #'sp-down-sexp
-        "C-M-p" #'sp-backward-down-sexp
-        "C-M-n" #'sp-up-sexp
-        "C-M-s" #'sp-splice-sexp
-        "C-)" #'sp-forward-slurp-sexp
-        "C-}" #'sp-forward-barf-sexp
-        "C-(" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-slurp-sexp
-        "C-M-)" #'sp-backward-barf-sexp))
+;; (use-package! smartparens
+;;   :init
+;;   (map! :map smartparens-mode-map
+;;         "C-M-f" #'sp-forward-sexp
+;;         "C-M-b" #'sp-backward-sexp
+;;         "C-M-u" #'sp-backward-up-sexp
+;;         "C-M-d" #'sp-down-sexp
+;;         "C-M-p" #'sp-backward-down-sexp
+;;         "C-M-n" #'sp-up-sexp
+;;         "C-M-s" #'sp-splice-sexp
+;;         ;; conflicts with mc
+;;         ;; "C-)" #'sp-forward-slurp-sexp
+;;         "C-}" #'sp-forward-barf-sexp
+;;         ;; conflicts with mc
+;;         ;; "C-(" #'sp-backward-slurp-sexp
+;;         "C-M-)" #'sp-backward-slurp-sexp
+;;         "C-M-)" #'sp-backward-barf-sexp))
 
 (use-package! wrap-region
   :hook
@@ -956,12 +979,11 @@ Loading manually from [[file:mathpix.el]] for now.
 
 #+begin_src emacs-lisp
 (defun setup-mathpix ()
-  (load-file "mathpix.el")
+  (load-file (concat doom-private-dir "mathpix.el"))
   (require 'mathpix)
   (customize-set-variable 'mathpix-app-id "dan_girsh_gmail_com_5d68dc")
   (customize-set-variable 'mathpix-app-key "600336b7b2b932549ce4")
-  (customize-set-variable 'mathpix-screenshot-method "scrot -s %s")
-  (map! "C-x m" 'mathpix-screenshot))
+  (customize-set-variable 'mathpix-screenshot-method "scrot -s %s"))
 #+end_src
 
 #+RESULTS:
@@ -971,7 +993,17 @@ Loading manually from [[file:mathpix.el]] for now.
 (setup-mathpix)
 #+end_src
 
+#+begin_src emacs-lisp
+(defun my/mathpix-screenshot-to-clipboard ()
+  (interactive)
+  (with-temp-buffer
+    (mathpix-screenshot)
+    (kill-new
+     (format "$$\n%s\n$$" (buffer-string)))))
+#+end_src
+
 #+RESULTS:
+: my/mathpix-screenshot-to-clipboard
 
 **** COMMENT Use-package form
 #+begin_src emacs-lisp
@@ -1073,6 +1105,25 @@ Julia myself here.
 ;;   (eglot-jl-init))
 #+END_SRC
 
+*** Convert Julia Markdown Blocks to Org Blocks
+
+Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
+
+#+begin_src emacs-lisp
+(defun jmd-block-to-jupyter-julia ()
+  (interactive)
+   (kmacro-lambda-form [?\C-  ?\C-e backspace ?\C-c ?\C-, ?j down ?\C-  ?\C-s ?` return left ?\C-w up ?\C-y down ?\C-k] 0 "%d"))
+#+end_src
+
+#+RESULTS:
+: jmd-block-to-jupyter-julia
+
+*** COMMENT Julia Formatter
+
+#+begin_src emacs-lisp
+(use-package julia-formatter
+    :hook (julia-mode . (lambda() (julia-formatter-server-start))))
+#+end_src
 
 ** Haskell
 
@@ -1125,22 +1176,26 @@ cargo install cargo-script
     (interactive)
     (jupyter-org-insert-src-block t current-prefix-arg))
 
+  ;; I locally modified jupyter-completion-at-point to check for this,
+  ;; since completions regularly crash the julia kernel for me :/
+  (setq my/jupyter-enable-completions nil)
+
   ;; Better than `M-c C-, j` or `M-c j =`
   (key-chord-define-global "jq" #'my/insert-julia-src-block)
   (map!
    :map julia-mode-map
    :localleader
    (:prefix ("j" . "jupyter")
-     :desc "Run REPL"         "o" #'jupyter-run-repl
-     :desc "Eval function"    "f" #'jupyter-eval-defun
-     :desc "Eval buffer"      "b" #'jupyter-eval-buffer
-     :desc "Eval region"      "r" #'jupyter-eval-region
-     :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
-     :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
-     :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
-     :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
-     :desc "Eval string"      "w" #'jupyter-eval-string
-     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
+    :desc "Run REPL"         "o" #'jupyter-run-repl
+    :desc "Eval function"    "f" #'jupyter-eval-defun
+    :desc "Eval buffer"      "b" #'jupyter-eval-buffer
+    :desc "Eval region"      "r" #'jupyter-eval-region
+    :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
+    :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
+    :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
+    :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
+    :desc "Eval string"      "w" #'jupyter-eval-string
+    :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
 #+END_SRC
 
 ** Ivy
@@ -1267,6 +1322,17 @@ Stunningly useful.
   (map! :map pdf-isearch-minor-mode-map
         "C-s" 'isearch-forward-regexp))
 #+END_SRC
+
+*** COMMENT org-noter-pdftools
+
+#+begin_src emacs-lisp
+(use-package! org-noter-pdftools
+  :after org-noter
+  :config
+  (with-eval-after-load 'pdf-annot
+    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+#+end_src
+
 
 ** Lauching External Programs
 
@@ -1401,6 +1467,16 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
 ;; No confirm on exit
 (setq confirm-kill-emacs nil)
+
+;; Alternative to calling save-buffers-kill-emacs, since
+;; a) Muscle memory sends me to "kill-emacs" via fj-q-q
+;; b) save-buffers-kill-emacs sometimes fails
+;; This way, we try to save things, but quit in any case.
+(defun my/save-ignore-errors ()
+  (ignore-errors
+    (save-some-buffers)))
+
+(add-hook 'kill-emacs-hook 'my/save-ignore-errors)
 
 
 ;; Help out Projectile for remote files via TRAMP
@@ -1772,6 +1848,21 @@ context.  When called with an argument, unconditionally call
                                   ((org-in-item-p) #'org-insert-item)
                                   ((my/org-in-any-block-p) #'my/org-split-block)
                                   (t #'org-insert-heading)))))
+
+;; https://emacs.stackexchange.com/questions/50649/jumping-from-a-source-block-to-the-tangled-file
+(defun my/org-babel-tangle-jump ()
+  "Jump to tangle file for the source block at point."
+  (interactive)
+  (let (file org-babel-pre-tangle-hook org-babel-post-tangle-hook)
+    (cl-letf (((symbol-function 'write-region) (lambda (start end filename &rest _ignore)
+                         (setq file filename)))
+          ((symbol-function 'delete-file) #'ignore))
+      (org-babel-tangle '(4)))
+    (when file
+      (setq file (expand-file-name file))
+      (if (file-readable-p file)
+      (find-file file)
+    (error "Cannot open tangle file %S" file)))))
 #+end_src
 
 * Neurosys Module
@@ -1845,8 +1936,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
-(package! company-org-roam :recipe (:host github :repo "jethrokuan/company-org-roam"))
-(package! company-posframe)
+;; (package! company-posframe)
 (package! deadgrep)
 (package! dired-narrow)
 (package! dmenu)
@@ -1871,6 +1961,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! toc-org)
 (package! undo-tree)
 (package! wrap-region)
+(package! almost-mono-themes)
+
 
 ;; Julia
 (package! julia-mode :pin "1c122f1dff")
@@ -1880,6 +1972,9 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;; https://github.com/tpapp/julia-repl/pull/84
 (package! julia-repl
   :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+
+(package! julia-formatter
+  :recipe (:host github :repo "ki-chi/julia-formatter"))
 
 ;; (package! eglot-jl)
 #+end_src

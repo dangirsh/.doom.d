@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 26)
+(setq doom-font (font-spec :family "Hack" :size 18)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -34,7 +34,9 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'leuven t)
+  ;; (load-theme 'doom-acario-light t)
+  ;; (load-theme 'leuven t)
+  (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one-light t)
 
@@ -75,82 +77,81 @@
   (interactive)
   (simulate-seq "\M-c"))
 
-  (after! key-chord
+(after! key-chord
 
-    (key-chord-define-global "fj" 'send-doom-leader)
-    (key-chord-define-global "gh" 'send-doom-local-leader)
+  (key-chord-define-global "fj" 'send-doom-leader)
+  (key-chord-define-global "gh" 'send-doom-local-leader)
 
-    (setq dk-keymap (make-sparse-keymap))
-    (setq sl-keymap (make-sparse-keymap))
+  (setq dk-keymap (make-sparse-keymap))
+  (setq sl-keymap (make-sparse-keymap))
 
-    (key-chord-define-global "dk" dk-keymap)
-    (key-chord-define-global "sl" sl-keymap)
+  (key-chord-define-global "dk" dk-keymap)
+  (key-chord-define-global "sl" sl-keymap)
 
-    (defun add-to-keymap (keymap bindings)
-      (dolist (binding bindings)
-	      (define-key keymap (kbd (car binding)) (cdr binding))))
+  (defun add-to-keymap (keymap bindings)
+    (dolist (binding bindings)
+      (define-key keymap (kbd (car binding)) (cdr binding))))
 
-    (defun add-to-dk-keymap (bindings)
-      (add-to-keymap dk-keymap bindings))
+  (defun add-to-dk-keymap (bindings)
+    (add-to-keymap dk-keymap bindings))
 
-    (defun add-to-sl-keymap (bindings)
-      (add-to-keymap sl-keymap bindings))
+  (defun add-to-sl-keymap (bindings)
+    (add-to-keymap sl-keymap bindings))
 
-(add-to-dk-keymap
- '(("." . pop-global-mark)
-   ("/" . org-recoll-search)
-   ("<SPC>" . rgrep)
-   ("b" . my/set-brightness)
-   ("c" . my/open-literate-private-config-file)
-   ("d" . dired-jump)
-   ("k" . doom/kill-this-buffer-in-all-windows)
-   ("m" . my/mathpix-screenshot-to-clipboard)
-   ("n" . narrow-or-widen-dwim)
-   ("o" . ibuffer)
-   ("p" . my/publish-dangirsh.org)
-   ("r" . my/edit-resume)
-   ("s" . save-buffer)
-   ("t" . +vterm/here)
-   ("v" . neurosys/open-config-file)
-   ("w" . google-this-noconfirm)
-   ("x" . sp-splice-sexp)))
+  (add-to-dk-keymap
+   '(("." . pop-global-mark)
+     ("/" . org-recoll-search)
+     ("<SPC>" . rgrep)
+     ("b" . my/set-brightness)
+     ("c" . my/open-literate-private-config-file)
+     ("d" . dired-jump)
+     ("k" . doom/kill-this-buffer-in-all-windows)
+     ("m" . my/mathpix-screenshot-to-clipboard)
+     ("n" . narrow-or-widen-dwim)
+     ("o" . ibuffer)
+     ("p" . my/publish-dangirsh.org)
+     ("r" . my/edit-resume)
+     ("s" . save-buffer)
+     ("t" . +vterm/here)
+     ("T" . google-translate-at-point)
+     ("v" . neurosys/open-config-file)
+     ("w" . google-this-noconfirm)
+     ("x" . sp-splice-sexp)))
 
-(key-chord-define-global ",." 'end-of-buffer)
-(key-chord-define-global "xz" 'beginning-of-buffer)  ; ergodox
-(key-chord-define-global "xc" 'beginning-of-buffer)
+  (key-chord-define-global ",." 'end-of-buffer)
+  ;; FIXME: accidentally triggered too often
+  (key-chord-define-global "zx" 'beginning-of-buffer)
 
-(key-chord-define-global "qw" 'delete-window)
-(key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global "qw" 'delete-window)
+  (key-chord-define-global "qp" 'delete-other-windows)
 
-(key-chord-define-global "fk" 'other-window)
-(key-chord-define-global "jd" 'rev-other-window)
+  (key-chord-define-global "fk" 'other-window)
+  (key-chord-define-global "jd" 'rev-other-window)
 
-(key-chord-define-global "JJ" 'previous-buffer)
-(key-chord-define-global "KK" 'next-buffer)
+  (key-chord-define-global "JJ" 'previous-buffer)
+  (key-chord-define-global "KK" 'next-buffer)
 
 
-(key-chord-define-global "hh" 'helpful-at-point)
-(key-chord-define-global "hk" 'helpful-key)
-(key-chord-define-global "hv" 'helpful-variable)
+  (key-chord-define-global "hh" 'helpful-at-point)
+  (key-chord-define-global "hk" 'helpful-key)
+  (key-chord-define-global "hv" 'helpful-variable)
 
-;; no bueno: e.g. "pathfinder", "highfidelity"
-;; (key-chord-define-global "hf" 'helpful-function)
+  ;; no bueno: e.g. "pathfinder", "highfidelity"
+  ;; (key-chord-define-global "hf" 'helpful-function)
 
-(key-chord-define-global "vn" 'split-window-vertically-and-switch)
-(key-chord-define-global "vm" 'split-window-vertically-and-switch)  ; ergodox
-(key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+  (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+  (key-chord-define-global "vm" 'split-window-vertically-and-switch) ; ergodox
+  (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
 
-(key-chord-define-global "jm" 'my/duplicate-line-or-region)
-(key-chord-define-global "fv" 'comment-line)
+  (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+  (key-chord-define-global "fv" 'comment-line)
 
-(key-chord-define-global "kl" 'er/expand-region)
+  (key-chord-define-global "kl" 'er/expand-region)
 
-(key-chord-define-global "xx" 'execute-extended-command)
-(key-chord-define-global "xf" 'find-file)
+  (key-chord-define-global "xx" 'execute-extended-command)
+  (key-chord-define-global "xf" 'find-file)
 
-(key-chord-define-global "l;" 'repeat)
-
-)
+  (key-chord-define-global "l;" 'repeat))
 
 (defun fix-keyboard ()
   (interactive)
@@ -209,11 +210,9 @@
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
   (require 'ob-async)
-  ;; (add-hook 'ob-async-pre-execute-src-block-hook
-  ;;           '(lambda ()
-  ;;              (setq inferior-julia-program-name "/usr/local/bin/julia")
-  ;;              ;; (setq inferior-julia-program-name "/home/dan/cms-stack/home/julia")
-  ;;              ))
+
+  ;; Clear Doom's default templates
+  (setq org-capture-templates '())
 
   (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "listen.org"))
                                         "* TODO %?\n%i"))
@@ -276,8 +275,7 @@
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "In-Progress(p)" "|" "DONE(d)")
-          (sequence "WAITING(w)" "BLOCKED(b)" "HOLD(h)" "|" "CANCELLED(c)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "|" "DONE(d)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -287,7 +285,14 @@
 
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors)
 
-  (advice-add 'org-meta-return :override #'my/org-meta-return))
+  (advice-add 'org-meta-return :override #'my/org-meta-return)
+
+  (setq org-agenda-files '()
+        org-agenda-start-day "+0d" ; start today
+        org-agenda-show-current-time-in-grid t
+        org-agenda-timegrid-use-ampm t
+        org-agenda-use-time-grid nil  ; Toggle it with 'G' in agenda view
+        org-agenda-span 3))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -298,7 +303,7 @@
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
+  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -332,7 +337,11 @@
         org-ref-bibliography-notes "~/Sync/pdf_notes.org"
         org-ref-pdf-directory "~/Sync/pdf/"
         org-ref-notes-function #'org-ref-notes-function-one-file)
+  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
 
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted")))
+  
   (defun get-pdf-filename (key)
     (let ((results (bibtex-completion-find-pdf key)))
       (if (equal 0 (length results))
@@ -396,7 +405,8 @@
   (set-company-backend! 'org-roam-mode 'company-capf)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
-        org-roam-graph-exclude-matcher '("todo")))
+        org-id-link-to-org-use-id t
+        org-roam-graph-exclude-matcher '("todo" "private")))
 
 (use-package! org-roam-server
   :config
@@ -421,7 +431,7 @@
   (setq bibtex-completion-library-path "~/Sync/pdf/")
   (setq orb-preformat-keywords
         '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
-
+  (setq orb-note-actions-interface 'ivy)
   (setq orb-templates
         '(("r" "ref" plain (function org-roam-capture--get-point)
            ""
@@ -439,6 +449,18 @@
 :NOTER_PAGE:
 :END:"))))
 
+(unpin! org-roam company-org-roam)
+
+(after! org-roam
+  (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
+  (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
+  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
+  (add-to-list 'org-agenda-files my/org-roam-todo-file)
+  (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
+                                        "* TODO %?"))
+  (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
+                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+
 (use-package! org-download
   :config
   ;; take an image that is already on the clipboard
@@ -446,13 +468,42 @@
 
 (use-package! org-cliplink)
 
+(use-package! org-cliplink)
+
 (use-package! org-drill
   :after org
   :config
   (add-to-list 'org-capture-templates
-               `("d" "drill Item" entry
+               `("d" "Drill" entry
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
+
+(use-package! org-super-agenda
+  :after org-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:name "High Priority"
+           :priority "A")
+          (:name "Today"
+           ;; :time-grid t
+           :scheduled today
+           :deadline today)
+          (:auto-todo t)))
+  (org-super-agenda-mode))
+
+(use-package! org-gcal
+  :config
+  (setq my/gcal-file "~/Sync/gcal.org"
+        wc/gcal-file "~/Work/Worldcoin/gcal.org")
+  (setq org-gcal-client-id "467647316293-kbukc1nkocq7ojvvgthi37u0gck3400o.apps.googleusercontent.com"
+        org-gcal-client-secret (password-store-get "org-gcal-client-secret")
+        org-gcal-fetch-file-alist `(("dan@worldcoin.org" .  ,wc/gcal-file)
+                                    ("dan.girsh@gmail.com" .  ,my/gcal-file)))
+
+  (add-to-list 'org-agenda-files wc/gcal-file)
+  (add-to-list 'org-agenda-files my/gcal-file)
+
+  (run-with-idle-timer 30 nil #'org-gcal-fetch))
 
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
@@ -590,6 +641,8 @@
 
 (use-package! ob-rust)
 
+(use-package! ob-rust)
+
 (use-package! jupyter
   :init
   (setq jupyter-eval-use-overlays t)
@@ -708,6 +761,8 @@
 
 (use-package! dmenu)
 
+(use-package! dmenu)
+
 (use-package! ace-window
   :config
   (map! "C-M-SPC" #'ace-window)
@@ -722,8 +777,18 @@
   :hook
   (typescript-mode . jest-minor-mode))
 
+(use-package google-translate
+  :custom
+  (google-translate-backend-method 'curl)
+  :config
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  (setq google-translate-output-destination 'kill-ring))
+
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
+
+(load-file "/home/dan/Work/Worldcoin/worldcoin-setup.el")
+(require 'worldcoin-setup)
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

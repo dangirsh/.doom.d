@@ -24,6 +24,7 @@
        lispy
        multiple-cursors
        word-wrap
+       format
 
        :emacs
        dired
@@ -62,8 +63,10 @@
 	+jupyter
         +roam
 	)
+       python
        rust
        sh
+
 
        :app
        calendar

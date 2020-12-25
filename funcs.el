@@ -118,6 +118,8 @@ text.
       (org-ref-save-all-bibtex-buffers))
     (let* ((parsed-entry (save-excursion
                            (with-temp-buffer
+                             ;; In case of dir-local path to references.bib
+                             (hack-dir-local-variables-non-file-buffer)
                              (insert-file-contents (car org-ref-default-bibliography))
                              (bibtex-set-dialect (parsebib-find-bibtex-dialect) t)
                              (search-forward (format "{%s}" arxiv-number))
@@ -247,6 +249,14 @@ narrowed."
     (copy-file (concat neurosys/base-dir "README.org") neurosys-org-file t)
     (copy-file (concat doom-private-dir "config.org") doom-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
+
+(defun my/org-roam-get-title (path)
+  (save-window-excursion
+    ;; A simple find-file didn't work when the original was narrowed
+    (with-temp-buffer
+      (insert-file-contents path)
+      (org-mode)
+      (car (org-roam--extract-titles-title)))))
 
 (defun my/edit-resume ()
   (interactive)

@@ -275,7 +275,7 @@
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "|" "DONE(d)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "|" "DONE(d)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -286,13 +286,17 @@
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors)
 
   (advice-add 'org-meta-return :override #'my/org-meta-return)
+  (setq org-tags-match-list-sublevels 'indented)
+  (setq org-agenda-files '())
+  (setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                   (todo . " %i %b")
+                                   (tags . " %i %-12:c %b")
+                                   (search . " %i %-12:c %b")))
+  (setq org-agenda-category-icon-alist
+        `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
+          ("Incoming" ,(list (all-the-icons-material "smartphone" :height 1.2)) nil nil :ascent center)))
 
-  (setq org-agenda-files '()
-        org-agenda-start-day "+0d" ; start today
-        org-agenda-show-current-time-in-grid t
-        org-agenda-timegrid-use-ampm t
-        org-agenda-use-time-grid nil  ; Toggle it with 'G' in agenda view
-        org-agenda-span 3))
+  )
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -478,11 +482,20 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
+(setq org-agenda-start-day "+0d"      ; start today
+      org-agenda-show-current-time-in-grid t
+      org-agenda-timegrid-use-ampm t
+      org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
+      org-agenda-span 3)
+
+(add-to-list 'org-agenda-files "~/Sync/Incoming.org")
+
 (use-package! org-super-agenda
   :after org-agenda
   :config
   (setq org-super-agenda-groups
-        '((:name "High Priority"
+        '((:discard (:todo "SOMEDAY"))
+          (:name "High Priority"
            :priority "A")
           (:name "Today"
            ;; :time-grid t
@@ -490,20 +503,6 @@
            :deadline today)
           (:auto-todo t)))
   (org-super-agenda-mode))
-
-(use-package! org-gcal
-  :config
-  (setq my/gcal-file "~/Sync/gcal.org"
-        wc/gcal-file "~/Work/Worldcoin/gcal.org")
-  (setq org-gcal-client-id "467647316293-kbukc1nkocq7ojvvgthi37u0gck3400o.apps.googleusercontent.com"
-        org-gcal-client-secret (password-store-get "org-gcal-client-secret")
-        org-gcal-fetch-file-alist `(("dan@worldcoin.org" .  ,wc/gcal-file)
-                                    ("dan.girsh@gmail.com" .  ,my/gcal-file)))
-
-  (add-to-list 'org-agenda-files wc/gcal-file)
-  (add-to-list 'org-agenda-files my/gcal-file)
-
-  (run-with-idle-timer 30 nil #'org-gcal-fetch))
 
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))

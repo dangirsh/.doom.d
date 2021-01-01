@@ -6,6 +6,7 @@
 (package! deadgrep)
 (package! dired-narrow)
 (package! dmenu)
+(package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
 (package! google-this)
 (package! google-translate)
 (package! helpful)
@@ -23,6 +24,7 @@
 (package! org-roam-bibtex)
 (package! org-roam-server)
 (package! org-super-agenda)
+
 (package! phi-search)
 (package! ob-rust)
 (package! real-auto-save)

@@ -58,8 +58,8 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
     - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
-    - [[#org-super-agenda-better-org-agenda][org-super-agenda: Better Org Agenda]]
-    - [[#org-gcal-google-calendar-integration][org-gcal: Google Calendar Integration]]
+    - [[#org-agenda][Org Agenda]]
+    - [[#org-sidebar][org-sidebar]]
   - [[#tramp][TRAMP]]
   - [[#effective-editing][Effective Editing]]
     - [[#structure-editing][Structure Editing]]
@@ -593,7 +593,7 @@ I use org as a primary interface. It currently manages:
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "|" "DONE(d)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "|" "DONE(d)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -604,13 +604,17 @@ I use org as a primary interface. It currently manages:
   (add-hook 'org-babel-after-execute-hook #'my/display-ansi-colors)
 
   (advice-add 'org-meta-return :override #'my/org-meta-return)
+  (setq org-tags-match-list-sublevels 'indented)
+  (setq org-agenda-files '())
+  (setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                   (todo . " %i %b")
+                                   (tags . " %i %-12:c %b")
+                                   (search . " %i %-12:c %b")))
+  (setq org-agenda-category-icon-alist
+        `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
+          ("Incoming" ,(list (all-the-icons-material "smartphone" :height 1.2)) nil nil :ascent center)))
 
-  (setq org-agenda-files '()
-        org-agenda-start-day "+0d" ; start today
-        org-agenda-show-current-time-in-grid t
-        org-agenda-timegrid-use-ampm t
-        org-agenda-use-time-grid nil  ; Toggle it with 'G' in agenda view
-        org-agenda-span 3))
+  )
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -868,7 +872,6 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 (use-package! org-cliplink)
 #+end_src
 
-
 *** org-drill: Spaced Repetition
 :PROPERTIES:
 :ID:       cc74feb5-1381-4314-8eef-9faf52294d14
@@ -886,14 +889,27 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 #+end_src
 
-*** org-super-agenda: Better Org Agenda
+*** Org Agenda
+
+#+begin_src emacs-lisp
+(setq org-agenda-start-day "+0d"      ; start today
+      org-agenda-show-current-time-in-grid t
+      org-agenda-timegrid-use-ampm t
+      org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
+      org-agenda-span 3)
+
+(add-to-list 'org-agenda-files "~/Sync/Incoming.org")
+#+end_src
+
+**** org-super-agenda: Better Org Agenda
 
 #+begin_src emacs-lisp
 (use-package! org-super-agenda
   :after org-agenda
   :config
   (setq org-super-agenda-groups
-        '((:name "High Priority"
+        '((:discard (:todo "SOMEDAY"))
+          (:name "High Priority"
            :priority "A")
           (:name "Today"
            ;; :time-grid t
@@ -903,7 +919,15 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
   (org-super-agenda-mode))
 #+end_src
 
-*** org-gcal: Google Calendar Integration
+**** COMMENT elegant-agenda-mode: Prettier Org Agenda
+
+#+begin_src emacs-lisp
+(use-package! elegant-agenda-mode
+  :hook (org-agenda-mode . elegant-agenda-mode))
+#+end_src
+
+*** TODO org-sidebar
+*** COMMENT org-gcal: Google Calendar Integration
 
 #+begin_src emacs-lisp
 (use-package! org-gcal
@@ -1347,7 +1371,6 @@ Stunningly useful.
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 #+end_src
 
-
 ** Lauching External Programs
 
 #+BEGIN_SRC emacs-lisp
@@ -1387,7 +1410,6 @@ Including the Doom =javascript= module does most of the work...
   (typescript-mode . jest-minor-mode))
 #+end_src
 
-
 ** Google Translate
 
 #+begin_src emacs-lisp
@@ -1399,7 +1421,6 @@ Including the Doom =javascript= module does most of the work...
   (setq google-translate-output-destination 'kill-ring))
 #+end_src
 
-
 ** COMMENT Poly Markdown
 
 Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#Weave.jl-Scientific-Reports-Using-Julia-1][Weave.jl]])
@@ -1407,7 +1428,6 @@ Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#
 #+begin_src emacs-lisp
 (use-package! poly-markdown)
 #+end_src
-
 
 ** Performance Tweaks
 
@@ -1986,6 +2006,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! deadgrep)
 (package! dired-narrow)
 (package! dmenu)
+(package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
 (package! google-this)
 (package! google-translate)
 (package! helpful)
@@ -2003,6 +2024,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! org-roam-bibtex)
 (package! org-roam-server)
 (package! org-super-agenda)
+
 (package! phi-search)
 (package! ob-rust)
 (package! real-auto-save)

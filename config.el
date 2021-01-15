@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 18)
+(setq doom-font (font-spec :family "Hack" :size 22)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -36,9 +36,10 @@
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
   ;; (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
-  (load-theme 'doom-dark+ t)
+  ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one-light t)
+  (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -57,6 +58,21 @@
 ;;   :config
 ;;   ;; (load-theme 'almost-mono-black t)
 ;;   (load-theme 'almost-mono-white t))
+
+
+;; (setq doom-theme 'nil)
+;; (require 'disp-table)
+;; (require 'nano-faces)
+;; (require 'nano-colors)
+;; (require 'nano-defaults)
+;; (require 'nano-theme)
+;; (require 'nano-theme-dark)
+;; (require 'nano-help)
+;; (require 'nano-modeline)
+;; (require 'nano-layout)
+;; (nano-faces)
+;; (nano-theme)
+;; (require 'nano-defaults)
 
 (use-package! key-chord
   :config
@@ -275,7 +291,7 @@
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "|" "DONE(d)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -287,6 +303,9 @@
 
   (advice-add 'org-meta-return :override #'my/org-meta-return)
   (setq org-tags-match-list-sublevels 'indented)
+
+  (setq org-image-actual-width nil)
+
   (setq org-agenda-files '())
   (setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
                                    (todo . " %i %b")
@@ -294,8 +313,7 @@
                                    (search . " %i %-12:c %b")))
   (setq org-agenda-category-icon-alist
         `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-          ("Incoming" ,(list (all-the-icons-material "smartphone" :height 1.2)) nil nil :ascent center)))
-
+          ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center)))
   )
 
 (use-package! toc-org
@@ -456,8 +474,7 @@
 (unpin! org-roam company-org-roam)
 
 (after! org-roam
-  (setq my/org-roam-files (directory-files org-roam-directory  t ".*.org"))
-  (setq my/org-roam-todo-file (concat org-roam-directory "todo.org"))
+  (setq my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
   (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
@@ -488,21 +505,37 @@
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
       org-agenda-span 3)
 
-(add-to-list 'org-agenda-files "~/Sync/Incoming.org")
+(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
+(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
 
 (use-package! org-super-agenda
   :after org-agenda
   :config
   (setq org-super-agenda-groups
         '((:discard (:todo "SOMEDAY"))
+          (:discard (:todo "QUESTION"))
+          (:name "WIP"
+           :todo "WIP")
           (:name "High Priority"
            :priority "A")
+          (:name "Med Priority"
+           :priority "B")
+          (:name "Low Priority"
+           :priority "C")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
            :deadline today)
           (:auto-todo t)))
   (org-super-agenda-mode))
+
+(defun my/open-questions ()
+  (interactive)
+  (let ((org-super-agenda-groups
+         '((:discard (:not (:todo "QUESTION")))
+           (:auto-todo t))))
+
+    (org-agenda nil "t")))
 
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
@@ -701,8 +734,7 @@
         dired-recursive-copies (quote always)
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
-        wdired-allow-to-change-permissions t
-        dired-omit-mode nil))
+        wdired-allow-to-change-permissions t))
 
 (use-package! dired-narrow
               :commands (dired-narrow-fuzzy)
@@ -766,6 +798,10 @@
   :config
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+(use-package! burly)
+
+(use-package! burly)
 
 (use-package! real-auto-save
   :hook

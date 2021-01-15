@@ -258,6 +258,16 @@ narrowed."
       (org-mode)
       (car (org-roam--extract-titles-title)))))
 
+
+(defun my/set-timezone ()
+  (interactive)
+  (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
+  ;; (shell-command "sudo timedatectl set-timezone America/New_York")
+  ;; (shell-command "sudo timedatectl set-timezone Europe/Paris")
+  )
+
+(my/set-timezone)
+
 (defun my/edit-resume ()
   (interactive)
   (find-file "~/Sync/resume/resume.tex"))
@@ -343,11 +353,23 @@ context.  When called with an argument, unconditionally call
   (interactive)
   (let (file org-babel-pre-tangle-hook org-babel-post-tangle-hook)
     (cl-letf (((symbol-function 'write-region) (lambda (start end filename &rest _ignore)
-                         (setq file filename)))
-          ((symbol-function 'delete-file) #'ignore))
+                                                 (setq file filename)))
+              ((symbol-function 'delete-file) #'ignore))
       (org-babel-tangle '(4)))
     (when file
       (setq file (expand-file-name file))
       (if (file-readable-p file)
-      (find-file file)
-    (error "Cannot open tangle file %S" file)))))
+          (find-file file)
+        (error "Cannot open tangle file %S" file)))))
+
+
+;; https://sachachua.com/blog/2019/07/tweaking-emacs-on-android-via-termux-xclip-xdg-open-syncthing-conflicts/
+(defun my/org-archive-done-tasks (&optional scope)
+  "Archive finished or cancelled tasks.
+SCOPE can be 'file or 'tree."
+  (interactive)
+  (org-map-entriesjjjp
+   (lambda ()
+     (org-archive-subtree)
+     (setq org-map-continue-from (outline-previous-heading)))
+   "TODO=\"DONE\"|TODO=\"CANCELLED\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))

@@ -2,6 +2,8 @@
 ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
+(package! burly :recipe (:host github :repo "alphapapa/burly.el"))
+
 ;; (package! company-posframe)
 (package! deadgrep)
 (package! dired-narrow)
@@ -13,6 +15,8 @@
 (package! jest)
 (package! key-chord)
 ;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
+(package! nano-emacs
+  :recipe (:host github :repo "rougier/nano-emacs"))
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)

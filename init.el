@@ -43,6 +43,7 @@
        docker
        lookup
        (magit +forge)
+       lsp
        pass
        pdf
 
@@ -64,7 +65,7 @@
         +roam
 	)
        python
-       rust
+       (rust +lsp)
        sh
 
 

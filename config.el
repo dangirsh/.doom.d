@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 22)
+(setq doom-font (font-spec :family "Hack" :size 28)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -58,21 +58,6 @@
 ;;   :config
 ;;   ;; (load-theme 'almost-mono-black t)
 ;;   (load-theme 'almost-mono-white t))
-
-
-;; (setq doom-theme 'nil)
-;; (require 'disp-table)
-;; (require 'nano-faces)
-;; (require 'nano-colors)
-;; (require 'nano-defaults)
-;; (require 'nano-theme)
-;; (require 'nano-theme-dark)
-;; (require 'nano-help)
-;; (require 'nano-modeline)
-;; (require 'nano-layout)
-;; (nano-faces)
-;; (nano-theme)
-;; (require 'nano-defaults)
 
 (use-package! key-chord
   :config
@@ -121,6 +106,7 @@
      ("b" . my/set-brightness)
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
+     ("J" . my/worldcoin-today)
      ("k" . doom/kill-this-buffer-in-all-windows)
      ("m" . my/mathpix-screenshot-to-clipboard)
      ("n" . narrow-or-widen-dwim)
@@ -671,9 +657,14 @@
 
 (setq haskell-mode-stylish-haskell-path "brittany")
 
-(use-package! ob-rust)
+(after! rustic
+  (setq rustic-format-on-save t)
+  (setq rustic-format-trigger 'on-save))
 
 (use-package! ob-rust)
+
+(use-package! evcxr
+  :hook (rustic-mode-hook . evcxr-minor-mode))
 
 (use-package! jupyter
   :init
@@ -909,7 +900,7 @@
                     list-buffers-directory
                     default-directory
                     dired-directory))
-    ad-do-it))
+ mad-do-it))
 
 (setq projectile-mode-line "Projectile")
 

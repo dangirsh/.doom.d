@@ -9,6 +9,7 @@
 (package! dired-narrow)
 (package! dmenu)
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
+(package! evxcr-mode :recipe (:host github :repo "serialdev/evcxr-mode"))
 (package! google-this)
 (package! google-translate)
 (package! helpful)

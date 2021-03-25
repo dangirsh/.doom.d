@@ -29,6 +29,7 @@
 (package! org-roam-bibtex)
 (package! org-roam-server)
 (package! org-super-agenda)
+(package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
 
 (package! phi-search)
 (package! ob-rust)
@@ -47,7 +48,7 @@
 ;; Use the branch that supports the vterm backend
 ;; https://github.com/tpapp/julia-repl/pull/84
 (package! julia-repl
-  :recipe (:host github :repo "tpapp/julia-repl" :branch "tp/terminal-backends"))
+  :recipe (:host github :repo "tpapp/julia-repl"))
 
 (package! julia-formatter
   :recipe (:host github :repo "ki-chi/julia-formatter"))

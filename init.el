@@ -48,10 +48,10 @@
        pdf
 
        :lang
-       common-lisp
+       ;; common-lisp
        data
        emacs-lisp
-       javascript
+       ;; javascript
        (haskell +dante)
        ;; (julia +lsp)
        ;; julia
@@ -67,10 +67,10 @@
        python
        (rust +lsp)
        sh
-
+       yaml
 
        :app
-       calendar
+       ;; calendar
 
        :config
        literate

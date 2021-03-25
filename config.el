@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 28)
+(setq doom-font (font-spec :family "Hack" :size 22)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -38,8 +38,8 @@
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
-  ;; (load-theme 'doom-one-light t)
-  (load-theme 'doom-nord-light t)
+  (load-theme 'doom-one-light t)
+  ;; (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -106,7 +106,6 @@
      ("b" . my/set-brightness)
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
-     ("J" . my/worldcoin-today)
      ("k" . doom/kill-this-buffer-in-all-windows)
      ("m" . my/mathpix-screenshot-to-clipboard)
      ("n" . narrow-or-widen-dwim)
@@ -153,7 +152,7 @@
   (key-chord-define-global "xx" 'execute-extended-command)
   (key-chord-define-global "xf" 'find-file)
 
-  (key-chord-define-global "l;" 'repeat))
+  (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
 
 (defun fix-keyboard ()
   (interactive)
@@ -222,8 +221,10 @@
   (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
   ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/04/Redirecting-stderr-in-org-mode-shell-blocks/
-  (setq org-babel-default-header-args:sh
-        '((:prologue . "exec 2>&1") (:epilogue . ":")))
+  ;; NOTE: This will affect (break) tangled output. Use directly on top of code blocks when needed instead.
+  ;; TODO: Figure out how to keep this without adding it to tangled output.
+  ;; (setq org-babel-default-header-args:sh
+  ;;       '((:prologue . "exec 2>&1") (:epilogue . ":")))
 
   (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.6")
                                                       (:display . "text/plain")
@@ -311,7 +312,7 @@
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -414,7 +415,7 @@
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
-        org-roam-graph-exclude-matcher '("todo" "private")))
+        org-roam-graph-exclude-matcher '("private" "todo")))
 
 (use-package! org-roam-server
   :config
@@ -468,6 +469,9 @@
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
                                         "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
 
+(use-package! org-transclusion
+  :hook (org-roam-mode . org-transclusion-mode))
+
 (use-package! org-download
   :config
   ;; take an image that is already on the clipboard
@@ -502,12 +506,16 @@
           (:discard (:todo "QUESTION"))
           (:name "WIP"
            :todo "WIP")
-          (:name "High Priority"
-           :priority "A")
-          (:name "Med Priority"
-           :priority "B")
-          (:name "Low Priority"
-           :priority "C")
+          ;; https://github.com/alphapapa/org-super-agenda/issues/192
+          ;; (:name "High Priority"
+          ;;  :priority "A")
+          ;; (:name "Med Priority"
+          ;;  :priority "B")
+          ;; (:name "Low Priority"
+          ;;  :priority "C")
+          (:regexp "\\[#A\\]")
+          (:regexp "\\[#B\\]")
+          (:regexp "\\[#C\\]")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
@@ -840,8 +848,8 @@
  ;; FIXME: This currently relies on Helm as an undeclared dep!
  "M-y" 'helm-show-kill-ring
 
- "<f5>" 'my/night-mode
- "<f6>" 'my/day-mode
+ "C-<f5>" 'my/night-mode
+ "C-<f6>" 'my/day-mode
 
  "C-z"   'undo-fu-only-undo
  "C-S-z" 'undo-fu-only-redo
@@ -912,3 +920,7 @@
 (setq comint-buffer-maximum-size 2000)
 
 (setq recentf-max-saved-items 10000)
+
+(after! vterm
+  (setq vterm-buffer-name-string "vterm: %s")
+  (setq vterm-copy-exclude-prompt t))

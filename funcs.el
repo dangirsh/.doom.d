@@ -141,17 +141,17 @@ text.
 
 (defun my/night-mode ()
   (interactive)
-  (load-theme 'doom-one t)
+  (load-theme 'doom-dark+ t)
   (doom/reload-theme)
-  (my/set-brightness 10)
+  (my/set-brightness 1000)
   (my/set-redshift 1500))
 
 (defun my/day-mode ()
   (interactive)
-  (load-theme 'doom-solarized-light t)
+  (load-theme 'doom-nord-light t)
   (doom/reload-theme)
-  (my/set-brightness 1000)
-  (my/set-redshift 6000))
+  (my/set-brightness 10000)
+  (my/set-redshift 5500))
 
 
 (defun narrow-or-widen-dwim (p)
@@ -264,9 +264,14 @@ narrowed."
   (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
   ;; (shell-command "sudo timedatectl set-timezone America/New_York")
   ;; (shell-command "sudo timedatectl set-timezone Europe/Paris")
+  ;; ;; (shell-command "sudo timedatectl set-timezone Europe/Berlin")
   )
 
-(my/set-timezone)
+;; (my/set-timezone)
+
+(defun my/insert-jupyter-python-block ()
+  (interactive)
+  (org-insert-structure-template "src jupyter-python"))
 
 (defun my/edit-resume ()
   (interactive)
@@ -368,8 +373,18 @@ context.  When called with an argument, unconditionally call
   "Archive finished or cancelled tasks.
 SCOPE can be 'file or 'tree."
   (interactive)
-  (org-map-entriesjjjp
+  (org-map-entries
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
    "TODO=\"DONE\"|TODO=\"CANCELLED\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
+
+
+(defun my/org-jupyter-execute-subtree-by-id (id)
+  (save-window-excursion
+    (org-id-goto id)
+    (save-excursion
+      (org-narrow-to-subtree)
+      (end-of-buffer)
+      (jupyter-org-execute-to-point nil)
+      (widen))))

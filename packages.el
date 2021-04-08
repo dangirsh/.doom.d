@@ -5,6 +5,7 @@
 (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
 
 ;; (package! company-posframe)
+;; (package! dap-mode)
 (package! deadgrep)
 (package! dired-narrow)
 (package! dmenu)

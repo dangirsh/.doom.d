@@ -665,11 +665,77 @@
 
 (setq haskell-mode-stylish-haskell-path "brittany")
 
+;; https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/
 (after! rustic
+  (map! :map rustic-mode-map
+        "M-j" #'lsp-ui-imenu
+        "M-?" #'lsp-find-references
+        "C-c C-c l" #'flycheck-list-errors
+        "C-c C-c a" #'lsp-execute-code-action
+        "C-c C-c r" #'lsp-rename
+        "C-c C-c q" #'lsp-workspace-restart
+        "C-c C-c Q" #'lsp-workspace-shutdown
+        "C-c C-c s" #'lsp-rust-analyzer-status)
+
+  (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-on-save t)
-  (setq rustic-format-trigger 'on-save))
+  (setq rustic-format-trigger 'on-save)
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
+  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook))
+
+(defun my/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm
+  (setq-local buffer-save-without-query t))
 
 (use-package! ob-rust)
+
+(defun start-file-process-shell-command@around (start-file-process-shell-command name buffer &rest args)
+  "Start a program in a subprocess.  Return the process object for it. Similar to `start-process-shell-command', but calls `start-file-process'."
+  ;; On remote hosts, the local `shell-file-name' might be useless.
+  (let ((command (mapconcat 'identity args " ")))
+    (funcall start-file-process-shell-command name buffer command)))
+
+(advice-add 'start-file-process-shell-command :around #'start-file-process-shell-command@around)
+
+(with-eval-after-load "lsp-rust"
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-tramp-connection "rust-analyzer")
+    :remote? t
+    :major-modes '(rust-mode rustic-mode)
+    :initialization-options 'lsp-rust-analyzer--make-init-options
+    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
+    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :after-open-fn (lambda ()
+                     (when lsp-rust-analyzer-server-display-inlay-hints
+                       (lsp-rust-analyzer-inlay-hints-mode)))
+    :ignore-messages nil
+    :server-id 'rust-analyzer-remote)))
+
+(defun my/register-remote-rust-analyzer ()
+  (interactive)
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-tramp-connection "rust-analyzer")
+    ;; (lsp-tramp-connection
+    ;;  (lambda ()
+    ;;    `(,(or (executable-find
+    ;;            (cl-first lsp-rust-analyzer-server-command))
+    ;;           (lsp-package-path 'rust-analyzer)
+    ;;           "rust-analyzer")
+    ;;      ,@(cl-rest lsp-rust-analyzer-server-args))))
+    :remote? t
+    :major-modes '(rust-mode rustic-mode)
+    :initialization-options 'lsp-rust-analyzer--make-init-options
+    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
+    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :after-open-fn (lambda ()
+                     (when lsp-rust-analyzer-server-display-inlay-hints
+                       (lsp-rust-analyzer-inlay-hints-mode)))
+    :ignore-messages nil
+    :server-id 'rust-analyzer-remote)))
 
 (use-package! evcxr
   :hook (rustic-mode-hook . evcxr-minor-mode))

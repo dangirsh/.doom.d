@@ -51,6 +51,7 @@
        ;; common-lisp
        data
        emacs-lisp
+       go
        ;; javascript
        (haskell +dante)
        ;; (julia +lsp)

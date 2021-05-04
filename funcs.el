@@ -273,6 +273,25 @@ narrowed."
   (interactive)
   (org-insert-structure-template "src jupyter-python"))
 
+;; https://emacs.stackexchange.com/questions/10091/sentence-in-text-is-read-only-even-though-the-buffer-is-not-how-to-fix-this/10093#10093
+(defun my/set-region-read-only (begin end)
+  "Sets the read-only text property on the marked region.
+
+Use `set-region-writeable' to remove this property."
+  ;; See https://stackoverflow.com/questions/7410125
+  (interactive "r")
+  (with-silent-modifications
+    (put-text-property begin end 'read-only t)))
+
+(defun my/set-region-writeable (begin end)
+  "Removes the read-only text property from the marked region.
+
+Use `set-region-read-only' to set this property."
+  ;; See https://stackoverflow.com/questions/7410125
+  (interactive "r")
+  (with-silent-modifications
+    (remove-text-properties begin end '(read-only t))))
+
 (defun my/edit-resume ()
   (interactive)
   (find-file "~/Sync/resume/resume.tex"))

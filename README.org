@@ -91,6 +91,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#autosave][Autosave]]
   - [[#additional-web-dev-tooling][Additional Web Dev Tooling]]
   - [[#google-translate][Google Translate]]
+  - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
   - [[#performance-tweaks][Performance Tweaks]]
     - [[#swiper][Swiper]]
   - [[#extra-load-files][Extra Load Files]]
@@ -1629,6 +1630,12 @@ Including the Doom =javascript= module does most of the work...
   :config
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   (setq google-translate-output-destination 'kill-ring))
+#+end_src
+
+** CamelCase to snake_case conversion
+
+#+begin_src emacs-lisp
+(use-package! string-inflection)
 #+end_src
 
 ** COMMENT Poly Markdown

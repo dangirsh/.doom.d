@@ -793,7 +793,7 @@ Very slow, even after initializing...
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8080
+        org-roam-server-port 8081
         org-roam-server-authenticate nil
         org-roam-server-export-inline-images t
         org-roam-server-serve-files nil
@@ -973,6 +973,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 *** TODO org-sidebar
 *** COMMENT org-gcal: Google Calendar Integration
+:PROPERTIES:
+:ID:       cd234f42-df87-4d43-a09c-806d358afc3a
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-gcal
@@ -1239,8 +1242,8 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
         "C-c C-c s" #'lsp-rust-analyzer-status)
 
   (setq lsp-enable-symbol-highlighting nil)
-  (setq rustic-format-on-save t)
-  (setq rustic-format-trigger 'on-save)
+  ;; (setq rustic-format-on-save t)
+  ;; (setq rustic-format-trigger 'on-save)
   (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook))
 
@@ -2318,6 +2321,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! ob-rust)
 (package! real-auto-save)
 (package! smartscan)
+(package! string-inflection)
 (package! toc-org)
 (package! undo-tree)
 (package! wrap-region)

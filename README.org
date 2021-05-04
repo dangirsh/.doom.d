@@ -608,7 +608,7 @@ I use org as a primary interface. It currently manages:
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "DELEGATED(o)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()

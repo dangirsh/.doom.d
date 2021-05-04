@@ -36,6 +36,7 @@
 (package! ob-rust)
 (package! real-auto-save)
 (package! smartscan)
+(package! string-inflection)
 (package! toc-org)
 (package! undo-tree)
 (package! wrap-region)

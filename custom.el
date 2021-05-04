@@ -18,7 +18,7 @@
  '(mathpix-screenshot-method "scrot -s %s")
  '(objed-cursor-color "#dc322f")
  '(org-agenda-files
-   '("~/Work/Worldcoin/org-roam/20201224175435-orb.org" "~/Work/Worldcoin/org-roam/orgzly/worldcoin-todo.org" "~/Sync/org-roam/orgzly/pixel-incoming.org" "~/Sync/org-roam/orgzly/boox-incoming.org" "/home/dan/Sync/org-roam/orgzly/todo.org"))
+   '("~/Work/Worldcoin/org-roam/20201224175435-resources.org" "~/Work/Worldcoin/org-roam/orgzly/worldcoin-todo.org" "~/Sync/org-roam/orgzly/pixel-incoming.org" "~/Sync/org-roam/orgzly/boox-incoming.org" "/home/dan/Sync/org-roam/orgzly/todo.org"))
  '(org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s")
  '(org-journal-carryover-items "TODO=\"TODO\"")
  '(org-journal-date-format "%Y-%m-%d")

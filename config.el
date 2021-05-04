@@ -14,7 +14,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 22)
+(setq doom-font (font-spec :family "Hack" :size 14)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -278,7 +278,7 @@
                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
+        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "DELEGATED(o)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -420,7 +420,7 @@
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8080
+        org-roam-server-port 8081
         org-roam-server-authenticate nil
         org-roam-server-export-inline-images t
         org-roam-server-serve-files nil
@@ -476,8 +476,6 @@
   :config
   ;; take an image that is already on the clipboard
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
-
-(use-package! org-cliplink)
 
 (use-package! org-cliplink)
 
@@ -678,8 +676,8 @@
         "C-c C-c s" #'lsp-rust-analyzer-status)
 
   (setq lsp-enable-symbol-highlighting nil)
-  (setq rustic-format-on-save t)
-  (setq rustic-format-trigger 'on-save)
+  ;; (setq rustic-format-on-save t)
+  ;; (setq rustic-format-trigger 'on-save)
   (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook))
 
@@ -857,14 +855,10 @@
 
 (use-package! dmenu)
 
-(use-package! dmenu)
-
 (use-package! ace-window
   :config
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-
-(use-package! burly)
 
 (use-package! burly)
 
@@ -883,6 +877,8 @@
   :config
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   (setq google-translate-output-destination 'kill-ring))
+
+(use-package! string-inflection)
 
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))

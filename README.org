@@ -92,6 +92,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#additional-web-dev-tooling][Additional Web Dev Tooling]]
   - [[#google-translate][Google Translate]]
   - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
+  - [[#dotenv][Dotenv]]
   - [[#performance-tweaks][Performance Tweaks]]
     - [[#swiper][Swiper]]
   - [[#extra-load-files][Extra Load Files]]
@@ -1643,6 +1644,21 @@ Including the Doom =javascript= module does most of the work...
 #+begin_src emacs-lisp
 (use-package! string-inflection)
 #+end_src
+
+** Dotenv
+
+#+begin_src emacs-lisp
+(use-package! dotenv)
+#+end_src
+
+#+begin_src emacs-lisp
+(defun my/load-env-file (env-file)
+  (interactive "f")
+  (dotenv-update-env (dotenv-load% env-file)))
+#+end_src
+
+#+RESULTS:
+: my/load-env-file
 
 ** COMMENT Poly Markdown
 

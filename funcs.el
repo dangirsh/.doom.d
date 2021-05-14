@@ -238,8 +238,8 @@ narrowed."
 
   (let* ((compilation-buffer-name-function #'local-compile-buffer-namer)
          (compilation-ask-about-save nil)
-         (full-cmd (if dir (concat "cd " dir " && " cmd) cmd)))
-    (compile full-cmd)))
+         (default-directory (if dir dir default-directory)))
+    (compile cmd)))
 
 (defun my/publish-dangirsh.org ()
   (interactive)

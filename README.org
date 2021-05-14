@@ -67,8 +67,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#mathpix-ocr-latex-from-images][Mathpix: OCR LaTeX From Images]]
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
-  - [[#julia][Julia]]
-    - [[#convert-julia-markdown-blocks-to-org-blocks][Convert Julia Markdown Blocks to Org Blocks]]
   - [[#haskell][Haskell]]
   - [[#rust][Rust]]
     - [[#rustic][Rustic]]
@@ -1162,7 +1160,7 @@ x There was an unexpected error:
   (global-undo-tree-mode 1))
 #+END_SRC
 
-** Julia
+** COMMENT Julia
 
 Doom's Julia module is opinionated. I'd like full control, so I'm configuring
 Julia myself here.

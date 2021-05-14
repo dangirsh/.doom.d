@@ -10,11 +10,13 @@
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
 (setq org-directory my/sync-base-dir
-      org-roam-directory (concat my/sync-base-dir "org-roam/"))
+      ;; org-roam-directory "/home/dan/Work/Worldcoin/org-roam"
+      org-roam-directory (concat my/sync-base-dir "org-roam/")
+      )
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 14)
+(setq doom-font (font-spec :family "Hack" :size 18)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -415,7 +417,7 @@
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
-        org-roam-graph-exclude-matcher '("private" "todo")))
+        org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
 (use-package! org-roam-server
   :config
@@ -505,15 +507,12 @@
           (:name "WIP"
            :todo "WIP")
           ;; https://github.com/alphapapa/org-super-agenda/issues/192
-          ;; (:name "High Priority"
-          ;;  :priority "A")
-          ;; (:name "Med Priority"
-          ;;  :priority "B")
-          ;; (:name "Low Priority"
-          ;;  :priority "C")
-          (:regexp "\\[#A\\]")
-          (:regexp "\\[#B\\]")
-          (:regexp "\\[#C\\]")
+          (:name "High Priority"
+           :priority "A")
+          (:name "Med Priority"
+           :priority "B")
+          (:name "Low Priority"
+           :priority "C")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
@@ -631,35 +630,6 @@
       (setq undo-tree-visualizer-diff t))
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
-
-(defvar inferior-julia-program-name "julia")
-
-(use-package! julia
-  :interpreter "julia"
-  :hook (julia-mode . julia-repl-mode))
-
-;; (defun my/julia-repl-hook ()
-;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
-
-(use-package! julia-repl
-  :config
-                                        ; See: https://github.com/tpapp/julia-repl/pull/84
-  ;; (require 'vterm)
-  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
-  )
-
-;; https://github.com/gcv/julia-snail
-;; (use-package julia-snail
-;;   :hook (julia-mode . julia-snail-mode))
-
-;; (use-package eglot-jl
-;;   :hook (julia-mode . eglot)
-;;   :config
-;;   (eglot-jl-init))
-
-(defun jmd-block-to-jupyter-julia ()
-  (interactive)
-   (kmacro-lambda-form [?\C-  ?\C-e backspace ?\C-c ?\C-, ?j down ?\C-  ?\C-s ?` return left ?\C-w up ?\C-y down ?\C-k] 0 "%d"))
 
 (setq haskell-mode-stylish-haskell-path "brittany")
 
@@ -879,6 +849,12 @@
   (setq google-translate-output-destination 'kill-ring))
 
 (use-package! string-inflection)
+
+(use-package! dotenv)
+
+(defun my/load-env-file (env-file)
+  (interactive "f")
+  (dotenv-update-env (dotenv-load% env-file)))
 
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))

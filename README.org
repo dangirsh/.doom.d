@@ -237,7 +237,9 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
-      org-roam-directory (concat my/sync-base-dir "org-roam/"))
+      ;; org-roam-directory "/home/dan/Work/Worldcoin/org-roam"
+      org-roam-directory (concat my/sync-base-dir "org-roam/")
+      )
 #+end_src
 
 #+RESULTS:
@@ -478,6 +480,9 @@ Set brightness by writing directly to system brightness file.
 Had issues the first time, but that was years ago.
 
 *** Bluetooth
+:PROPERTIES:
+:ID:       eb02d566-902d-41aa-81f4-3822111f130f
+:END:
 
 #+begin_src emacs-lisp
 (defun my/connect-to-bose-700s ()
@@ -772,7 +777,7 @@ aka my exocortex
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
-        org-roam-graph-exclude-matcher '("private" "todo")))
+        org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 #+end_src
 
 #+RESULTS:
@@ -939,15 +944,12 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
           (:name "WIP"
            :todo "WIP")
           ;; https://github.com/alphapapa/org-super-agenda/issues/192
-          ;; (:name "High Priority"
-          ;;  :priority "A")
-          ;; (:name "Med Priority"
-          ;;  :priority "B")
-          ;; (:name "Low Priority"
-          ;;  :priority "C")
-          (:regexp "\\[#A\\]")
-          (:regexp "\\[#B\\]")
-          (:regexp "\\[#C\\]")
+          (:name "High Priority"
+           :priority "A")
+          (:name "Med Priority"
+           :priority "B")
+          (:name "Low Priority"
+           :priority "C")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
@@ -1210,6 +1212,7 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 (use-package julia-formatter
     :hook (julia-mode . (lambda() (julia-formatter-server-start))))
 #+end_src
+
 
 ** Haskell
 
@@ -2030,8 +2033,8 @@ narrowed."
 
   (let* ((compilation-buffer-name-function #'local-compile-buffer-namer)
          (compilation-ask-about-save nil)
-         (full-cmd (if dir (concat "cd " dir " && " cmd) cmd)))
-    (compile full-cmd)))
+         (default-directory (if dir dir default-directory)))
+    (compile cmd)))
 
 (defun my/publish-dangirsh.org ()
   (interactive)

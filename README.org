@@ -9,7 +9,7 @@
 “I'm rarely happier than when spending an entire day programming my computer to perform automatically a task that would otherwise take me a good ten seconds to do by hand.” - Douglas Adams
 #+end_quote
 
-This is the =.doom.d= submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my complete computing environment.
+This is the =.doom.d= submodule of [[https://github.com/dangirsh/neurosys][neurosys]], my computing environment.
 
 I use [[emacs.sexy][Emacs]] as the primary interface to my machine and remote machines. In many situations, it replaces CLIs or GUIs with well-designed keyboard-driven interfaces (e.g. [[https://magit.vc/][magit]]). There's no going back.
 
@@ -254,7 +254,7 @@ clients, file templates and snippets.
 ** Visual Settings
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 18)
+(setq doom-font (font-spec :family "Hack" :size 20)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -782,14 +782,19 @@ aka my exocortex
 #+RESULTS:
 | todo |
 
-**** COMMENT Deft: Note search
-
-Very slow, even after initializing...
+**** Deft: Note search
 
 #+begin_src emacs-lisp
-(setq deft-directory org-roam-directory)
-(setq deft-recursive t)
+;; Helpful command: (deft-refresh)
+(map! "<f8>" 'deft)
+(setq deft-directory org-roam-directory
+      deft-recursive t
+      ;; Otherwise too slow
+      deft-file-limit 100)
 #+end_src
+
+#+RESULTS:
+: 100
 
 **** org-roam-server: Graph visualization / navigation
 
@@ -874,7 +879,8 @@ The =org-capture-templates= templates used here:
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
-                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))
+  )
 #+end_src
 
 *** org-transclusion
@@ -1732,6 +1738,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
 
 #+begin_src emacs-lisp
+(setq warning-minimum-level :emergency)
+
 (flycheck-mode 0)
 
 (setq direnv-always-show-summary nil)
@@ -2232,7 +2240,6 @@ SCOPE can be 'file or 'tree."
 #+RESULTS:
 : my/org-jupyter-execute-subtree-by-id
 
-
 * Neurosys Module
 :PROPERTIES:
 :header-args: :tangle ./modules/personal/neurosys/config.el
@@ -2361,410 +2368,3 @@ Any desired package not declared in a Doom module must be declared here. This se
   ;; (package! eglot-jl)
 #+end_src
 
-* COMMENT Emacs X Window Management (EXWM)
-
-I love EXWM, but retreated back to XMonad. I had issues with both Emacs and Firefox causing the main thread to block, which (in EXWM) hangs the entire system.
-
-** About
-Pros:
-
-- System-wide UI consistency
-  - X windows and Emacs windows are treated the same
-    - e.g. Use Ivy to surface Firefox windows with fuzzy search
-  - Key simulation allows consistent keybindings (e.g. the copy/paste bindings
-    can be made the same between Emacs, browsers, terminals, etc...)
-- Interactively update WM configuration
-  - Unlike e.g. XMonad, which requires a re-compile + restart
-  - Can add new bindings and immediately use them
-- No separate WM install + config. It's just Emacs + Elisp.
-
-Cons:
-- Need to be careful not to block the main thread! That will lock the entire system.
-  - Workaround: just spawn a secondary Emacs within the base Emacs whenever
-    there's a risk of blocking.
-    - e.g. Before using TRAMP, spawn a fresh Emacs.
-- Less stable than XMonad, which is a tiny, well-tested Haskell program
-- Limited support for managing multiple screens.
-  - It works, but it hardwires each workspace to a specific monitor.
-- Need to be careful not to leave your Emacs configuration in a broken state.
-  - Fallbacks include other WMs installed (XMonad) or switching to a tty
-    (Ctrl-Alt-f#)
-
-** Create the config directory where Doom expects it
-
-#+BEGIN_EXAMPLE sh
-mkdir -p ./modules/desktop/exwm
-#+END_EXAMPLE
-
-** Package Declarations
-#+begin_src emacs-lisp :tangle ./modules/desktop/exwm/packages.el
-;; -*- no-byte-compile: t; -*-
-;;; desktop/exwm/packages.el
-(package! exwm)
-;; (package! exwm-firefox
-;;   :recipe (:host github :repo "ieure/exwm-firefox"))
-;; (package! exwm-mff
-;;   :recipe (:host github :repo "ieure/exwm-mff"))
-(package! xelb)
-(package! exwm-edit)
-
-#+end_src
-
-** EXWM Configuration
-
-#+begin_src emacs-lisp :tangle ./modules/desktop/exwm/config.el
-  ;;; desktop/exwm/config.el -*- lexical-binding: t; -*-
-(use-package! exwm
-  :init
-  (setq
-   mouse-autoselect-window t
-   focus-follows-mouse t)
-  :config
-  (setq exwm-workspace-number 9))
-
-(defun my/exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer (format "%s - %s" exwm-class-name exwm-title)))
-(setq exwm-workspace-show-all-buffers t
-      exwm-layout-show-all-buffers t
-      exwm-manage-force-tiling t)
-
-
-(setq exwm-input-prefix-keys '(?\s- ))
-
-(display-battery-mode 1)
-(display-time-mode 1)
-
-
-;; (setq exwm-manage-configurations
-;;       '(((string= exwm-class-name "Google-chrome")
-;;          workspace 0)
-;;         ((string= exwm-class-name "Firefox")
-;;          workspace 1)
-;;         ((string= exwm-instance-name "terminator")
-;;          workspace 8)
-;;         ((string= exwm-instance-name "keybase")
-;;          workspace 9)))
-
-
-(defun my/launch (command)
-  (interactive (list (read-shell-command "$ ")))
-  (start-process-shell-command command nil command))
-
-(defun my/launch-terminal ()
-  (interactive)
-  (my/launch "terminator"))
-
-(defun my/launch-browser ()
-  (interactive)
-  (my/launch "firefox"))
-
-(defun my/launch-emacs ()
-  (interactive)
-  (my/launch "emacs"))
-
-(defun my/lock-screen ()
-  (interactive)
-  (my/launch "xtrlock -b"))
-
-(defun my/volume-up ()
-  (interactive)
-  (my/launch "amixer sset Master unmute")
-  (my/launch "amixer sset Master 5%+"))
-
-(defun my/volume-down ()
-  (interactive)
-  (my/launch "amixer sset Master 5%-"))
-
-(setq exwm-workspace-minibuffer-position 'nil)
-
-(exwm-input-set-key (kbd "s-:") #'eval-expression)
-
-;; https://emacs.stackexchange.com/questions/33326/how-do-i-cut-and-paste-effectively-between-applications-while-using-exwm
-(defun my/exwm-input-line-mode ()
-  "Set exwm window to line-mode and show mode line"
-  (call-interactively #'exwm-input-grab-keyboard))
-
-(defun my/exwm-input-char-mode ()
-  "Set exwm window to char-mode and hide mode line"
-  (call-interactively #'exwm-input-release-keyboard))
-
-(defun my/exwm-input-toggle-mode ()
-  "Toggle between line- and char-mode"
-  (interactive)
-  (with-current-buffer (window-buffer)
-    (when (eq major-mode 'exwm-mode)
-      (if (equal (second (second mode-line-process)) "line")
-          (my/exwm-input-char-mode)
-        (my/exwm-input-line-mode)))))
-
-(defun my/toggle-exwm-input-line-mode-passthrough ()
-  (interactive)
-  (if exwm-input-line-mode-passthrough
-      (progn
-        (setq exwm-input-line-mode-passthrough nil)
-        (message "App receives all the keys now (with some simulation)"))
-    (progn
-      (setq exwm-input-line-mode-passthrough t)
-      (message "emacs receives all the keys now")))
-  (force-mode-line-update))
-
-(exwm-input-set-key (kbd "s-;") 'my/toggle-exwm-input-line-mode-passthrough)
-
-
-
-;; Switch to last workspace
-(defvar my/exwm-workspace-previous-index 0 "The previous active workspace index.")
-
-(defun my/exwm-workspace--current-to-previous-index (_x &optional _y)
-  (setq my/exwm-workspace-previous-index exwm-workspace-current-index))
-
-(advice-add 'exwm-workspace-switch :before #'my/exwm-workspace--current-to-previous-index)
-
-(defun my/exwm-workspace-switch-to-previous ()
-  (interactive)
-  "Switch to the previous active workspace."
-  (let ((index my/exwm-workspace-previous-index))
-    (exwm-workspace-switch index)))
-
-(defun my/switch-to-last-buffer ()
-  "Switch to last open buffer in current window."
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-;; Re-use muscle memory from 6 years of an xmonad setup
-(exwm-input-set-key (kbd "s-p") #'dmenu)
-(exwm-input-set-key (kbd "s-P") #'counsel-linux-app)
-(exwm-input-set-key (kbd "s-s") #'password-store-copy)
-(exwm-input-set-key (kbd "s-<return>") #'my/launch-terminal)
-(exwm-input-set-key (kbd "s-.") #'my/switch-to-last-buffer)
-(exwm-input-set-key (kbd "s-,") #'my/exwm-workspace-switch-to-previous)
-(exwm-input-set-key (kbd "s-i") #'my/launch-browser)
-(exwm-input-set-key (kbd "s-b") 'switch-to-buffer)
-(exwm-input-set-key (kbd "s-M-O") #'my/lock-screen)
-(exwm-input-set-key (kbd "s-<up>") #'my/volume-up)
-(exwm-input-set-key (kbd "s-<down>") #'my/volume-down)
-;; (exwm-input-set-key (kbd "s-<print>") #'my/screen-to-clipboard)
-
-(exwm-input-set-key (kbd "s-R") #'doom/reload)
-(exwm-input-set-key (kbd "s-Q") #'kill-emacs)
-
-(exwm-input-set-key (kbd "s-m") #'bury-buffer)
-(exwm-input-set-key (kbd "s-M") #'unbury-buffer)
-
-(exwm-input-set-key (kbd "s-j") #'other-window)
-(exwm-input-set-key (kbd "s-k") #'rev-other-window)
-
-(exwm-input-set-key (kbd "s-J") #'previous-buffer)
-(exwm-input-set-key (kbd "s-K") #'next-buffer)
-
-(exwm-input-set-key (kbd "s-h") 'shrink-window)
-(exwm-input-set-key (kbd "s-l") 'enlarge-window)
-(exwm-input-set-key (kbd "s-H") 'shrink-window-horizontally)
-(exwm-input-set-key (kbd "s-L") 'enlarge-window-horizontally)
-
-(exwm-input-set-key (kbd "s-/") 'winner-undo)
-(exwm-input-set-key (kbd "s-?") 'winner-redo)
-
-(exwm-input-set-key (kbd "s-'") 'exwm-edit--compose)
-
-(exwm-input-set-key (kbd "s-w") 'delete-window)
-(exwm-input-set-key (kbd "s-q") 'kill-this-buffer)
-
-(exwm-input-set-key (kbd "s-C") 'cfw:open-org-calendar)
-
-(exwm-input-set-key (kbd "s-x") 'counsel-M-x)
-
-(exwm-input-set-key (kbd "s-t") 'vterm)
-
-(exwm-input-set-key (kbd "s-<f7>") 'my/monitor-screen-layout)
-(exwm-input-set-key (kbd "s-<f8>") 'my/laptop-screen-layout)
-
-(mapcar (lambda (i)
-          (exwm-input-set-key (kbd (format "s-%d" i))
-                              `(lambda ()
-                                 (interactive)
-                                 (exwm-workspace-switch-create ,i))))
-        (number-sequence 0 9))
-
-;; Configure firefox to open every tab as a new window instead
-;; http://p.hagelb.org/exwm-ff-tabs.html
-(add-hook 'exwm-manage-finish-hook
-          (lambda ()
-            ;; these have their own Emacs simulation installed (e.g. Surfingkeys)
-            (if (or (string= exwm-class-name "Firefox")
-                    (string= exwm-class-name "Google-chrome")
-                    (string= exwm-class-name "Atom"))
-                (progn
-                  (exwm-input-set-local-simulation-keys
-                   `(([?\s-w] . [?\C-w])
-                     ([?\M-w] . [?\C-c])
-                     ([?\C-y] . [?\C-v])
-                     ([?\C-w] . [?\C-x])))
-                  (exwm-layout-hide-mode-line))
-              (exwm-layout-show-mode-line))))
-
-;; (add-hook 'exwm-update-title-hook
-;;           (defun my/exwm-title-hook ()
-;;             (when (string-match "Firefox" exwm-class-name)
-;;               (exwm-workspace-rename-buffer exwm-title))))
-
-(add-hook 'exwm-update-title-hook 'my/exwm-rename-buffer-to-title)
-
-(setq browse-url-firefox-arguments '("-new-window"))
-
-(setq exwm-input-simulation-keys
-      '(
-        ;; movement
-        ([?\C-b] . [left])
-        ([?\M-b] . [C-left])
-        ([?\C-f] . [right])
-        ([?\M-f] . [C-right])
-        ([?\C-p] . [up])
-        ([?\C-n] . [down])
-        ([?\C-e] . [end])
-        ([?\M-v] . [prior])
-        ([?\C-v] . [next])
-        ([?\C-d] . [delete])
-        ;; undo
-        ([?\C-/] . [?\C-z])
-
-        ;; Interferes with Slack
-        ;; ([?\C-k] . [S-end delete])
-
-        ;; cut/copy/paste.
-        ([?\C-w] . [?\C-x])
-        ([?\M-w] . [?\C-c])
-        ([?\C-y] . [?\C-v])
-        ;; search
-        ([?\C-s] . [?\C-f])))
-
-(define-ibuffer-column exwm-class (:name "Class")
-  (if (bound-and-true-p exwm-class-name)
-      exwm-class-name
-    ""))
-(define-ibuffer-column exwm-instance (:name "Instance")
-  (if (bound-and-true-p exwm-instance-name)
-      exwm-instance-name
-    ""))
-(define-ibuffer-column exwm-urgent (:name "U")
-  (if (bound-and-true-p exwm--hints-urgency)
-      "U"
-    " "))
-
-(defun my/exwm-ibuffer (&optional other-window)
-  (interactive "P")
-  (let ((name (buffer-name)))
-    (ibuffer other-window
-             "*exwm-ibuffer*"
-             '((mode . exwm-mode))
-             nil nil nil
-             '((mark exwm-urgent
-                     " "
-                     (name 64 64 :left :elide)
-                     " "
-                     (exwm-class 20 -1 :left)
-                     " "
-                     (exwm-instance 10 -1 :left))))
-    (ignore-errors (ibuffer-jump-to-buffer name))))
-
-(exwm-input-set-key (kbd "s-o") #'my/exwm-ibuffer)
-
-(use-package! exwm-edit
-  :init
-  ;; Otherwise it steals C-c ' from org
-  (setq exwm-edit-bind-default-keys nil))
-
-(defun my/exwm-start-in-char-mode ()
-  (when (or (string-prefix-p "terminator" exwm-instance-name)
-            (string-prefix-p "emacs" exwm-instance-name)
-            (string-prefix-p "next" exwm-instance-name))
-    (exwm-input-release-keyboard (exwm--buffer->id (window-buffer)))))
-(add-hook 'exwm-manage-finish-hook 'my/exwm-start-in-char-mode)
-
-(require 'exwm-randr)
-;; FIXME
-(setq exwm-randr-workspace-monitor-plist '(0 "eDP-1"
-                                             1 "HDMI-1"
-                                             1 "HDMI-1"
-                                             2 "HDMI-1"
-                                             3 "HDMI-1"
-                                             4 "HDMI-1"
-                                             5 "HDMI-1"
-                                             6 "HDMI-1"
-                                             7 "HDMI-1"
-                                             8 "HDMI-1"
-                                             9 "HDMI-1"))
-
-
-(require 'exwm-randr)
-(exwm-randr-enable)
-
-;; (exwm-enable)
-
-;; (use-package! exwm-mff
-;;   :config
-;;   (exwm-mff-mode 1))
-
-#+END_SRC
-
-#+RESULTS:
-
-** Launch Script
-
-#+begin_src sh :tangle ./modules/desktop/exwm/launch-exwm.sh :tangle-mode (identity #o775)
-#!/bin/bash
-
-# Disable access control for the current user.
-xhost +SI:localuser:$USER
-
-# Identify the home of our gtkrc file, important for setting styles of
-# gtk-based applications
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-
-
-# Make Java applications aware this is a non-reparenting window manager.
-export _JAVA_AWT_WM_NONREPARENTING=1
-
-# Bind caps to ctrl
-setxkbmap -option 'ctrl:nocaps'
-
-# set keyboard rate
-xset r rate 160 50
-
-xsetroot -solid black
-
-# Set default cursor.
-xsetroot -cursor_name left_ptr
-
-# Nix + direnv
-# lorri daemon &
-
-# Email sync
-offlineimap &
-
-# Uncomment the following block to use the exwm-xim module.
-# export XMODIFIERS=@im=exwm-xim
-# export GTK_IM_MODULE=xim
-# export QT_IM_MODULE=xim
-# export CLUTTER_IM_MODULE=xim
-
-source ~/.profile
-
-# Sync Doom
-# ~/.emacs.d/bin/doom sync
-
-# Finally start Emacs
-exec ~/.emacs.d/bin/doom run
-#+end_src
-
-** XSession Configuration
-
-This gets picked up by DM
-
-#+begin_src conf :tangle "/sudo::/usr/share/xsessions/exwm.desktop" :tangle-mode (identity #o644)
-[Desktop Entry]
-Encoding=UTF-8
-Name=EXWM
-Comment=Emacs X WM
-Exec=/home/dan/.doom.d/modules/desktop/exwm/launch-exwm.sh
-Type=XSession
-#+end_src

@@ -16,7 +16,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 18)
+(setq doom-font (font-spec :family "Hack" :size 20)
       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
       doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -419,6 +419,13 @@
         org-id-link-to-org-use-id t
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
+;; Helpful command: (deft-refresh)
+(map! "<f8>" 'deft)
+(setq deft-directory org-roam-directory
+      deft-recursive t
+      ;; Otherwise too slow
+      deft-file-limit 100)
+
 (use-package! org-roam-server
   :config
   (setq org-roam-server-host "127.0.0.1"
@@ -469,7 +476,8 @@
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
-                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a")))
+                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))
+  )
 
 (use-package! org-transclusion
   :hook (org-roam-mode . org-transclusion-mode))
@@ -478,6 +486,8 @@
   :config
   ;; take an image that is already on the clipboard
   (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+
+(use-package! org-cliplink)
 
 (use-package! org-cliplink)
 
@@ -825,10 +835,14 @@
 
 (use-package! dmenu)
 
+(use-package! dmenu)
+
 (use-package! ace-window
   :config
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+(use-package! burly)
 
 (use-package! burly)
 
@@ -849,6 +863,10 @@
   (setq google-translate-output-destination 'kill-ring))
 
 (use-package! string-inflection)
+
+(use-package! string-inflection)
+
+(use-package! dotenv)
 
 (use-package! dotenv)
 
@@ -897,6 +915,8 @@
 
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+(setq warning-minimum-level :emergency)
 
 (flycheck-mode 0)
 

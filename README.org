@@ -652,7 +652,7 @@ I use org as a primary interface. It currently manages:
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
+  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -786,11 +786,15 @@ aka my exocortex
 
 #+begin_src emacs-lisp
 ;; Helpful command: (deft-refresh)
-(map! "<f8>" 'deft)
-(setq deft-directory org-roam-directory
-      deft-recursive t
+(setq deft-recursive t
       ;; Otherwise too slow
       deft-file-limit 100)
+
+(map! "<f8>" 'my/deft)
+(defun my/deft ()
+  (interactive)
+  (let ((deft-directory org-roam-directory))
+    (deft)))
 #+end_src
 
 #+RESULTS:
@@ -1688,7 +1692,7 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 ** Extra Load Files
 
 #+begin_src emacs-lisp
-(load-file "/home/dan/Work/Worldcoin/worldcoin-setup.el")
+(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
 (require 'worldcoin-setup)
 #+end_src
 
@@ -2048,8 +2052,7 @@ narrowed."
                    img)))
 
 
-(defun my/run-in-fresh-compilation (cmd &optional dir)
-
+(defun my/run-in-fresh-compilation (cmd dir)
   (defun local-compile-buffer-namer (ignored)
     (generate-new-buffer-name cmd))
 
@@ -2108,6 +2111,17 @@ Use `set-region-read-only' to set this property."
   (interactive "r")
   (with-silent-modifications
     (remove-text-properties begin end '(read-only t))))
+
+
+(defun my/get-yubikey-token ()
+  "Expects ykman to be installed."
+  (interactive)
+  (with-temp-buffer
+    (message "Touch Yubikey!")
+    (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" "yubi")
+    (let* ((output (buffer-string))
+           (cells (split-string output)))
+      (last cells))))
 #+end_src
 
 #+RESULTS:

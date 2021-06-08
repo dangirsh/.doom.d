@@ -314,7 +314,7 @@
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
+  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -420,11 +420,15 @@
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
 ;; Helpful command: (deft-refresh)
-(map! "<f8>" 'deft)
-(setq deft-directory org-roam-directory
-      deft-recursive t
+(setq deft-recursive t
       ;; Otherwise too slow
       deft-file-limit 100)
+
+(map! "<f8>" 'my/deft)
+(defun my/deft ()
+  (interactive)
+  (let ((deft-directory org-roam-directory))
+    (deft)))
 
 (use-package! org-roam-server
   :config
@@ -877,7 +881,7 @@
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
 
-(load-file "/home/dan/Work/Worldcoin/worldcoin-setup.el")
+(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
 (require 'worldcoin-setup)
 
 (map!

@@ -76,3 +76,4 @@
  '(fixed-pitch-serif ((t (:font #<font-spec nil nil Libre\ Baskerville nil nil nil nil nil nil nil nil nil nil>))))
  '(org-roam-link ((t (:inherit org-link))))
  '(variable-pitch ((t (:font #<font-spec nil nil Libre\ Baskerville nil nil nil nil nil nil nil nil nil nil>)))))
+(put 'upcase-region 'disabled nil)

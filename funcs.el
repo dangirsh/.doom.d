@@ -231,8 +231,7 @@ narrowed."
                    img)))
 
 
-(defun my/run-in-fresh-compilation (cmd &optional dir)
-
+(defun my/run-in-fresh-compilation (cmd dir)
   (defun local-compile-buffer-namer (ignored)
     (generate-new-buffer-name cmd))
 
@@ -291,6 +290,17 @@ Use `set-region-read-only' to set this property."
   (interactive "r")
   (with-silent-modifications
     (remove-text-properties begin end '(read-only t))))
+
+
+(defun my/get-yubikey-token ()
+  "Expects ykman to be installed."
+  (interactive)
+  (with-temp-buffer
+    (message "Touch Yubikey!")
+    (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" "yubi")
+    (let* ((output (buffer-string))
+           (cells (split-string output)))
+      (last cells))))
 
 (defun my/edit-resume ()
   (interactive)

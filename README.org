@@ -96,7 +96,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#logview][Logview]]
   - [[#wgrep][wgrep]]
   - [[#performance-tweaks][Performance Tweaks]]
-  - [[#extra-load-files][Extra Load Files]]
+  - [[#load-untracked-elisp][Load Untracked Elisp]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#misc][Misc]]
 - [[#utility-functions][Utility functions.]]
@@ -272,7 +272,6 @@ clients, file templates and snippets.
 #+begin_src emacs-lisp
 (load-file (concat doom-private-dir "funcs.el"))
 #+end_src
-
 
 ** Visual Settings
 :PROPERTIES:
@@ -471,7 +470,6 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
 #+end_src
 
-
 ** Hardware Settings
 *** Keyboard
 :PROPERTIES:
@@ -521,7 +519,7 @@ Set brightness by writing directly to system brightness file.
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
-  (interactive "n:")
+  (interactive "nBrightness level:")
   (let ((safe-level
          (cond ((< level my/brightness-min) my/brightness-min)
                ((> level my/brightness-max) my/brightness-max)
@@ -545,6 +543,75 @@ Set brightness by writing directly to system brightness file.
 (map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
 #+end_src
 
+**** Redshift
+:PROPERTIES:
+:ID:       d05518f1-7f49-40d2-b75b-e01a94d63925
+:END:
+
+#+begin_src emacs-lisp
+(setq my/redshift-min 500)
+(setq my/redshift-max 6000)
+(setq my/redshift-step 250)
+;; Since get-redshift is slow
+(setq my/redshift-val-cache nil)
+
+
+(defun my/query-redshift ()
+  (string-to-number (save-window-excursion
+                      (with-temp-buffer
+                        (insert (shell-command-to-string "redshift -p"))
+                        (beginning-of-buffer)
+                        (re-search-forward "Color temperature")
+                        (forward-char)
+                        (forward-char)
+                        (set-mark-command nil)
+                        (re-search-forward "K")
+                        (backward-char)
+                        (buffer-substring (mark) (point))))))
+
+(defun my/get-redshift-cache ()
+  (if my/redshift-val-cache
+      my/redshift-val-cache
+    (let ((val (my/query-redshift)))
+      (setq my/redshift-val-cache val)
+      val)))
+
+(defun my/get-redshift ()
+  (* my/redshift-step (round (my/get-redshift-cache)
+                             my/redshift-step)))
+
+
+(defun my/set-redshift (level)
+  (interactive "nRedshift level:")
+  (let ((safe-level
+         (cond ((< level my/redshift-min) my/redshift-min)
+               ((> level my/redshift-max) my/redshift-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "redshift -P -O %s" level)
+       nil nil))))
+
+
+(defun my/redshift-step-change (delta)
+  (let ((new-val (+ delta (my/get-redshift-cache))))
+    (my/set-redshift new-val)
+    (setq my/redshift-val-cache new-val)))
+
+(defun my/redshift-increase ()
+  (interactive)
+  (my/redshift-step-change my/redshift-step))
+
+(defun my/redshift-decrease ()
+  (interactive)
+  (my/redshift-step-change (- my/redshift-step)))
+
+(map! "S-<f5>" 'my/redshift-decrease)
+(map! "S-<f6>" 'my/redshift-increase)
+
+
+#+end_src
+
 *** Volume
 :PROPERTIES:
 :ID:       e0eb42ca-e1e4-485c-9957-011578af1711
@@ -561,7 +628,7 @@ Set brightness by writing directly to system brightness file.
                                my/volume-step)))
 
 (defun my/set-volume (level)
-  (interactive "n:")
+  (interactive "nVolume level:")
   (let ((clipped-level
          (cond ((< level my/volume-min) my/volume-min)
                ((> level my/volume-max) my/volume-max)
@@ -1156,27 +1223,6 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+end_src
 
 *** TODO org-sidebar
-*** COMMENT org-gcal: Google Calendar Integration
-:PROPERTIES:
-:ID:       cd234f42-df87-4d43-a09c-806d358afc3a
-:END:
-
-#+begin_src emacs-lisp
-(use-package! org-gcal
-  :config
-  (setq my/gcal-file "~/Sync/gcal.org"
-        wc/gcal-file "~/Work/Worldcoin/gcal.org")
-  (setq org-gcal-client-id "467647316293-kbukc1nkocq7ojvvgthi37u0gck3400o.apps.googleusercontent.com"
-        org-gcal-client-secret (password-store-get "org-gcal-client-secret")
-        org-gcal-fetch-file-alist `(("dan@worldcoin.org" .  ,wc/gcal-file)
-                                    ("dan.girsh@gmail.com" .  ,my/gcal-file)))
-
-  (add-to-list 'org-agenda-files wc/gcal-file)
-  (add-to-list 'org-agenda-files my/gcal-file)
-
-  (run-with-idle-timer 30 nil #'org-gcal-fetch))
-#+end_src
-
 ** TRAMP
 :PROPERTIES:
 :ID:       c54e2755-745b-44fa-b9b3-a965695ad67c
@@ -1411,7 +1457,6 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 (use-package! julia-formatter
     :hook (julia-mode . (lambda() (julia-formatter-server-start))))
 #+end_src
-
 
 ** Haskell
 :PROPERTIES:
@@ -2137,7 +2182,7 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 (setq swiper-use-visual-line-p (lambda (a) nil))
 #+end_src
 
-** Extra Load Files
+** Load Untracked Elisp
 :PROPERTIES:
 :ID:       52472b2d-ec59-4629-88c6-83dcab02b49e
 :END:
@@ -2185,6 +2230,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 #+END_SRC
+**
+**
 
 ** Misc
 :PROPERTIES:
@@ -2412,10 +2459,6 @@ text.
         (insert ref-title)
         (insert "\n\n")
         (insert (format "cite:%s" ref-key))))))
-
-(defun my/set-redshift (level)
-  (interactive "nRedshift level: ")
-  (shell-command (format "redshift -P -O %s" level)))
 
 (defun my/night-mode ()
   (interactive)
@@ -2910,6 +2953,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 #+end_src
 
 * Future
+- [ ] [[https://github.com/takaxp/org-tree-slide][GitHub - takaxp/org-tree-slide: A presentation tool for org-mode based on the...]]
 - [ ] [[https://github.com/minad/bookmark-view][GitHub - minad/bookmark-view: bookmark-view.el - Use bookmarks to persist the...]]
 - [ ] [[https://codeberg.org/jao/consult-recoll][jao/consult-recoll: recoll queries in emacs using consult - consult-recoll - ...]]
 - [ ] [[https://github.com/gagbo/consult-lsp][GitHub - gagbo/consult-lsp: LSP-mode and consult.el helping each other]]

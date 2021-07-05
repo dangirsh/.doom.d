@@ -172,9 +172,9 @@
 (setq my/brightness-step 5)
 
 (defun my/get-brightness ()
-  (round (string-to-number
-          (shell-command-to-string "xbacklight -get"))
-         my/brightness-step))
+  (* my/brightness-step (round (string-to-number
+                                (shell-command-to-string "xbacklight -get"))
+                               my/brightness-step)))
 
 (defun my/set-brightness (level)
   (let ((safe-level

@@ -725,6 +725,7 @@
 (use-package! selectrum
   :config
   (selectrum-mode +1)
+  (setq magit-completing-read-function #'selectrum-completing-read)
   (setq selectrum-highlight-candidates-function #'orderless-highlight-matches))
 
 (use-package! orderless

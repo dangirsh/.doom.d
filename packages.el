@@ -56,6 +56,7 @@
 (package! embark-consult)
 
 (package! logview)
+(package! wgrep)
 
 ;; Julia
 ;; (package! julia-mode :pin "1c122f1dff")

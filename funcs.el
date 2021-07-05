@@ -143,14 +143,14 @@ text.
   (interactive)
   (load-theme 'doom-dark+ t)
   (doom/reload-theme)
-  (my/set-brightness 1000)
+  (my/set-brightness 30)
   (my/set-redshift 1500))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-nord-light t)
   (doom/reload-theme)
-  (my/set-brightness 10000)
+  (my/set-brightness 100)
   (my/set-redshift 5500))
 
 
@@ -300,7 +300,41 @@ Use `set-region-read-only' to set this property."
     (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" "yubi")
     (let* ((output (buffer-string))
            (cells (split-string output)))
-      (last cells))))
+      (car (last cells)))))
+
+
+(defun my/copy-yubikey-token ()
+  (interactive)
+  (kill-new (format "%s" (my/get-yubikey-token))))
+
+
+;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
+(defun my/run-in-vterm-kill (process event)
+  "A process sentinel. Kills PROCESS's buffer if it is live."
+  (let ((b (process-buffer process)))
+    (and (buffer-live-p b)
+         (kill-buffer b))))
+
+
+;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
+(defun my/run-in-vterm (command)
+  "Execute string COMMAND in a new vterm.
+
+Interactively, prompt for COMMAND with the current buffer's file
+name supplied.
+
+Like `async-shell-command`, but run in a vterm for full terminal features.
+
+The new vterm buffer is named in the form `*foo bar.baz*`, the
+command and its arguments in earmuffs.
+
+When the command terminates, the shell remains open, but when the
+shell exits, the buffer is killed."
+  (interactive)
+  (with-current-buffer (vterm (concat "*" command "*"))
+    (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
+    (vterm-send-string command)
+    (vterm-send-return)))
 
 (defun my/edit-resume ()
   (interactive)
@@ -402,6 +436,7 @@ context.  When called with an argument, unconditionally call
   "Archive finished or cancelled tasks.
 SCOPE can be 'file or 'tree."
   (interactive)
+  (beginning-of-buffer)
   (org-map-entries
    (lambda ()
      (org-archive-subtree)

@@ -9,10 +9,10 @@
 
        :completion
        (company)
-       (ivy +prescient +childframe)
+       ;; (ivy +prescient +childframe)
 
        :ui
-       deft
+       ;; deft
        doom
        hl-todo
        modeline
@@ -25,6 +25,7 @@
        multiple-cursors
        word-wrap
        format
+       snippets
 
        :emacs
        dired

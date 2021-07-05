@@ -36,11 +36,11 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-light t)
+  (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
-  (load-theme 'doom-one-light t)
+  ;; (load-theme 'doom-one t)
   ;; (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
@@ -56,7 +56,7 @@
 ;;   :config
 ;;   (load-theme 'poet))
 
-;; (use-package almost-mono-themes
+;; (use-package! almost-mono-themes
 ;;   :config
 ;;   ;; (load-theme 'almost-mono-black t)
 ;;   (load-theme 'almost-mono-white t))
@@ -105,6 +105,7 @@
    '(("." . pop-global-mark)
      ("/" . org-recoll-search)
      ("<SPC>" . rgrep)
+     ("a" . my/org-agenda)
      ("b" . my/set-brightness)
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
@@ -127,6 +128,7 @@
 
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global ",," 'doom/open-scratch-buffer)
 
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
@@ -165,17 +167,37 @@
   (interactive)
   (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
 
-(defun my/set-brightness (brightness)
-  (interactive "nBrightness level: ")
-  (save-window-excursion
-    (find-file "/sudo:root@localhost:/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/brightness")
-    (kill-region
-     (point-min)
-     (point-max))
-    (insert
-     (format "%s" brightness))
-    (save-buffer)
-    (kill-buffer)))
+(setq my/brightness-min 1)
+(setq my/brightness-max 100)
+(setq my/brightness-step 5)
+
+(defun my/get-brightness ()
+  (round (string-to-number
+          (shell-command-to-string "xbacklight -get"))
+         my/brightness-step))
+
+(defun my/set-brightness (level)
+  (let ((safe-level
+         (cond ((< level my/brightness-min) my/brightness-min)
+               ((> level my/brightness-max) my/brightness-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "xbacklight -set %s &" safe-level) nil nil))))
+
+(defun my/brightness-step-change (delta)
+  (my/set-brightness (+ delta (my/get-brightness))))
+
+(defun my/brightness-increase ()
+  (interactive)
+  (my/brightness-step-change my/brightness-step))
+
+(defun my/brightness-decrease ()
+  (interactive)
+  (my/brightness-step-change (- my/brightness-step)))
+
+(map! "<f5>" 'my/brightness-decrease)
+(map! "<f6>" 'my/brightness-increase)
 
 (defun my/connect-to-bose-700s ()
   (interactive)
@@ -314,7 +336,7 @@
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -331,63 +353,6 @@
 
 (use-package! org-recoll
   :after org)
-
-;; Note that this pulls in Helm :/
-;; https://github.com/jkitchin/org-ref/issues/202
-(use-package! org-ref
-  :after (org bibtex)
-  :init
-  (setq org-ref-default-bibliography '("~/Sync/references.bib"))
-  (setq bibtex-completion-bibliography org-ref-default-bibliography)
-  :config
-  (setq org-latex-pdf-process
-        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "bibtex %b"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-        org-ref-bibliography-notes "~/Sync/pdf_notes.org"
-        org-ref-pdf-directory "~/Sync/pdf/"
-        org-ref-notes-function #'org-ref-notes-function-one-file)
-  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
-
-  (setq org-latex-listings 'minted
-        org-latex-packages-alist '(("" "minted")))
-  
-  (defun get-pdf-filename (key)
-    (let ((results (bibtex-completion-find-pdf key)))
-      (if (equal 0 (length results))
-          (org-ref-get-pdf-filename key)
-        (car results))))
-
-  (add-hook 'org-ref-create-notes-hook
-            (lambda ()
-              (org-entry-put
-               nil
-               "NOTER_DOCUMENT"
-               (get-pdf-filename (org-entry-get
-                                  (point) "Custom_ID")))) )
-
-  (defun my/org-ref-noter-at-point ()
-    (interactive)
-    (let* ((results (org-ref-get-bibtex-key-and-file))
-           (key (car results))
-           (pdf-file (funcall org-ref-get-pdf-filename-function key))
-           (orig-bibtex-dialect bibtex-dialect))
-      (if (file-exists-p pdf-file)
-          (save-window-excursion
-            ;; using the local flag for bibtex-set-dialect doesn't work
-            ;; likely because org-ref-open-notes-at-point loses the buffer context
-            (bibtex-set-dialect 'BibTeX)
-            (org-ref-open-notes-at-point)
-            (bibtex-set-dialect orig-bibtex-dialect)
-            (find-file-other-window pdf-file)
-            (org-noter))
-        (message "no pdf found for %s" key))))
-
-  (map! :leader
-        :map org-mode-map
-        :desc "org-noter from ref"
-        "n p" 'my/org-ref-noter-at-point))
 
 (use-package! org-journal
   :after org
@@ -419,16 +384,13 @@
         org-id-link-to-org-use-id t
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
-;; Helpful command: (deft-refresh)
-(setq deft-recursive t
-      ;; Otherwise too slow
-      deft-file-limit 100)
-
-(map! "<f8>" 'my/deft)
-(defun my/deft ()
+(defun my/org-roam-search ()
+  "Search org-roam directory using consult-ripgrep. With live-preview."
   (interactive)
-  (let ((deft-directory org-roam-directory))
-    (deft)))
+  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
+    (consult-ripgrep org-roam-directory)))
+
+(map! "<f8>" 'my/org-roam-search)
 
 (use-package! org-roam-server
   :config
@@ -443,35 +405,6 @@
         org-roam-server-network-label-truncate t
         org-roam-server-network-label-truncate-length 60
         org-roam-server-network-label-wrap-length 20))
-
-(use-package! org-roam-bibtex
-  :after org-roam
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :bind (:map org-mode-map
-         (("C-c n a" . orb-note-actions)))
-  :config
-  (setq bibtex-completion-library-path "~/Sync/pdf/")
-  (setq orb-preformat-keywords
-        '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
-  (setq orb-note-actions-interface 'ivy)
-  (setq orb-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           ""
-           :file-name "${citekey}"
-           :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}
-
-- tags ::
-
-* ${title}
-:PROPERTIES:
-:Custom_ID: ${citekey}
-:URL: ${url}
-:AUTHOR: ${author-or-editor}
-:NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
-:NOTER_PAGE:
-:END:"))))
-
-(unpin! org-roam company-org-roam)
 
 (after! org-roam
   (setq my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
@@ -493,8 +426,6 @@
 
 (use-package! org-cliplink)
 
-(use-package! org-cliplink)
-
 (use-package! org-drill
   :after org
   :config
@@ -511,6 +442,10 @@
 
 (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
 (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
+
+(defun my/org-agenda ()
+  (interactive)
+  (org-agenda nil "n"))
 
 (use-package! org-super-agenda
   :after org-agenda
@@ -632,7 +567,7 @@
   (map! "C-;" 'company-complete)
   (map! "M-i" 'iedit-mode))
 
-(use-package undo-tree
+(use-package! undo-tree
   :init
   (setq undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t)
@@ -719,9 +654,6 @@
     :ignore-messages nil
     :server-id 'rust-analyzer-remote)))
 
-(use-package! evcxr
-  :hook (rustic-mode-hook . evcxr-minor-mode))
-
 (use-package! jupyter
   :init
   (setq jupyter-eval-use-overlays t)
@@ -756,24 +688,152 @@
     :desc "Eval string"      "w" #'jupyter-eval-string
     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
 
-(after! ivy
-  ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
-  (setq ivy-use-virtual-buffers t
-        counsel-find-file-at-point t
-        ivy-wrap nil
-        ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-        ivy-posframe-height-alist '((t . 20))
-        ivy-posframe-parameters '((internal-border-width . 1))
-        ivy-posframe-width 100)
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (eshell-cmpl-initialize)
-              (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))
+(use-package! selectrum
+  :config
+  (selectrum-mode +1)
+  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches))
+
+(use-package! orderless
+  :custom (completion-styles '(orderless)))
+
+(use-package! selectrum-prescient
+  :after (selectrum)
+  :config
+  (setq selectrum-prescient-enable-filtering nil)
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
+
+(use-package! ctrlf
+  :init
+  (ctrlf-mode +1))
+
+(use-package! mini-frame
+  :init
+  (mini-frame-mode +1)
+  (setq resize-mini-frames t)
+  (setq mini-frame-show-parameters
+        '((top . 25)
+          (height . 1)
+          (width . 0.7)
+          (left . 0.5)))
+  ;; (dolist (cmd '(consult-line
+  ;;                consult-ripgrep))
+  ;;   (add-to-list 'mini-frame-ignore-commands cmd))
+  )
+
+(use-package! consult
+  :init
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   (add-to-dk-keymap
-   '(("g" . +ivy/project-search)
-     ("h" . +ivy/projectile-find-file)
-     ("i" . counsel-semantic-or-imenu)
-     ("j" . ivy-switch-buffer))))
+   '(("<SPC>" . consult-ripgrep)
+     ("g" . consult-git-grep)
+     ("i" . consult-imenu)
+     ("l" . consult-locate)
+     ("j" . consult-buffer)))
+  (map! :localleader
+        :map org-mode-map
+        ;; override default binding for org-goto
+        "." 'consult-outline)
+  :config
+  (setq consult-narrow-key "<")
+  (setq consult-async-split-style 'space)
+  (autoload 'projectile-project-root "projectile")
+  (setq consult-project-root-function #'projectile-project-root)
+  :bind (;; C-c bindings (mode-specific-map)
+         ("C-c h" . consult-history)
+         ("C-c m" . consult-mode-command)
+         ("C-c b" . consult-bookmark)
+         ("C-c k" . consult-kmacro)
+         ;; C-x bindings (ctl-x-map)
+         ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)            ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store) ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+
+         ;; only differs from built-in yank-pop by a preview mechanism
+         ;; the previews break pasting into vterm, so disabling for now
+         ;; ("M-y" . consult-yank-pop)     ;; orig. yank-pop
+
+         ("<help> a" . consult-apropos) ;; orig. apropos-command
+         ;; M-g bindings (goto-map)
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)     ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)   ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line) ;; orig. goto-line
+         ("M-g o" . consult-outline)     ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-project-imenu)
+         ;; M-s bindings (search-map)
+         ("M-s f" . consult-find)
+         ("M-s L" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch)
+         :map isearch-mode-map
+         ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
+         ("M-s l" . consult-line))   ;; needed by consult-line to detect isearch
+  )
+
+
+(use-package! consult-flycheck
+  :bind (:map flycheck-command-map
+         ("!" . consult-flycheck)))
+
+
+(use-package! consult-projectile
+  :config
+  (add-to-dk-keymap
+   '(("h" . consult-projectile))))
+
+(use-package! marginalia
+  :init (marginalia-mode)
+  :bind
+  (("M-A" . marginalia-cycle)
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle)))
+
+(use-package! embark
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+  (setq embark-action-indicator
+        (lambda (map _target)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator))
+
+;; Consult users will also want the embark-consult package.
+(use-package! embark-consult
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . embark-consult-preview-minor-mode))
 
 (after! dired
   (setq dired-listing-switches "-aBhl  --group-directories-first"
@@ -792,10 +852,7 @@
 ;; Directly edit permisison bits!
 (setq wdired-allow-to-change-permissions t)
 
-(use-package! deadgrep
-              :if (executable-find "rg")
-              :init
-              (map! "M-s" #'deadgrep))
+(use-package! deadgrep)
 
 (use-package! smartscan
   :init (global-smartscan-mode 1)
@@ -833,11 +890,8 @@
      ("l" . magit-show-refs-head))))
 
 (after! pdf-tools
-  ;;swiper doesn't trigger the pdf-isearch
   (map! :map pdf-isearch-minor-mode-map
         "C-s" 'isearch-forward-regexp))
-
-(use-package! dmenu)
 
 (use-package! dmenu)
 
@@ -846,20 +900,15 @@
   (map! "C-M-SPC" #'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-(use-package! burly)
-
-(use-package! burly)
+;; prevents horizontal splits when split-window-sensibly is used
+(setq split-width-threshold nil)
 
 (use-package! real-auto-save
   :hook
   (prog-mode . real-auto-save-mode)
   (org-mode . real-auto-save-mode))
 
-(use-package! jest
-  :hook
-  (typescript-mode . jest-minor-mode))
-
-(use-package google-translate
+(use-package! google-translate
   :custom
   (google-translate-backend-method 'curl)
   :config
@@ -868,18 +917,13 @@
 
 (use-package! string-inflection)
 
-(use-package! string-inflection)
-
-(use-package! dotenv)
-
 (use-package! dotenv)
 
 (defun my/load-env-file (env-file)
   (interactive "f")
   (dotenv-update-env (dotenv-load% env-file)))
 
-(setq swiper-use-visual-line nil)
-(setq swiper-use-visual-line-p (lambda (a) nil))
+(use-package! logview)
 
 (load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
 (require 'worldcoin-setup)
@@ -895,18 +939,12 @@
 
  "M-SPC" 'avy-goto-word-or-subword-1
 
- "C-s" 'swiper-isearch
- ;; "C-M-s" 'swiper-isearch
-
  "C-S-d" 'my/duplicate-line-or-region
  "C-c <left>" 'winner-undo
  "C-c <right>" 'winner-redo
 
  "C-+" 'text-scale-increase
  "C--" 'text-scale-decrease
-
- ;; FIXME: This currently relies on Helm as an undeclared dep!
- "M-y" 'helm-show-kill-ring
 
  "C-<f5>" 'my/night-mode
  "C-<f6>" 'my/day-mode
@@ -917,10 +955,14 @@
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo)
 
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
+;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
+;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 (setq warning-minimum-level :emergency)
+
+(setq isearch-allow-scroll t)
+
+(setq async-shell-command-buffer 'new-buffer)
 
 (flycheck-mode 0)
 

@@ -52,7 +52,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#org][Org]]
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
     - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
-    - [[#org-ref-managing-citations][org-ref: Managing citations]]
     - [[#org-journal-managing-daily-journal-files][org-journal: Managing daily journal files]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
     - [[#org-transclusion][org-transclusion]]
@@ -72,9 +71,11 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#rustic][Rustic]]
     - [[#org-babel-setup][Org-babel setup]]
     - [[#language-server][Language Server]]
-    - [[#evcxr-mode][EVCXR Mode]]
   - [[#jupyter][Jupyter]]
-  - [[#ivy][Ivy]]
+  - [[#selectrum-etc][Selectrum etc...]]
+  - [[#miniframe][Miniframe]]
+  - [[#consult][Consult]]
+  - [[#embark-and-marginalia][Embark and Marginalia]]
   - [[#dired][Dired]]
   - [[#search-utilities][Search Utilities]]
     - [[#better-grep][Better Grep]]
@@ -84,15 +85,15 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#searching--annotating-pdfs][Searching + Annotating PDFs]]
     - [[#pdf-tools][pdf-tools]]
   - [[#lauching-external-programs][Lauching External Programs]]
-  - [[#jumping-between-windows][Jumping between windows]]
-  - [[#saving-window-configurations][Saving Window Configurations]]
+  - [[#window-management][Window Management]]
+    - [[#jumping-between-windows][Jumping between windows]]
+    - [[#avoiding-automatic-horizontal-splits][Avoiding Automatic Horizontal Splits]]
   - [[#autosave][Autosave]]
-  - [[#additional-web-dev-tooling][Additional Web Dev Tooling]]
   - [[#google-translate][Google Translate]]
   - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
   - [[#dotenv][Dotenv]]
+  - [[#logview][Logview]]
   - [[#performance-tweaks][Performance Tweaks]]
-    - [[#swiper][Swiper]]
   - [[#extra-load-files][Extra Load Files]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#misc][Misc]]
@@ -107,9 +108,13 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#misc-1][Misc]]
   - [[#keybindings][Keybindings]]
 - [[#package-declarations][Package declarations]]
+- [[#future][Future]]
 #+END_QUOTE
 
 * Doom Module Declarations
+:PROPERTIES:
+:ID:       51ad662e-95d0-41bf-a17c-80f3b9ad6bb3
+:END:
 
 This file controls what Doom modules are enabled and what order they load in.
 Remember to run =doom sync= or =doom/reload=  after modifying it.
@@ -126,10 +131,10 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 
        :completion
        (company)
-       (ivy +prescient +childframe)
+       ;; (ivy +prescient +childframe)
 
        :ui
-       deft
+       ;; deft
        doom
        hl-todo
        modeline
@@ -142,6 +147,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        multiple-cursors
        word-wrap
        format
+       snippets
 
        :emacs
        dired
@@ -202,6 +208,9 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 :header-args: :tangle config.el
 :END:
 ** Header
+:PROPERTIES:
+:ID:       9bb29ab5-3376-4e2f-b2b0-afba1d83b951
+:END:
 Set =lexical-binding= for this file.
 
 #+begin_src emacs-lisp
@@ -210,6 +219,9 @@ Set =lexical-binding= for this file.
 
 ** Global Constants
 *** Contact info
+:PROPERTIES:
+:ID:       37cd9dae-945d-4995-a256-7d2a5e0fec33
+:END:
 
 Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets.
@@ -220,6 +232,9 @@ clients, file templates and snippets.
 #+end_src
 
 *** Directories
+:PROPERTIES:
+:ID:       7bded30b-eb12-414d-adcc-793d332992ed
+:END:
 
 #+begin_src emacs-lisp
 (setq my/home-dir "/home/dan/")
@@ -233,6 +248,9 @@ clients, file templates and snippets.
 : /home/dan/Media/
 
 **** Org
+:PROPERTIES:
+:ID:       a8ee5123-de16-4100-8f61-4254ad41a35a
+:END:
 
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
@@ -245,6 +263,9 @@ clients, file templates and snippets.
 : /home/dan/Sync/org-roam/
 
 ** Load helper functions
+:PROPERTIES:
+:ID:       7b5b7825-c637-4def-ab9b-c7c0adc07e51
+:END:
 
 #+begin_src emacs-lisp
 (load-file (concat doom-private-dir "funcs.el"))
@@ -252,6 +273,9 @@ clients, file templates and snippets.
 
 
 ** Visual Settings
+:PROPERTIES:
+:ID:       c19e07c7-9f80-4b3d-9316-1a7e03e7886e
+:END:
 
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Hack" :size 20)
@@ -271,6 +295,10 @@ clients, file templates and snippets.
 #+end_src
 
 *** Theme
+:PROPERTIES:
+:ID:       962674ce-6327-446e-9000-c820d7b3f885
+:END:
+
 
 #+begin_src emacs-lisp
 (use-package! doom-themes
@@ -278,11 +306,11 @@ clients, file templates and snippets.
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-light t)
+  (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
-  (load-theme 'doom-one-light t)
+  ;; (load-theme 'doom-one t)
   ;; (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
@@ -298,7 +326,7 @@ clients, file templates and snippets.
 ;;   :config
 ;;   (load-theme 'poet))
 
-;; (use-package almost-mono-themes
+;; (use-package! almost-mono-themes
 ;;   :config
 ;;   ;; (load-theme 'almost-mono-black t)
 ;;   (load-theme 'almost-mono-white t))
@@ -314,6 +342,9 @@ I have some custom code to bind chords to Doom's leaders. Many commonly used
 commands are bound in these "key chord maps".
 
 *** Enable the key chord package
+:PROPERTIES:
+:ID:       9d6f7721-18d3-4487-8128-235c11fe4988
+:END:
 
 Set hardware-specific delay. Tweak this if:
 
@@ -330,6 +361,9 @@ Set hardware-specific delay. Tweak this if:
 #+end_src
 
 *** Setup for binding chords as leaders
+:PROPERTIES:
+:ID:       149caf22-cf26-419e-91fe-8927a664eb85
+:END:
 
 #+begin_src emacs-lisp
 (defun simulate-seq (seq)
@@ -348,6 +382,9 @@ Set hardware-specific delay. Tweak this if:
 #+end_src
 
 *** Define global key-chords
+:PROPERTIES:
+:ID:       dd47cb54-9c47-48fe-b38e-358b89558fcb
+:END:
 
 One of my proudest moments....
 https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
@@ -378,6 +415,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
    '(("." . pop-global-mark)
      ("/" . org-recoll-search)
      ("<SPC>" . rgrep)
+     ("a" . my/org-agenda)
      ("b" . my/set-brightness)
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
@@ -400,6 +438,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global ",," 'doom/open-scratch-buffer)
 
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
@@ -433,6 +472,9 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
 ** Hardware Settings
 *** Keyboard
+:PROPERTIES:
+:ID:       a30def7c-fa73-462d-9c05-c3f6658993a1
+:END:
 
 Sets caps to control and sets a snappy key repeat / delay.
 
@@ -446,6 +488,9 @@ Sets caps to control and sets a snappy key repeat / delay.
 #+end_src
 
 *** Toggle Touchpad
+:PROPERTIES:
+:ID:       4dc06675-d277-4442-a544-e5be429b8209
+:END:
 
 Occassionally, the touchpad gets triggered accidentally while typing. This is a
 quick way to disable/enable it.
@@ -457,26 +502,45 @@ quick way to disable/enable it.
 #+end_src
 
 *** Display Brightness
+:PROPERTIES:
+:ID:       a704c311-cb1c-4b0d-aacb-f368a1af0600
+:END:
 
 Set brightness by writing directly to system brightness file.
 
 #+begin_src emacs-lisp
-(defun my/set-brightness (brightness)
-  (interactive "nBrightness level: ")
-  (save-window-excursion
-    (find-file "/sudo:root@localhost:/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/brightness")
-    (kill-region
-     (point-min)
-     (point-max))
-    (insert
-     (format "%s" brightness))
-    (save-buffer)
-    (kill-buffer)))
+(setq my/brightness-min 1)
+(setq my/brightness-max 100)
+(setq my/brightness-step 5)
+
+(defun my/get-brightness ()
+  (round (string-to-number
+          (shell-command-to-string "xbacklight -get"))
+         my/brightness-step))
+
+(defun my/set-brightness (level)
+  (let ((safe-level
+         (cond ((< level my/brightness-min) my/brightness-min)
+               ((> level my/brightness-max) my/brightness-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "xbacklight -set %s &" safe-level) nil nil))))
+
+(defun my/brightness-step-change (delta)
+  (my/set-brightness (+ delta (my/get-brightness))))
+
+(defun my/brightness-increase ()
+  (interactive)
+  (my/brightness-step-change my/brightness-step))
+
+(defun my/brightness-decrease ()
+  (interactive)
+  (my/brightness-step-change (- my/brightness-step)))
+
+(map! "<f5>" 'my/brightness-decrease)
+(map! "<f6>" 'my/brightness-increase)
 #+end_src
-
-**** TODO Switch to interfacing with a brightness manager.
-
-Had issues the first time, but that was years ago.
 
 *** Bluetooth
 :PROPERTIES:
@@ -644,6 +708,9 @@ I use org as a primary interface. It currently manages:
 
 
 *** org-noter: Syncing notes to PDFs
+:PROPERTIES:
+:ID:       5a6bff7b-1b4b-4703-9646-115b5c247d4b
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! org-noter
@@ -652,7 +719,7 @@ I use org as a primary interface. It currently manages:
   ;; helpful in EXWM, where there are no frames
   (customize-set-variable 'org-noter-always-create-frame t)
   (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'vertical-split)
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
   (setq org-noter-notes-window-location 'other-frame
         org-noter-notes-search-path '("~/Sync")
         org-noter-auto-save-last-location t
@@ -669,6 +736,9 @@ I use org as a primary interface. It currently manages:
 #+END_SRC
 
 *** org-recoll: Interface to Recoll - PDF content search
+:PROPERTIES:
+:ID:       6355d4d1-45ed-4995-97a5-45b572666f99
+:END:
 
 [[https://github.com/alraban/org-recoll][GitHub - alraban/org-recoll: A lightweight emacs org-mode wrapper for the rec...]]
 
@@ -677,7 +747,10 @@ I use org as a primary interface. It currently manages:
   :after org)
 #+end_src
 
-*** org-ref: Managing citations
+*** COMMENT org-ref: Managing citations
+:PROPERTIES:
+:ID:       ed41ebd3-68bb-4f8d-95a4-7785c2e507c3
+:END:
 
 #+BEGIN_SRC emacs-lisp
 ;; Note that this pulls in Helm :/
@@ -739,6 +812,9 @@ I use org as a primary interface. It currently manages:
 #+END_SRC
 
 *** org-journal: Managing daily journal files
+:PROPERTIES:
+:ID:       49793723-4ced-45f7-bd4a-26ce616efe53
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! org-journal
@@ -762,6 +838,9 @@ I use org as a primary interface. It currently manages:
 #+END_SRC
 
 *** org-roam: Graph layer on top of Org
+:PROPERTIES:
+:ID:       2252cd6a-0724-4bd1-9174-ccf6e51488d1
+:END:
 
 aka my exocortex
 
@@ -782,7 +861,31 @@ aka my exocortex
 #+RESULTS:
 | todo |
 
-**** Deft: Note search
+**** Search via consult
+:PROPERTIES:
+:ID:       17a22bb8-b3e9-4503-823a-94b9828b7f4f
+:END:
+
+https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searching-notes/1226
+
+#+begin_src emacs-lisp
+(defun my/org-roam-search ()
+  "Search org-roam directory using consult-ripgrep. With live-preview."
+  (interactive)
+  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
+    (consult-ripgrep org-roam-directory)))
+
+(map! "<f8>" 'my/org-roam-search)
+#+end_src
+
+
+
+
+
+**** COMMENT Deft: Note search
+:PROPERTIES:
+:ID:       69587a08-56f4-49a9-b040-0394d5524487
+:END:
 
 #+begin_src emacs-lisp
 ;; Helpful command: (deft-refresh)
@@ -801,6 +904,9 @@ aka my exocortex
 : 100
 
 **** org-roam-server: Graph visualization / navigation
+:PROPERTIES:
+:ID:       6e670688-8f77-4b7e-9baa-2eb4889a5972
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-roam-server
@@ -818,7 +924,10 @@ aka my exocortex
         org-roam-server-network-label-wrap-length 20))
 #+end_src
 
-**** org-roam-bibtex: Manage PDFs, notes, & citations.
+**** COMMENT org-roam-bibtex: Manage PDFs, notes, & citations.
+:PROPERTIES:
+:ID:       9c4090a3-3687-449c-b8a3-c0c32e42cf48
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-roam-bibtex
@@ -830,7 +939,7 @@ aka my exocortex
   (setq bibtex-completion-library-path "~/Sync/pdf/")
   (setq orb-preformat-keywords
         '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
-  (setq orb-note-actions-interface 'ivy)
+  ;; (setq orb-note-actions-interface 'ivy)
   (setq orb-templates
         '(("r" "ref" plain (function org-roam-capture--get-point)
            ""
@@ -888,13 +997,20 @@ The =org-capture-templates= templates used here:
 #+end_src
 
 *** org-transclusion
+:PROPERTIES:
+:ID:       73004e15-f4ed-4900-9f58-3c3f07c1fece
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-transclusion
   :hook (org-roam-mode . org-transclusion-mode))
 #+end_src
 
+
 *** org-download: Inserting images into org-mode
+:PROPERTIES:
+:ID:       2e4bd258-5b1a-4ab0-88b0-68ff84dbaef2
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-download
@@ -904,6 +1020,9 @@ The =org-capture-templates= templates used here:
 #+end_src
 
 *** org-cliplink: Better external links
+:PROPERTIES:
+:ID:       f7d4449f-00ad-45d8-bcb6-5e4706856f80
+:END:
 
 Automatically pulls the titles from pages from a URL, then inserts a corresponding org-link.
 
@@ -929,6 +1048,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+end_src
 
 *** Org Agenda
+:PROPERTIES:
+:ID:       bb591dea-93dc-49d1-a148-7dec1a39a4e9
+:END:
 
 #+begin_src emacs-lisp
 (setq org-agenda-start-day "+0d"      ; start today
@@ -939,9 +1061,16 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
 (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
+
+(defun my/org-agenda ()
+  (interactive)
+  (org-agenda nil "n"))
 #+end_src
 
 **** org-super-agenda: Better Org Agenda
+:PROPERTIES:
+:ID:       fbc15248-747e-454a-90bc-ee2093cfc2e2
+:END:
 
 #+begin_src emacs-lisp
 (use-package! org-super-agenda
@@ -1005,6 +1134,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+end_src
 
 ** TRAMP
+:PROPERTIES:
+:ID:       c54e2755-745b-44fa-b9b3-a965695ad67c
+:END:
 
 #+begin_src emacs-lisp
 (after! tramp
@@ -1013,6 +1145,11 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 ** Effective Editing
 *** Structure Editing
+:PROPERTIES:
+:ID:       c9546bd8-9ef0-40c0-bf05-fbc250d3903e
+:END:
+
+FIXME: This pulls in ivy/swiper/counsel :/
 
 #+BEGIN_SRC emacs-lisp
 (use-package! lispy
@@ -1069,6 +1206,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+END_SRC
 
 *** Mathpix: OCR LaTeX From Images
+:PROPERTIES:
+:ID:       7c2cb971-fdfc-477b-966f-bd2eb12711bc
+:END:
 
 The mathpix.el package is failing when using the standard =package!= / =use-package!= setup.
 
@@ -1131,6 +1271,9 @@ x There was an unexpected error:
 
 
 *** Multiple Cursors
+:PROPERTIES:
+:ID:       7db07d35-2062-4cf0-9273-c8fb2ead0b1c
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! multiple-cursors
@@ -1154,9 +1297,12 @@ x There was an unexpected error:
 #+END_SRC
 
 *** Undo Tree
+:PROPERTIES:
+:ID:       395942d2-7d49-4b82-a1da-02a97fd8498b
+:END:
 
 #+BEGIN_SRC emacs-lisp
-(use-package undo-tree
+(use-package! undo-tree
   :init
   (setq undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t)
@@ -1193,10 +1339,10 @@ Julia myself here.
   )
 
 ;; https://github.com/gcv/julia-snail
-;; (use-package julia-snail
+;; (use-package! julia-snail
 ;;   :hook (julia-mode . julia-snail-mode))
 
-;; (use-package eglot-jl
+;; (use-package! eglot-jl
 ;;   :hook (julia-mode . eglot)
 ;;   :config
 ;;   (eglot-jl-init))
@@ -1218,12 +1364,15 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 *** COMMENT Julia Formatter
 
 #+begin_src emacs-lisp
-(use-package julia-formatter
+(use-package! julia-formatter
     :hook (julia-mode . (lambda() (julia-formatter-server-start))))
 #+end_src
 
 
 ** Haskell
+:PROPERTIES:
+:ID:       26366f5f-94f9-427e-bea6-fe18a9ce1f81
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (setq haskell-mode-stylish-haskell-path "brittany")
@@ -1271,23 +1420,6 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
 
 - cargo-edit
 
-*** COMMENT Racer Setup
-:PROPERTIES:
-:ID:       dd5c5241-1a93-4c1b-99dc-c0a63c5586a4
-:END:
-
-#+begin_example sh
-rustup component add rust-src
-#+end_example
-
-#+begin_example sh
-rustup toolchain add nightly
-#+end_example
-
-#+begin_example sh
-cargo +nightly install racer
-#+end_example
-
 *** Org-babel setup
 :PROPERTIES:
 :ID:       3c1fb6c5-243a-4718-b4f6-883468cc898f
@@ -1311,6 +1443,9 @@ sudo chmod +x /usr/local/bin/rust-analyzer
 #+end_example
 
 **** TRAMP
+:PROPERTIES:
+:ID:       c8b5cd73-81fd-4f01-9bc2-ebbdfc55f168
+:END:
 
 [[https://github.com/brotzeit/rustic#lsp--tramp][GitHub - brotzeit/rustic: Rust development environment for Emacs]]
 
@@ -1373,7 +1508,10 @@ sudo chmod +x /usr/local/bin/rust-analyzer
 #+RESULTS:
 : (standard-value (nil) custom-type hook custom-package-version (lsp-mode . 7.0.1) variable-documentation Hooks to run after `rust-analyzer-remote' server is run. custom-requests nil)
 
-*** EVCXR Mode
+*** COMMENT EVCXR Mode
+:PROPERTIES:
+:ID:       0164b6a8-15df-4036-a5e6-443040e4f963
+:END:
 
 #+begin_src emacs-lisp
 (use-package! evcxr
@@ -1417,6 +1555,9 @@ undefinederror: need to add support for DW_TAG_base_type 'char' encoded with DW_
 Also, breaks swiper :(
 
 ** Jupyter
+:PROPERTIES:
+:ID:       f909e8c0-e43d-44d6-810f-757cd509ff62
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! jupyter
@@ -1454,7 +1595,10 @@ Also, breaks swiper :(
     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
 #+END_SRC
 
-** Ivy
+** COMMENT Ivy
+:PROPERTIES:
+:ID:       a97d18d1-59c2-46dd-bd73-b2ba61308451
+:END:
 
 Ivy allows you to find the input to a command by incrementally searching the
 space of all valid inputs. It's well-supported in Doom.
@@ -1481,7 +1625,189 @@ space of all valid inputs. It's well-supported in Doom.
 
 #+END_SRC
 
+** Selectrum etc...
+:PROPERTIES:
+:ID:       2b685615-6622-41ab-aa27-13f9ccfdaca1
+:END:
+
+[[https://dev.arcology.garden/cce/selectrum.html][Selectrum, etc]]
+
+#+begin_src emacs-lisp
+(use-package! selectrum
+  :config
+  (selectrum-mode +1)
+  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches))
+
+(use-package! orderless
+  :custom (completion-styles '(orderless)))
+
+(use-package! selectrum-prescient
+  :after (selectrum)
+  :config
+  (setq selectrum-prescient-enable-filtering nil)
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
+
+(use-package! ctrlf
+  :init
+  (ctrlf-mode +1))
+#+end_src
+
+** Miniframe
+:PROPERTIES:
+:ID:       873bff87-e435-43a9-b141-88f4aadec250
+:END:
+
+#+begin_src emacs-lisp
+(use-package! mini-frame
+  :init
+  (mini-frame-mode +1)
+  (setq resize-mini-frames t)
+  (setq mini-frame-show-parameters
+        '((top . 25)
+          (height . 1)
+          (width . 0.7)
+          (left . 0.5)))
+  ;; (dolist (cmd '(consult-line
+  ;;                consult-ripgrep))
+  ;;   (add-to-list 'mini-frame-ignore-commands cmd))
+  )
+#+end_src
+
+** Consult
+:PROPERTIES:
+:ID:       21b80d84-22d0-4c51-bd9b-df794f575eb9
+:END:
+
+#+begin_src emacs-lisp
+(use-package! consult
+  :init
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  (add-to-dk-keymap
+   '(("<SPC>" . consult-ripgrep)
+     ("g" . consult-git-grep)
+     ("i" . consult-imenu)
+     ("l" . consult-locate)
+     ("j" . consult-buffer)))
+  (map! :localleader
+        :map org-mode-map
+        ;; override default binding for org-goto
+        "." 'consult-outline)
+  :config
+  (setq consult-narrow-key "<")
+  (setq consult-async-split-style 'space)
+  (autoload 'projectile-project-root "projectile")
+  (setq consult-project-root-function #'projectile-project-root)
+  :bind (;; C-c bindings (mode-specific-map)
+         ("C-c h" . consult-history)
+         ("C-c m" . consult-mode-command)
+         ("C-c b" . consult-bookmark)
+         ("C-c k" . consult-kmacro)
+         ;; C-x bindings (ctl-x-map)
+         ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)            ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store) ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+
+         ;; only differs from built-in yank-pop by a preview mechanism
+         ;; the previews break pasting into vterm, so disabling for now
+         ;; ("M-y" . consult-yank-pop)     ;; orig. yank-pop
+
+         ("<help> a" . consult-apropos) ;; orig. apropos-command
+         ;; M-g bindings (goto-map)
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)     ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)   ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line) ;; orig. goto-line
+         ("M-g o" . consult-outline)     ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-project-imenu)
+         ;; M-s bindings (search-map)
+         ("M-s f" . consult-find)
+         ("M-s L" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch)
+         :map isearch-mode-map
+         ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
+         ("M-s l" . consult-line))   ;; needed by consult-line to detect isearch
+  )
+
+
+(use-package! consult-flycheck
+  :bind (:map flycheck-command-map
+         ("!" . consult-flycheck)))
+
+
+(use-package! consult-projectile
+  :config
+  (add-to-dk-keymap
+   '(("h" . consult-projectile))))
+
+
+#+end_src
+
+** Embark and Marginalia
+:PROPERTIES:
+:ID:       9a897aa0-c81c-4287-b486-25ea661c2fac
+:END:
+
+#+begin_src emacs-lisp
+(use-package! marginalia
+  :init (marginalia-mode)
+  :bind
+  (("M-A" . marginalia-cycle)
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle)))
+
+(use-package! embark
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+  (setq embark-action-indicator
+        (lambda (map _target)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator))
+
+;; Consult users will also want the embark-consult package.
+(use-package! embark-consult
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . embark-consult-preview-minor-mode))
+#+end_src
+
 ** Dired
+:PROPERTIES:
+:ID:       bb2652cb-665e-4835-89b5-cd5d16254186
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (after! dired
@@ -1508,15 +1834,18 @@ space of all valid inputs. It's well-supported in Doom.
 ** Search Utilities
 
 *** Better Grep
+:PROPERTIES:
+:ID:       958328c0-f6fb-4515-954d-6a1428ae7f70
+:END:
 
 #+BEGIN_SRC emacs-lisp
-(use-package! deadgrep
-              :if (executable-find "rg")
-              :init
-              (map! "M-s" #'deadgrep))
+(use-package! deadgrep)
 #+END_SRC
 
 *** Scanning occurances within a buffer
+:PROPERTIES:
+:ID:       54d5efa9-5b0e-4461-963f-eeb5e8ddebfa
+:END:
 
 This is one of my primary ways of navigating next: jump through other occurances
 of the text currently under the cursor.
@@ -1532,6 +1861,9 @@ of the text currently under the cursor.
 #+END_SRC
 
 ** Version Control
+:PROPERTIES:
+:ID:       50c4c552-206f-4a95-a543-2278c64639e4
+:END:
 
 Disable version control when using TRAMP to avoid extra delays
 
@@ -1543,6 +1875,9 @@ Disable version control when using TRAMP to avoid extra delays
 #+END_SRC
 
 *** Magit
+:PROPERTIES:
+:ID:       51cdd812-4ae4-4e27-8418-c8983c77a5f3
+:END:
 
 Stunningly useful.
 
@@ -1573,10 +1908,12 @@ Stunningly useful.
 ** Searching + Annotating PDFs
 
 *** pdf-tools
+:PROPERTIES:
+:ID:       2ae1cf47-1f04-41c0-a6dc-32f88b807b0d
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (after! pdf-tools
-  ;;swiper doesn't trigger the pdf-isearch
   (map! :map pdf-isearch-minor-mode-map
         "C-s" 'isearch-forward-regexp))
 #+END_SRC
@@ -1592,12 +1929,19 @@ Stunningly useful.
 #+end_src
 
 ** Lauching External Programs
+:PROPERTIES:
+:ID:       c781bc03-4866-4d5f-9051-cdb9a0b5e392
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package! dmenu)
 #+END_SRC
 
-** Jumping between windows
+** Window Management
+*** Jumping between windows
+:PROPERTIES:
+:ID:       bd0213d6-ab2d-4172-a463-ae752837cedb
+:END:
 
 Here we set the window labels to homerow keys (they are numbers by default)
 
@@ -1611,13 +1955,29 @@ to ace-window.
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 #+end_src
 
-** Saving Window Configurations
+*** COMMENT Saving Window Configurations
+:PROPERTIES:
+:ID:       22e0fde9-8b3b-4200-a3a2-ddef158b4c96
+:END:
 
 #+begin_src emacs-lisp
 (use-package! burly)
 #+end_src
 
+*** Avoiding Automatic Horizontal Splits
+:PROPERTIES:
+:ID:       557a7e58-0457-47af-a2bf-eb77e46ce360
+:END:
+
+#+begin_src emacs-lisp
+;; prevents horizontal splits when split-window-sensibly is used
+(setq split-width-threshold nil)
+#+end_src
+
 ** Autosave
+:PROPERTIES:
+:ID:       a1c6fcc8-9127-4ee1-a7b0-75d62d032c23
+:END:
 
 #+begin_src emacs-lisp
 (use-package! real-auto-save
@@ -1626,7 +1986,10 @@ to ace-window.
   (org-mode . real-auto-save-mode))
 #+end_src
 
-** Additional Web Dev Tooling
+** COMMENT Additional Web Dev Tooling
+:PROPERTIES:
+:ID:       0df85fc1-cd60-42f1-9604-1eff5050ced2
+:END:
 
 Including the Doom =javascript= module does most of the work...
 
@@ -1637,9 +2000,12 @@ Including the Doom =javascript= module does most of the work...
 #+end_src
 
 ** Google Translate
+:PROPERTIES:
+:ID:       f3bdc502-8bdd-4a42-8605-e6386697ab9a
+:END:
 
 #+begin_src emacs-lisp
-(use-package google-translate
+(use-package! google-translate
   :custom
   (google-translate-backend-method 'curl)
   :config
@@ -1648,12 +2014,18 @@ Including the Doom =javascript= module does most of the work...
 #+end_src
 
 ** CamelCase to snake_case conversion
+:PROPERTIES:
+:ID:       4a429f7f-55a4-409b-9240-13f395c3f52a
+:END:
 
 #+begin_src emacs-lisp
 (use-package! string-inflection)
 #+end_src
 
 ** Dotenv
+:PROPERTIES:
+:ID:       482fa444-39e1-46f0-a1f2-a7d11383e21b
+:END:
 
 #+begin_src emacs-lisp
 (use-package! dotenv)
@@ -1668,6 +2040,15 @@ Including the Doom =javascript= module does most of the work...
 #+RESULTS:
 : my/load-env-file
 
+** Logview
+:PROPERTIES:
+:ID:       d5469d66-f892-40ef-8a34-87c9b37a6426
+:END:
+
+#+begin_src emacs-lisp
+(use-package! logview)
+#+end_src
+
 ** COMMENT Poly Markdown
 
 Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#Weave.jl-Scientific-Reports-Using-Julia-1][Weave.jl]])
@@ -1678,7 +2059,10 @@ Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#
 
 ** Performance Tweaks
 
-*** Swiper
+*** COMMENT Swiper
+:PROPERTIES:
+:ID:       00108066-21b8-4f67-b934-5eb32ec70aa2
+:END:
 
 Seems like a good solution to swiper being slow is to [[https://oremacs.com/2019/04/07/swiper-isearch/][just use swiper-isearch]], but I find swiper's handling of multiple results on a line more convenient most of the time.
 
@@ -1690,6 +2074,9 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 #+end_src
 
 ** Extra Load Files
+:PROPERTIES:
+:ID:       52472b2d-ec59-4629-88c6-83dcab02b49e
+:END:
 
 #+begin_src emacs-lisp
 (load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
@@ -1698,6 +2085,9 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
 
 ** Misc Global Keybindings
+:PROPERTIES:
+:ID:       fe4a8869-cdb4-4790-9a3a-e02deaece17b
+:END:
 
 #+BEGIN_SRC emacs-lisp
 (map!
@@ -1711,18 +2101,12 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 
  "M-SPC" 'avy-goto-word-or-subword-1
 
- "C-s" 'swiper-isearch
- ;; "C-M-s" 'swiper-isearch
-
  "C-S-d" 'my/duplicate-line-or-region
  "C-c <left>" 'winner-undo
  "C-c <right>" 'winner-redo
 
  "C-+" 'text-scale-increase
  "C--" 'text-scale-decrease
-
- ;; FIXME: This currently relies on Helm as an undeclared dep!
- "M-y" 'helm-show-kill-ring
 
  "C-<f5>" 'my/night-mode
  "C-<f6>" 'my/day-mode
@@ -1733,16 +2117,23 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo)
 
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
+;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
+;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 #+END_SRC
 
 ** Misc
+:PROPERTIES:
+:ID:       84c57526-9ea1-4c89-b247-084651330d97
+:END:
 
 
 #+begin_src emacs-lisp
 (setq warning-minimum-level :emergency)
+
+(setq isearch-allow-scroll t)
+
+(setq async-shell-command-buffer 'new-buffer)
 
 (flycheck-mode 0)
 
@@ -1808,6 +2199,7 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 (after! vterm
   (setq vterm-buffer-name-string "vterm: %s")
   (setq vterm-copy-exclude-prompt t))
+
 #+end_src
 
 #+RESULTS:
@@ -1816,6 +2208,7 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 * Utility functions.
 :PROPERTIES:
 :header-args: :tangle funcs.el
+:ID:       fe8bb9d0-a7c2-4d32-9c92-fe704953ba6c
 :END:
 
 #+begin_src emacs-lisp
@@ -1964,14 +2357,14 @@ text.
   (interactive)
   (load-theme 'doom-dark+ t)
   (doom/reload-theme)
-  (my/set-brightness 1000)
+  (my/set-brightness 30)
   (my/set-redshift 1500))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-nord-light t)
   (doom/reload-theme)
-  (my/set-brightness 10000)
+  (my/set-brightness 100)
   (my/set-redshift 5500))
 
 
@@ -2121,13 +2514,50 @@ Use `set-region-read-only' to set this property."
     (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" "yubi")
     (let* ((output (buffer-string))
            (cells (split-string output)))
-      (last cells))))
+      (car (last cells)))))
+
+
+(defun my/copy-yubikey-token ()
+  (interactive)
+  (kill-new (format "%s" (my/get-yubikey-token))))
+
+
+;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
+(defun my/run-in-vterm-kill (process event)
+  "A process sentinel. Kills PROCESS's buffer if it is live."
+  (let ((b (process-buffer process)))
+    (and (buffer-live-p b)
+         (kill-buffer b))))
+
+
+;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
+(defun my/run-in-vterm (command)
+  "Execute string COMMAND in a new vterm.
+
+Interactively, prompt for COMMAND with the current buffer's file
+name supplied.
+
+Like `async-shell-command`, but run in a vterm for full terminal features.
+
+The new vterm buffer is named in the form `*foo bar.baz*`, the
+command and its arguments in earmuffs.
+
+When the command terminates, the shell remains open, but when the
+shell exits, the buffer is killed."
+  (interactive)
+  (with-current-buffer (vterm (concat "*" command "*"))
+    (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
+    (vterm-send-string command)
+    (vterm-send-return)))
 #+end_src
 
 #+RESULTS:
 : my/publish-dangirsh\.org
 
 ** Resume
+:PROPERTIES:
+:ID:       2ee64283-c4e1-44a5-8c47-6aad42359c2a
+:END:
 
 #+begin_src emacs-lisp
 (defun my/edit-resume ()
@@ -2136,6 +2566,9 @@ Use `set-region-read-only' to set this property."
 #+end_src
 
 ** Org
+:PROPERTIES:
+:ID:       9269ab00-a942-4436-bf7e-8bae4b36a254
+:END:
 
 #+begin_src emacs-lisp
 (defun my/org-split-block ()
@@ -2234,6 +2667,7 @@ context.  When called with an argument, unconditionally call
   "Archive finished or cancelled tasks.
 SCOPE can be 'file or 'tree."
   (interactive)
+  (beginning-of-buffer)
   (org-map-entries
    (lambda ()
      (org-archive-subtree)
@@ -2262,6 +2696,9 @@ SCOPE can be 'file or 'tree."
 Elisp related to my [[nerusos][neurosys]].
 
 ** Globals
+:PROPERTIES:
+:ID:       bb40fc42-2490-4e1a-9df0-67b136961929
+:END:
 
 #+begin_src emacs-lisp
 (setq neurosys/base-dir "/home/dan/repos/neurosys/")
@@ -2270,6 +2707,9 @@ Elisp related to my [[nerusos][neurosys]].
 ** Helpers
 
 *** Deployment
+:PROPERTIES:
+:ID:       9a02b747-e5a1-44e0-a18c-a7f80c73a7e3
+:END:
 
 #+begin_src emacs-lisp
 (defun neurosys/deploy-to-host (host host-home-raw)
@@ -2299,6 +2739,9 @@ Elisp related to my [[nerusos][neurosys]].
 NOTE: These can be combined with =nixos-rebuild switch --update=
 
 *** Misc
+:PROPERTIES:
+:ID:       8554032f-9167-4b4e-a0ae-0e57c32a1b69
+:END:
 
 #+begin_src emacs-lisp
 (defun neurosys/open-config-file ()
@@ -2307,6 +2750,9 @@ NOTE: These can be combined with =nixos-rebuild switch --update=
 #+end_src
 
 ** Keybindings
+:PROPERTIES:
+:ID:       22c0e92b-37d1-4851-9cb6-2fba931b048a
+:END:
 
 #+begin_src emacs-lisp
 (map!
@@ -2317,68 +2763,89 @@ NOTE: These can be combined with =nixos-rebuild switch --update=
 #+end_src
 
 * Package declarations
+:PROPERTIES:
+:ID:       3842ba19-41b8-4343-b956-3f4d7e68d737
+:END:
 
 Any desired package not declared in a Doom module must be declared here. This seems redundant given the corresponding =use-package!= declarations, but required by Doom (presumably for lazy loading).
 
 #+begin_src emacs-lisp :tangle packages.el
-  ;; -*- no-byte-compile: t; -*-
+;; -*- no-byte-compile: t; -*-
   ;;; $DOOMDIR/packages.el
-  (package! ace-window)
-  (package! aggressive-indent)
-  (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
+(package! ace-window)
+(package! aggressive-indent)
+;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
 
-  ;; (package! company-posframe)
-  ;; (package! dap-mode)
-  (package! deadgrep)
-  (package! dired-narrow)
-  (package! dmenu)
-  (package! dotenv :recipe (:host github :repo "pkulev/dotenv.el"))
-  (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
-  (package! evxcr-mode :recipe (:host github :repo "serialdev/evcxr-mode"))
-  (package! google-this)
-  (package! google-translate)
-  (package! helpful)
-  (package! jest)
-  (package! key-chord)
-  ;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
-  ;; (package! nano-emacs
-  ;;   :recipe (:host github :repo "rougier/nano-emacs"))
-  (package! org-cliplink)
-  (package! org-download)
-  (package! org-drill)
-  (package! org-gcal)
-  (package! org-noter)
-  (package! org-recoll :recipe (:host github :repo "alraban/org-recoll"))
-  (package! org-ref)
-  (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
-  (package! org-roam-bibtex)
-  (package! org-roam-server)
-  (package! org-super-agenda)
-  (package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
+;; (package! company-posframe)
+;; (package! dap-mode)
+(package! deadgrep)
+(package! dired-narrow)
+(package! dmenu)
+(package! dotenv :recipe (:host github :repo "pkulev/dotenv.el"))
+(package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
+;; (package! evxcr-mode :recipe (:host github :repo "serialdev/evcxr-mode"))
+(package! google-this)
+(package! google-translate)
+(package! helpful)
+;; (package! jest)
+(package! key-chord)
+;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
+;; (package! nano-emacs
+;;   :recipe (:host github :repo "rougier/nano-emacs"))
+(package! org-cliplink)
+(package! org-download)
+(package! org-drill)
+;; (package! org-gcal)
+(package! org-noter)
+(package! org-recoll :recipe (:host github :repo "alraban/org-recoll"))
+;; (package! org-ref)
+(package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
+;; (package! org-roam-bibtex)
+(package! org-roam-server)
+(package! org-super-agenda)
+(package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
 
-  (package! phi-search)
-  (package! ob-rust)
-  (package! real-auto-save)
-  (package! smartscan)
-  (package! string-inflection)
-  (package! toc-org)
-  (package! undo-tree)
-  (package! wrap-region)
-  (package! almost-mono-themes)
+(package! phi-search)
+(package! ob-rust)
+(package! real-auto-save)
+(package! smartscan)
+(package! string-inflection)
+(package! toc-org)
+(package! undo-tree)
+(package! wrap-region)
+;; (package! almost-mono-themes)
 
+(package! selectrum)
+(package! orderless)
+(package! selectrum-prescient)
+(package! ctrlf)
+(package! mini-frame)
+(package! consult)
+(package! consult-flycheck)
+(package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
+(package! marginalia)
+(package! embark)
+(package! embark-consult)
 
-  ;; Julia
-  ;; (package! julia-mode :pin "1c122f1dff")
-  ;; (package! julia-snail)
+(package! logview)
 
-  ;; ;; Use the branch that supports the vterm backend
-  ;; ;; https://github.com/tpapp/julia-repl/pull/84
-  ;; (package! julia-repl
-  ;;   :recipe (:host github :repo "tpapp/julia-repl"))
+;; Julia
+;; (package! julia-mode :pin "1c122f1dff")
+;; (package! julia-snail)
 
-  ;; (package! julia-formatter
-  ;;   :recipe (:host github :repo "ki-chi/julia-formatter"))
+;; ;; Use the branch that supports the vterm backend
+;; ;; https://github.com/tpapp/julia-repl/pull/84
+;; (package! julia-repl
+;;   :recipe (:host github :repo "tpapp/julia-repl"))
 
-  ;; (package! eglot-jl)
+;; (package! julia-formatter
+;;   :recipe (:host github :repo "ki-chi/julia-formatter"))
+
+;; (package! eglot-jl)
 #+end_src
 
+* Future
+- [ ] [[https://github.com/minad/bookmark-view][GitHub - minad/bookmark-view: bookmark-view.el - Use bookmarks to persist the...]]
+- [ ] [[https://codeberg.org/jao/consult-recoll][jao/consult-recoll: recoll queries in emacs using consult - consult-recoll - ...]]
+- [ ] [[https://github.com/gagbo/consult-lsp][GitHub - gagbo/consult-lsp: LSP-mode and consult.el helping each other]]
+-

@@ -177,6 +177,7 @@
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
+  (interactive "n:")
   (let ((safe-level
          (cond ((< level my/brightness-min) my/brightness-min)
                ((> level my/brightness-max) my/brightness-max)
@@ -196,8 +197,41 @@
   (interactive)
   (my/brightness-step-change (- my/brightness-step)))
 
-(map! "<f5>" 'my/brightness-decrease)
-(map! "<f6>" 'my/brightness-increase)
+(map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
+(map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
+
+(setq my/volume-min 1)
+(setq my/volume-max 100)
+(setq my/volume-step 5)
+
+(defun my/get-volume ()
+  (* my/volume-step (round (string-to-number
+                                (shell-command-to-string "awk -F\"[][]\" '/dB/ { print $2 }' <(amixer sget Master)"))
+                               my/volume-step)))
+
+(defun my/set-volume (level)
+  (interactive "n:")
+  (let ((clipped-level
+         (cond ((< level my/volume-min) my/volume-min)
+               ((> level my/volume-max) my/volume-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "amixer set Master %s%% &" clipped-level) nil nil))))
+
+(defun my/volume-step-change (delta)
+  (my/set-volume (+ delta (my/get-volume))))
+
+(defun my/volume-increase ()
+  (interactive)
+  (my/volume-step-change my/volume-step))
+
+(defun my/volume-decrease ()
+  (interactive)
+  (my/volume-step-change (- my/volume-step)))
+
+(map! "<XF86AudioRaiseVolume>" 'my/volume-increase)
+(map! "<XF86AudioLowerVolume>" 'my/volume-decrease)
 
 (defun my/connect-to-bose-700s ()
   (interactive)
@@ -799,6 +833,21 @@
   (add-to-dk-keymap
    '(("h" . consult-projectile))))
 
+
+(consult-customize consult-buffer consult-ripgrep
+                   consult-git-grep consult-grep consult-bookmark
+                   consult-recent-file consult-xref consult--source-file
+                   consult--source-project-file consult--source-bookmark
+                   consult-theme
+                   :preview-key
+                   (list (kbd "M-.")
+                         :debounce 0.5 (kbd "<up>") (kbd "<down>")
+                         :debounce 1 'any))
+
+(consult-customize
+ consult--source-file consult--source-project-file consult--source-bookmark
+ :preview-key (kbd "M-."))
+
 (use-package! marginalia
   :init (marginalia-mode)
   :bind
@@ -809,7 +858,7 @@
 (use-package! embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("M-<RET>" . embark-dwim)    ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
   ;; Optionally replace the key help with a completing-read interface
@@ -820,11 +869,8 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none))))
-  (setq embark-action-indicator
-        (lambda (map _target)
-          (which-key--show-keymap "Embark" map nil nil 'no-paging)
-          #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator))
+  (setq embark-prompter 'embark-completing-read-prompter)
+  )
 
 ;; Consult users will also want the embark-consult package.
 (use-package! embark-consult
@@ -924,6 +970,8 @@
   (dotenv-update-env (dotenv-load% env-file)))
 
 (use-package! logview)
+
+(use-package! wgrep)
 
 (load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
 (require 'worldcoin-setup)

@@ -48,6 +48,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#keyboard][Keyboard]]
     - [[#toggle-touchpad][Toggle Touchpad]]
     - [[#display-brightness][Display Brightness]]
+    - [[#volume][Volume]]
     - [[#bluetooth][Bluetooth]]
   - [[#org][Org]]
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
@@ -93,6 +94,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
   - [[#dotenv][Dotenv]]
   - [[#logview][Logview]]
+  - [[#wgrep][wgrep]]
   - [[#performance-tweaks][Performance Tweaks]]
   - [[#extra-load-files][Extra Load Files]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
@@ -519,6 +521,7 @@ Set brightness by writing directly to system brightness file.
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
+  (interactive "n:")
   (let ((safe-level
          (cond ((< level my/brightness-min) my/brightness-min)
                ((> level my/brightness-max) my/brightness-max)
@@ -538,9 +541,50 @@ Set brightness by writing directly to system brightness file.
   (interactive)
   (my/brightness-step-change (- my/brightness-step)))
 
-(map! "<f5>" 'my/brightness-decrease)
-(map! "<f6>" 'my/brightness-increase)
+(map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
+(map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
 #+end_src
+
+*** Volume
+:PROPERTIES:
+:ID:       e0eb42ca-e1e4-485c-9957-011578af1711
+:END:
+
+#+begin_src emacs-lisp
+(setq my/volume-min 1)
+(setq my/volume-max 100)
+(setq my/volume-step 5)
+
+(defun my/get-volume ()
+  (* my/volume-step (round (string-to-number
+                                (shell-command-to-string "awk -F\"[][]\" '/dB/ { print $2 }' <(amixer sget Master)"))
+                               my/volume-step)))
+
+(defun my/set-volume (level)
+  (interactive "n:")
+  (let ((clipped-level
+         (cond ((< level my/volume-min) my/volume-min)
+               ((> level my/volume-max) my/volume-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "amixer set Master %s%% &" clipped-level) nil nil))))
+
+(defun my/volume-step-change (delta)
+  (my/set-volume (+ delta (my/get-volume))))
+
+(defun my/volume-increase ()
+  (interactive)
+  (my/volume-step-change my/volume-step))
+
+(defun my/volume-decrease ()
+  (interactive)
+  (my/volume-step-change (- my/volume-step)))
+
+(map! "<XF86AudioRaiseVolume>" 'my/volume-increase)
+(map! "<XF86AudioLowerVolume>" 'my/volume-decrease)
+#+end_src
+
 
 *** Bluetooth
 :PROPERTIES:
@@ -1759,6 +1803,19 @@ space of all valid inputs. It's well-supported in Doom.
    '(("h" . consult-projectile))))
 
 
+(consult-customize consult-buffer consult-ripgrep
+                   consult-git-grep consult-grep consult-bookmark
+                   consult-recent-file consult-xref consult--source-file
+                   consult--source-project-file consult--source-bookmark
+                   consult-theme
+                   :preview-key
+                   (list (kbd "M-.")
+                         :debounce 0.5 (kbd "<up>") (kbd "<down>")
+                         :debounce 1 'any))
+
+(consult-customize
+ consult--source-file consult--source-project-file consult--source-bookmark
+ :preview-key (kbd "M-."))
 #+end_src
 
 ** Embark and Marginalia
@@ -1777,7 +1834,7 @@ space of all valid inputs. It's well-supported in Doom.
 (use-package! embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("M-<RET>" . embark-dwim)    ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
   ;; Optionally replace the key help with a completing-read interface
@@ -1788,11 +1845,8 @@ space of all valid inputs. It's well-supported in Doom.
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none))))
-  (setq embark-action-indicator
-        (lambda (map _target)
-          (which-key--show-keymap "Embark" map nil nil 'no-paging)
-          #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator))
+  (setq embark-prompter 'embark-completing-read-prompter)
+  )
 
 ;; Consult users will also want the embark-consult package.
 (use-package! embark-consult
@@ -2047,6 +2101,15 @@ Including the Doom =javascript= module does most of the work...
 
 #+begin_src emacs-lisp
 (use-package! logview)
+#+end_src
+
+** wgrep
+:PROPERTIES:
+:ID:       499bd407-ced9-4184-971d-80f87f496074
+:END:
+
+#+begin_src emacs-lisp
+(use-package! wgrep)
 #+end_src
 
 ** COMMENT Poly Markdown
@@ -2828,6 +2891,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! embark-consult)
 
 (package! logview)
+(package! wgrep)
 
 ;; Julia
 ;; (package! julia-mode :pin "1c122f1dff")
@@ -2848,4 +2912,4 @@ Any desired package not declared in a Doom module must be declared here. This se
 - [ ] [[https://github.com/minad/bookmark-view][GitHub - minad/bookmark-view: bookmark-view.el - Use bookmarks to persist the...]]
 - [ ] [[https://codeberg.org/jao/consult-recoll][jao/consult-recoll: recoll queries in emacs using consult - consult-recoll - ...]]
 - [ ] [[https://github.com/gagbo/consult-lsp][GitHub - gagbo/consult-lsp: LSP-mode and consult.el helping each other]]
--
+- [ ] look through [[https://protesilaos.com/dotemacs/#h:77d14350-978d-4820-ab7f-4641706c445a][GNU Emacs integrated computing environment | Protesilaos Stavrou]]

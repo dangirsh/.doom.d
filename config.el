@@ -177,7 +177,7 @@
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
-  (interactive "n:")
+  (interactive "nBrightness level:")
   (let ((safe-level
          (cond ((< level my/brightness-min) my/brightness-min)
                ((> level my/brightness-max) my/brightness-max)
@@ -200,6 +200,66 @@
 (map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
 (map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
 
+(setq my/redshift-min 500)
+(setq my/redshift-max 6000)
+(setq my/redshift-step 250)
+;; Since get-redshift is slow
+(setq my/redshift-val-cache nil)
+
+
+(defun my/query-redshift ()
+  (string-to-number (save-window-excursion
+                      (with-temp-buffer
+                        (insert (shell-command-to-string "redshift -p"))
+                        (beginning-of-buffer)
+                        (re-search-forward "Color temperature")
+                        (forward-char)
+                        (forward-char)
+                        (set-mark-command nil)
+                        (re-search-forward "K")
+                        (backward-char)
+                        (buffer-substring (mark) (point))))))
+
+(defun my/get-redshift-cache ()
+  (if my/redshift-val-cache
+      my/redshift-val-cache
+    (let ((val (my/query-redshift)))
+      (setq my/redshift-val-cache val)
+      val)))
+
+(defun my/get-redshift ()
+  (* my/redshift-step (round (my/get-redshift-cache)
+                             my/redshift-step)))
+
+
+(defun my/set-redshift (level)
+  (interactive "nRedshift level:")
+  (let ((safe-level
+         (cond ((< level my/redshift-min) my/redshift-min)
+               ((> level my/redshift-max) my/redshift-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "redshift -P -O %s" level)
+       nil nil))))
+
+
+(defun my/redshift-step-change (delta)
+  (let ((new-val (+ delta (my/get-redshift-cache))))
+    (my/set-redshift new-val)
+    (setq my/redshift-val-cache new-val)))
+
+(defun my/redshift-increase ()
+  (interactive)
+  (my/redshift-step-change my/redshift-step))
+
+(defun my/redshift-decrease ()
+  (interactive)
+  (my/redshift-step-change (- my/redshift-step)))
+
+(map! "S-<f5>" 'my/redshift-decrease)
+(map! "S-<f6>" 'my/redshift-increase)
+
 (setq my/volume-min 1)
 (setq my/volume-max 100)
 (setq my/volume-step 5)
@@ -210,7 +270,7 @@
                                my/volume-step)))
 
 (defun my/set-volume (level)
-  (interactive "n:")
+  (interactive "nVolume level:")
   (let ((clipped-level
          (cond ((< level my/volume-min) my/volume-min)
                ((> level my/volume-max) my/volume-max)

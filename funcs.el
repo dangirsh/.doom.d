@@ -135,10 +135,6 @@ text.
         (insert "\n\n")
         (insert (format "cite:%s" ref-key))))))
 
-(defun my/set-redshift (level)
-  (interactive "nRedshift level: ")
-  (shell-command (format "redshift -P -O %s" level)))
-
 (defun my/night-mode ()
   (interactive)
   (load-theme 'doom-dark+ t)

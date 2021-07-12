@@ -519,7 +519,7 @@ Set brightness by writing directly to system brightness file.
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
-  (interactive "nBrightness level:")
+  (interactive "nBrightness level: ")
   (let ((safe-level
          (cond ((< level my/brightness-min) my/brightness-min)
                ((> level my/brightness-max) my/brightness-max)
@@ -582,7 +582,7 @@ Set brightness by writing directly to system brightness file.
 
 
 (defun my/set-redshift (level)
-  (interactive "nRedshift level:")
+  (interactive "nRedshift level: ")
   (let ((safe-level
          (cond ((< level my/redshift-min) my/redshift-min)
                ((> level my/redshift-max) my/redshift-max)
@@ -628,7 +628,7 @@ Set brightness by writing directly to system brightness file.
                                my/volume-step)))
 
 (defun my/set-volume (level)
-  (interactive "nVolume level:")
+  (interactive "nVolume level: ")
   (let ((clipped-level
          (cond ((< level my/volume-min) my/volume-min)
                ((> level my/volume-max) my/volume-max)
@@ -1924,7 +1924,7 @@ space of all valid inputs. It's well-supported in Doom.
               (map! :map dired-mode-map
                     :desc "narrow" "/" #'dired-narrow-fuzzy))
 
-;; Directly edit permisison bits!
+;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)
 #+END_SRC
 
@@ -2188,8 +2188,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 :END:
 
 #+begin_src emacs-lisp
-(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-setup.el")
-(require 'worldcoin-setup)
+(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-config.el")
+(require 'worldcoin-config)
 #+end_src
 
 

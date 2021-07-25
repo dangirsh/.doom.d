@@ -49,7 +49,7 @@
        pdf
 
        :lang
-       ;; common-lisp
+       common-lisp
        data
        emacs-lisp
        go
@@ -60,14 +60,13 @@
        (latex +latexmk +cdlatex)
        markdown
        nix
-       (org
-	+journal
-	+hugo
-	+jupyter
-        +roam
-	)
+       (org +journal
+	    +hugo
+	    +jupyter
+            +roam)
        python
        (rust +lsp)
+       ;; rust
        sh
        yaml
 

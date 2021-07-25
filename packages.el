@@ -34,8 +34,9 @@
 (package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
 
 (package! phi-search)
-(package! ob-rust)
+;; (package! ob-rust)
 (package! real-auto-save)
+(package! rust-mode)
 (package! smartscan)
 (package! string-inflection)
 (package! toc-org)
@@ -57,6 +58,9 @@
 
 (package! logview)
 (package! wgrep)
+
+(package! fancy-dabbrev)
+
 
 ;; Julia
 ;; (package! julia-mode :pin "1c122f1dff")

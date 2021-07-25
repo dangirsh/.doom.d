@@ -139,15 +139,13 @@ text.
   (interactive)
   (load-theme 'doom-dark+ t)
   (doom/reload-theme)
-  (my/set-brightness 30)
-  (my/set-redshift 1500))
+  (my/set-redshift 1500 30))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-nord-light t)
   (doom/reload-theme)
-  (my/set-brightness 100)
-  (my/set-redshift 5500))
+  (my/set-redshift 5500 100))
 
 
 (defun narrow-or-widen-dwim (p)
@@ -313,11 +311,8 @@ Use `set-region-read-only' to set this property."
 
 
 ;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
-(defun my/run-in-vterm (command)
+(defun my/run-in-vterm (command dir)
   "Execute string COMMAND in a new vterm.
-
-Interactively, prompt for COMMAND with the current buffer's file
-name supplied.
 
 Like `async-shell-command`, but run in a vterm for full terminal features.
 
@@ -327,7 +322,9 @@ command and its arguments in earmuffs.
 When the command terminates, the shell remains open, but when the
 shell exits, the buffer is killed."
   (interactive)
-  (with-current-buffer (vterm (concat "*" command "*"))
+  ;; Ensure the vterm is opened in the right directory
+  (dired dir)
+  (with-current-buffer (+vterm/here t)
     (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
     (vterm-send-string command)
     (vterm-send-return)))

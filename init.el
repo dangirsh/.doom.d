@@ -63,7 +63,8 @@
        (org +journal
 	    +hugo
 	    +jupyter
-            +roam)
+            +roam
+            )
        python
        (rust +lsp)
        ;; rust

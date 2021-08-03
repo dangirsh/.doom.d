@@ -187,7 +187,8 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        (org +journal
 	    +hugo
 	    +jupyter
-            +roam)
+            +roam
+            )
        python
        (rust +lsp)
        ;; rust
@@ -203,7 +204,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        ;; (default +bindings +smartparens)
        )
 #+end_src
-
 
 * Package Configuration
 :PROPERTIES:
@@ -256,9 +256,9 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
-      ;; org-roam-directory "/home/dan/Work/Worldcoin/org-roam"
-      org-roam-directory (concat my/sync-base-dir "org-roam/")
-      )
+      org-roam-directory "/home/dan/Work/WC/org-roam"
+      ;; org-roam-directory (concat my/sync-base-dir "org-roam/")
+      my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 #+end_src
 
 #+RESULTS:
@@ -279,9 +279,9 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Hack" :size 26)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-      doom-serif-font (font-spec :family "Libre Baskerville"))
+(setq  doom-font (font-spec :family "Hack" :size 14)
+       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+       doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (when (file-exists-p "~/.doom.d/banners")
   (setq +doom-dashboard-banner-padding '(0 . 2)
@@ -831,7 +831,10 @@ I use org as a primary interface. It currently manages:
     (let (org-log-done org-log-states)  ; turn off logging
       (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
-  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo))
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
+  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org"))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -980,7 +983,7 @@ aka my exocortex
   ;; Globally accessible commands
   (map! :leader
         :prefix "n"
-        :desc "org-roam-find-file" "f" #'org-roam-find-file)
+        :desc "org-roam-node-find" "f" #'org-roam-node-find)
   (set-company-backend! 'org-roam-mode 'company-capf)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
@@ -1029,7 +1032,7 @@ https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searc
 #+RESULTS:
 : 100
 
-**** org-roam-server: Graph visualization / navigation
+**** COMMENT org-roam-server: Graph visualization / navigation
 :PROPERTIES:
 :ID:       6e670688-8f77-4b7e-9baa-2eb4889a5972
 :END:
@@ -1111,9 +1114,7 @@ The =org-capture-templates= templates used here:
 
 
 #+begin_src emacs-lisp
-(after! org-roam
-  (setq my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
-  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
+(after! org
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
@@ -1178,14 +1179,11 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 :END:
 
 #+begin_src emacs-lisp
-(setq org-agenda-start-day "+0d"      ; start today
+(setq org-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
       org-agenda-span 3)
-
-(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
-(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
 
 (defun my/org-agenda ()
   (interactive)
@@ -2228,8 +2226,8 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 :END:
 
 #+begin_src emacs-lisp
-(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-config.el")
-(require 'worldcoin-config)
+(load-file "/home/dan/Work/WC/emacs/wc-config.el")
+(require 'wc-config)
 #+end_src
 
 ** Misc Global Keybindings

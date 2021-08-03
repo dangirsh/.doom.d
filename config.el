@@ -10,15 +10,15 @@
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
 (setq org-directory my/sync-base-dir
-      ;; org-roam-directory "/home/dan/Work/Worldcoin/org-roam"
-      org-roam-directory (concat my/sync-base-dir "org-roam/")
-      )
+      org-roam-directory "/home/dan/Work/WC/org-roam"
+      ;; org-roam-directory (concat my/sync-base-dir "org-roam/")
+      my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq doom-font (font-spec :family "Hack" :size 26)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-      doom-serif-font (font-spec :family "Libre Baskerville"))
+(setq  doom-font (font-spec :family "Hack" :size 14)
+       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+       doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (when (file-exists-p "~/.doom.d/banners")
   (setq +doom-dashboard-banner-padding '(0 . 2)
@@ -440,7 +440,10 @@
     (let (org-log-done org-log-states)  ; turn off logging
       (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
-  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo))
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
+  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org"))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -492,7 +495,7 @@
   ;; Globally accessible commands
   (map! :leader
         :prefix "n"
-        :desc "org-roam-find-file" "f" #'org-roam-find-file)
+        :desc "org-roam-node-find" "f" #'org-roam-node-find)
   (set-company-backend! 'org-roam-mode 'company-capf)
   (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
         +org-roam-open-buffer-on-find-file nil
@@ -507,23 +510,7 @@
 
 (map! "<f8>" 'my/org-roam-search)
 
-(use-package! org-roam-server
-  :config
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8081
-        org-roam-server-authenticate nil
-        org-roam-server-export-inline-images t
-        org-roam-server-serve-files nil
-        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20))
-
-(after! org-roam
-  (setq my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
-  (setq org-refile-targets `((,(append (my/open-org-files-list) (directory-files org-directory  t ".*.org")) :maxlevel . 7)))
+(after! org
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
@@ -549,14 +536,11 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
-(setq org-agenda-start-day "+0d"      ; start today
+(setq org-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
       org-agenda-span 3)
-
-(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
-(add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
 
 (defun my/org-agenda ()
   (interactive)
@@ -987,8 +971,8 @@
 (set-register ?h '(file . "~/Sync/home/config.org"))
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))
 
-(load-file "/home/dan/Work/Worldcoin/emacs/worldcoin-config.el")
-(require 'worldcoin-config)
+(load-file "/home/dan/Work/WC/emacs/wc-config.el")
+(require 'wc-config)
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

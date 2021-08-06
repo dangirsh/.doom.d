@@ -678,6 +678,8 @@
 
 (after! rustic-flycheck
   (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu"))
+  (add-to-list 'flycheck-checkers 'rustic-clippy)
+  (delete 'rust-clippy flycheck-checkers)
   (delete 'rust-cargo flycheck-checkers)
   (delete 'rust flycheck-checkers))
 

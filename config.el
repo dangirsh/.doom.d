@@ -271,8 +271,8 @@
 
 (defun my/get-volume ()
   (* my/volume-step (round (string-to-number
-                                (shell-command-to-string "awk -F\"[][]\" '/dB/ { print $2 }' <(amixer sget Master)"))
-                               my/volume-step)))
+                            (shell-command-to-string "awk -F\"[][]\" '/dB/ { print $2 }' <(amixer sget Master)"))
+                           my/volume-step)))
 
 (defun my/set-volume (level)
   (interactive "nVolume level: ")
@@ -531,7 +531,7 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
-(setq org-agenda-start-day "+0d"      ; start today
+(setq org-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
@@ -643,18 +643,18 @@
      (format "$$\n%s\n$$" (buffer-string)))))
 
 (use-package! multiple-cursors
-              :init
-              (setq mc/always-run-for-all t)
-              :config
-              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
-              :bind (("C-S-c" . mc/edit-lines)
-                     ("C-M-g" . mc/mark-all-like-this-dwim)
-                     ("C->" . mc/mark-next-like-this)
-                     ("C-<" . mc/mark-previous-like-this)
-                     ("C-)" . mc/skip-to-next-like-this)
-                     ("C-M->" . mc/skip-to-next-like-this)
-                     ("C-(" . mc/skip-to-previous-like-this)
-                     ("C-M-<" . mc/skip-to-previous-like-this)))
+  :init
+  (setq mc/always-run-for-all t)
+  :config
+  (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+  :bind (("C-S-c" . mc/edit-lines)
+         ("C-M-g" . mc/mark-all-like-this-dwim)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-)" . mc/skip-to-next-like-this)
+         ("C-M->" . mc/skip-to-next-like-this)
+         ("C-(" . mc/skip-to-previous-like-this)
+         ("C-M-<" . mc/skip-to-previous-like-this)))
 
 (use-package! iedit
   :init
@@ -682,7 +682,7 @@
   (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-(setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -868,10 +868,10 @@
         wdired-allow-to-change-permissions t))
 
 (use-package! dired-narrow
-              :commands (dired-narrow-fuzzy)
-              :init
-              (map! :map dired-mode-map
-                    :desc "narrow" "/" #'dired-narrow-fuzzy))
+  :commands (dired-narrow-fuzzy)
+  :init
+  (map! :map dired-mode-map
+        :desc "narrow" "/" #'dired-narrow-fuzzy))
 
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)
@@ -887,9 +887,9 @@
          ("M-n" . nil)))
 
 (setq vc-ignore-dir-regexp
-                (format "\\(%s\\)\\|\\(%s\\)"
-                        vc-ignore-dir-regexp
-                        tramp-file-name-regexp))
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
 
 (use-package! magit
   :config
@@ -1056,7 +1056,7 @@
                     list-buffers-directory
                     default-directory
                     dired-directory))
- mad-do-it))
+    mad-do-it))
 
 (setq projectile-mode-line "Projectile")
 

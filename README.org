@@ -1138,7 +1138,7 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 :END:
 
 #+begin_src emacs-lisp
-(setq org-agenda-start-day "+0d"      ; start today
+(setq org-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view

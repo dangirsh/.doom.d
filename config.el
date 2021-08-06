@@ -10,13 +10,13 @@
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Work/WC/org-roam"
+      org-roam-directory "/home/dan/Work/WC/org-roam/"
       ;; org-roam-directory (concat my/sync-base-dir "org-roam/")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 14)
+(setq  doom-font (font-spec :family "Hack" :size 16)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -36,7 +36,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-light t)
+  (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
@@ -442,8 +442,9 @@
 
   (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
-  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org"))
+  ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
+  ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
+  )
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -491,24 +492,21 @@
     (org-journal-new-entry t)))
 
 (after! org-roam
-  (add-hook 'org-journal-mode 'org-roam-mode)
-  ;; Globally accessible commands
-  (map! :leader
-        :prefix "n"
-        :desc "org-roam-node-find" "f" #'org-roam-node-find)
-  (set-company-backend! 'org-roam-mode 'company-capf)
-  (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
+  ;; (add-hook 'org-journal-mode 'org-roam-mode)
+  ;; (set-company-backend! 'org-roam-mode 'company-capf)
+  (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
+  (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
-(defun my/org-roam-search ()
-  "Search org-roam directory using consult-ripgrep. With live-preview."
-  (interactive)
+(defun my/org-dir-search (dir)
+  "Search an org directory using consult-ripgrep. With live-preview."
   (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
-    (consult-ripgrep org-roam-directory)))
+    (consult-ripgrep dir)))
 
-(map! "<f8>" 'my/org-roam-search)
+;; FIXME: Switch back to org-roam-directory after migration
+(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam")))
 
 (after! org
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
@@ -517,9 +515,6 @@
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
                                         "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))
   )
-
-(use-package! org-transclusion
-  :hook (org-roam-mode . org-transclusion-mode))
 
 (use-package! org-download
   :config
@@ -536,7 +531,7 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
-(setq org-start-day "+0d"      ; start today
+(setq org-agenda-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
@@ -682,10 +677,12 @@
 (setq haskell-mode-stylish-haskell-path "brittany")
 
 (after! rustic-flycheck
-  (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu")))
+  (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu"))
+  (delete 'rust-cargo flycheck-checkers)
+  (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+(setq lsp-rust-analyzer-cargo-watch-command "clippy"))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -1004,13 +1001,14 @@
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
+(after! so-long
+  (setq so-long-threshold 10000))
+
 (setq warning-minimum-level :emergency)
 
 (setq isearch-allow-scroll t)
 
 (setq async-shell-command-buffer 'new-buffer)
-
-(flycheck-mode 0)
 
 (setq direnv-always-show-summary nil)
 

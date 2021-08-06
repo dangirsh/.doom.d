@@ -416,3 +416,55 @@ Comment=Emacs X WM
 Exec=/home/dan/.doom.d/modules/desktop/exwm/launch-exwm.sh
 Type=XSession
 #+end_src
+
+* COMMENT Deft: Note search
+:PROPERTIES:
+:ID:       69587a08-56f4-49a9-b040-0394d5524487
+:ARCHIVE_TIME: 2021-08-04 Wed 14:32
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org/org-roam: Graph layer on top of Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+;; Helpful command: (deft-refresh)
+(setq deft-recursive t
+      ;; Otherwise too slow
+      deft-file-limit 100)
+
+(map! "<f8>" 'my/deft)
+(defun my/deft ()
+  (interactive)
+  (let ((deft-directory org-roam-directory))
+    (deft)))
+#+end_src
+
+#+RESULTS:
+: 100
+
+
+* COMMENT org-roam-server: Graph visualization / navigation
+:PROPERTIES:
+:ID:       6e670688-8f77-4b7e-9baa-2eb4889a5972
+:ARCHIVE_TIME: 2021-08-04 Wed 14:32
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org/org-roam: Graph layer on top of Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8081
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
+#+end_src
+

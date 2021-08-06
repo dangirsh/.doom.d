@@ -55,7 +55,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
     - [[#org-journal-managing-daily-journal-files][org-journal: Managing daily journal files]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
-    - [[#org-transclusion][org-transclusion]]
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
     - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
@@ -98,6 +97,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#performance-tweaks][Performance Tweaks]]
   - [[#load-untracked-elisp][Load Untracked Elisp]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
+  - [[#avoid-long-line-performance-hit][Avoid Long-line Performance Hit]]
   - [[#misc][Misc]]
 - [[#utility-functions][Utility functions.]]
   - [[#resume][Resume]]
@@ -187,7 +187,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        (org +journal
 	    +hugo
 	    +jupyter
-            ;; +roam
+            +roam2
             )
        python
        (rust +lsp)
@@ -256,7 +256,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Work/WC/org-roam"
+      org-roam-directory "/home/dan/Work/WC/org-roam/"
       ;; org-roam-directory (concat my/sync-base-dir "org-roam/")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 #+end_src
@@ -279,7 +279,7 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq  doom-font (font-spec :family "Hack" :size 14)
+(setq  doom-font (font-spec :family "Hack" :size 16)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -307,7 +307,7 @@ clients, file templates and snippets.
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-light t)
+  (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
@@ -833,8 +833,9 @@ I use org as a primary interface. It currently manages:
 
   (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
-  (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org"))
+  ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
+  ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
+  )
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -979,13 +980,10 @@ aka my exocortex
 
 #+begin_src emacs-lisp
 (after! org-roam
-  (add-hook 'org-journal-mode 'org-roam-mode)
-  ;; Globally accessible commands
-  (map! :leader
-        :prefix "n"
-        :desc "org-roam-node-find" "f" #'org-roam-node-find)
-  (set-company-backend! 'org-roam-mode 'company-capf)
-  (setq org-roam-db-location "/home/dan/Sync/org-roam/org-roam.db"
+  ;; (add-hook 'org-journal-mode 'org-roam-mode)
+  ;; (set-company-backend! 'org-roam-mode 'company-capf)
+  (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
+  (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
@@ -1002,55 +1000,13 @@ aka my exocortex
 https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searching-notes/1226
 
 #+begin_src emacs-lisp
-(defun my/org-roam-search ()
-  "Search org-roam directory using consult-ripgrep. With live-preview."
-  (interactive)
+(defun my/org-dir-search (dir)
+  "Search an org directory using consult-ripgrep. With live-preview."
   (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
-    (consult-ripgrep org-roam-directory)))
+    (consult-ripgrep dir)))
 
-(map! "<f8>" 'my/org-roam-search)
-#+end_src
-
-**** COMMENT Deft: Note search
-:PROPERTIES:
-:ID:       69587a08-56f4-49a9-b040-0394d5524487
-:END:
-
-#+begin_src emacs-lisp
-;; Helpful command: (deft-refresh)
-(setq deft-recursive t
-      ;; Otherwise too slow
-      deft-file-limit 100)
-
-(map! "<f8>" 'my/deft)
-(defun my/deft ()
-  (interactive)
-  (let ((deft-directory org-roam-directory))
-    (deft)))
-#+end_src
-
-#+RESULTS:
-: 100
-
-**** COMMENT org-roam-server: Graph visualization / navigation
-:PROPERTIES:
-:ID:       6e670688-8f77-4b7e-9baa-2eb4889a5972
-:END:
-
-#+begin_src emacs-lisp
-(use-package! org-roam-server
-  :config
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8081
-        org-roam-server-authenticate nil
-        org-roam-server-export-inline-images t
-        org-roam-server-serve-files nil
-        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20))
+;; FIXME: Switch back to org-roam-directory after migration
+(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam")))
 #+end_src
 
 **** COMMENT org-roam-bibtex: Manage PDFs, notes, & citations.
@@ -1061,7 +1017,7 @@ https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searc
 #+begin_src emacs-lisp
 (use-package! org-roam-bibtex
   :after org-roam
-  :hook (org-roam-mode . org-roam-bibtex-mode)
+  ;; :hook (org-roam-mode . org-roam-bibtex-mode)
   :bind (:map org-mode-map
          (("C-c n a" . orb-note-actions)))
   :config
@@ -1103,6 +1059,8 @@ Unfortunately, this workflow doesn't work for org-roam, since org-agenda is impl
 
 My fix, as recommended [[https://github.com/org-roam/org-roam/issues/144#issuecomment-592726052][here]], is to put capture todos to a single file, but auto-insert links back to the context of the todo. Then, any TODOs for a page should be visible in the backlinks of that page. This is an inversion of the setup available in Roam.
 
+Jethro mentions a better solution potentially coming soon (org-roam-agenda )at the bottom of [[https://blog.jethro.dev/posts/org_roam_v2/][this post]].
+
 The =org-capture-templates= templates used here:
 
 | Template | Doc                          |
@@ -1123,14 +1081,15 @@ The =org-capture-templates= templates used here:
   )
 #+end_src
 
-*** org-transclusion
+*** COMMENT org-transclusion
 :PROPERTIES:
 :ID:       73004e15-f4ed-4900-9f58-3c3f07c1fece
 :END:
 
 #+begin_src emacs-lisp
 (use-package! org-transclusion
-  :hook (org-roam-mode . org-transclusion-mode))
+  ;; :hook (org-roam-mode . org-transclusion-mode)
+  )
 #+end_src
 
 *** org-download: Inserting images into org-mode
@@ -1179,7 +1138,7 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 :END:
 
 #+begin_src emacs-lisp
-(setq org-start-day "+0d"      ; start today
+(setq org-agenda-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
@@ -1490,11 +1449,16 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 
 #+begin_src emacs-lisp
 (after! rustic-flycheck
-  (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu")))
+  (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu"))
+  (delete 'rust-cargo flycheck-checkers)
+  (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+(setq lsp-rust-analyzer-cargo-watch-command "clippy"))
 #+end_src
+
+#+RESULTS:
+: clippy
 
 
 *** Rustic
@@ -2267,8 +2231,18 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 #+END_SRC
-**
-**
+
+** Avoid Long-line Performance Hit
+:PROPERTIES:
+:ID:       ff70f104-e167-4300-868c-50024fc844e4
+:END:
+
+When a file has lines longer than so-long-threshold, so-long mode is enabled. This prevents files with long lines from slowing down emacs. Doom sets this to 400, which is too small for me.
+
+#+begin_src emacs-lisp
+(after! so-long
+  (setq so-long-threshold 10000))
+#+end_src
 
 ** Misc
 :PROPERTIES:
@@ -2282,8 +2256,6 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 (setq isearch-allow-scroll t)
 
 (setq async-shell-command-buffer 'new-buffer)
-
-(flycheck-mode 0)
 
 (setq direnv-always-show-summary nil)
 
@@ -2705,6 +2677,32 @@ shell exits, the buffer is killed."
     (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
     (vterm-send-string command)
     (vterm-send-return)))
+
+;; https://github.com/org-roam/org-roam/wiki/Hitchhiker's-Rough-Guide-to-Org-roam-V2#hiding-the-properties-drawer
+(defun org-hide-properties ()
+  "Hide all org-mode headline property drawers in buffer. Could be slow if it has a lot of overlays."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward
+            "^ *:properties:\n\\( *:.+?:.*\n\\)+ *:end:\n" nil t)
+      (let ((ov_this (make-overlay (match-beginning 0) (match-end 0))))
+        (overlay-put ov_this 'display "")
+        (overlay-put ov_this 'hidden-prop-drawer t))))
+  (put 'org-toggle-properties-hide-state 'state 'hidden))
+
+(defun org-show-properties ()
+  "Show all org-mode property drawers hidden by org-hide-properties."
+  (interactive)
+  (remove-overlays (point-min) (point-max) 'hidden-prop-drawer t)
+  (put 'org-toggle-properties-hide-state 'state 'shown))
+
+(defun org-toggle-properties ()
+  "Toggle visibility of property drawers."
+  (interactive)
+  (if (eq (get 'org-toggle-properties-hide-state 'state) 'hidden)
+      (org-show-properties)
+    (org-hide-properties)))
 #+end_src
 
 #+RESULTS:

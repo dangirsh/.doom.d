@@ -29,7 +29,8 @@
 ;; (package! org-ref)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
 ;; (package! org-roam-bibtex)
-(package! org-roam-server)
+(package! websocket)
+(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 (package! org-super-agenda)
 (package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
 

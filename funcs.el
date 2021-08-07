@@ -243,13 +243,13 @@ narrowed."
     (copy-file (concat doom-private-dir "config.org") doom-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
 
-(defun my/org-roam-get-title (path)
+(defun my/org-get-title (path)
   (save-window-excursion
     ;; A simple find-file didn't work when the original was narrowed
     (with-temp-buffer
       (insert-file-contents path)
       (org-mode)
-      (car (org-roam--extract-titles-title)))))
+      (org-roam--file-keyword-get "TITLE"))))
 
 
 (defun my/set-timezone ()

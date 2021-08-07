@@ -500,6 +500,27 @@
         org-id-link-to-org-use-id t
         org-roam-graph-exclude-matcher '("private" "todo" "daily")))
 
+(setq org-roam-dailies-directory "daily/")
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %?"
+         :if-new (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n#+filetags:daily"
+
+        ))))
+
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
 (defun my/org-dir-search (dir)
   "Search an org directory using consult-ripgrep. With live-preview."
   (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
@@ -513,7 +534,7 @@
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
-                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))
+                                        "* TODO %?  #[[%F][%(my/org-get-title \"%F\")]]\n%i\n%a"))
   )
 
 (use-package! org-download
@@ -966,6 +987,8 @@
   (setq dabbrev-case-replace nil)
   (add-hook 'minibuffer-setup-hook (lambda () (fancy-dabbrev-mode 0)))
   (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1))))
+
+(delete 'register-alist savehist-additional-variables)
 
 (set-register ?h '(file . "~/Sync/home/config.org"))
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))

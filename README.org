@@ -992,6 +992,44 @@ aka my exocortex
 #+RESULTS:
 | todo |
 
+**** org-roam-dailies
+:PROPERTIES:
+:ID:       17e64f76-683b-4fe4-a56b-c3e5d04fc02d
+:END:
+
+#+begin_src emacs-lisp
+(setq org-roam-dailies-directory "daily/")
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %?"
+         :if-new (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n#+filetags:daily"
+
+        ))))
+#+end_src
+
+#+RESULTS:
+| d | default | entry | * %? | :if-new | (file+head %<%Y-%m-%d>.org #+title: %<%Y-%m-%d> |
+
+**** org-roam-ui
+:PROPERTIES:
+:ID:       55b7e312-f076-4d23-bf5d-bbb885aa4fee
+:END:
+
+#+begin_src emacs-lisp
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+
 **** Search via consult
 :PROPERTIES:
 :ID:       17a22bb8-b3e9-4503-823a-94b9828b7f4f
@@ -1077,7 +1115,7 @@ The =org-capture-templates= templates used here:
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
                                         "* TODO %?"))
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
-                                        "* TODO %?  #[[%F][%(my/org-roam-get-title \"%F\")]]\n%i\n%a"))
+                                        "* TODO %?  #[[%F][%(my/org-get-title \"%F\")]]\n%i\n%a"))
   )
 #+end_src
 
@@ -2163,6 +2201,8 @@ Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#
 :END:
 
 #+begin_src emacs-lisp
+(delete 'register-alist savehist-additional-variables)
+
 (set-register ?h '(file . "~/Sync/home/config.org"))
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))
 #+end_src
@@ -2594,13 +2634,13 @@ narrowed."
     (copy-file (concat doom-private-dir "config.org") doom-org-file t)
     (my/run-in-fresh-compilation "./publi.sh" "/home/dan/repos/dangirsh.org/")))
 
-(defun my/org-roam-get-title (path)
+(defun my/org-get-title (path)
   (save-window-excursion
     ;; A simple find-file didn't work when the original was narrowed
     (with-temp-buffer
       (insert-file-contents path)
       (org-mode)
-      (car (org-roam--extract-titles-title)))))
+      (org-roam--file-keyword-get "TITLE"))))
 
 
 (defun my/set-timezone ()
@@ -2708,7 +2748,7 @@ shell exits, the buffer is killed."
 #+end_src
 
 #+RESULTS:
-: my/publish-dangirsh\.org
+: org-toggle-properties
 
 ** Resume
 :PROPERTIES:
@@ -2957,7 +2997,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;; (package! org-ref)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
 ;; (package! org-roam-bibtex)
-(package! org-roam-server)
+(package! websocket)
+(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 (package! org-super-agenda)
 (package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
 

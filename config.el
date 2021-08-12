@@ -16,7 +16,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 16)
+(setq  doom-font (font-spec :family "Hack" :size 32)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -36,7 +36,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-light t)
+  ;; (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
@@ -388,6 +388,7 @@
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
   (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
+  (add-to-list 'org-structure-template-alist '("r" . "src rust"))
   (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
 
   (setq org-refile-use-outline-path 'file
@@ -473,24 +474,6 @@
 (use-package! org-recoll
   :after org)
 
-(use-package! org-journal
-  :after org
-  :config
-  (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
-  (customize-set-variable 'org-journal-file-format "private-%Y-%m-%d.org")
-  (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
-  (customize-set-variable 'org-journal-time-prefix "* ")
-  (customize-set-variable 'org-journal-time-format "")
-  (customize-set-variable 'org-journal-carryover-items "TODO=\"TODO\"")
-  (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
-  (map! :leader
-        (:prefix-map ("n" . "notes")
-         (:prefix ("j" . "journal")
-          :desc "Today" "t" #'org-journal-today)))
-  (defun org-journal-today ()
-    (interactive)
-    (org-journal-new-entry t)))
-
 (after! org-roam
   ;; (add-hook 'org-journal-mode 'org-roam-mode)
   ;; (set-company-backend! 'org-roam-mode 'company-capf)
@@ -498,17 +481,32 @@
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
-        org-roam-graph-exclude-matcher '("private" "todo" "daily")))
+        org-roam-mode-section-functions (list #'org-roam-backlinks-section
+                                              #'org-roam-reflinks-section
+                                              #'org-roam-unlinked-references-section)))
 
-(setq org-roam-dailies-directory "daily/")
+(after! org-roam-dailies
+  (setq org-roam-dailies-directory "daily/")
 
-(setq org-roam-dailies-capture-templates
-      '(("d" "default" entry
-         "* %?"
-         :if-new (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n#+filetags:daily"
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: daily"
 
-        ))))
+                              )))))
+
+(defun my/today ()
+  (interactive)
+  (save-excursion
+    (dired (concat my/sync-base-dir "org-roam2"))
+    (org-roam-dailies-goto-today)))
+
+;; leader-n-r-d-t also works, but this muscle-memory from the org-journal days is easier to type
+(map! :leader
+      (:prefix-map ("n" . "notes")
+       (:prefix ("j" . "journal")
+        :desc "Today" "j" #'my/today)))
 
 (use-package! websocket
     :after org-roam)
@@ -705,7 +703,7 @@
   (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-(setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -719,11 +717,12 @@
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
 
-  ;; (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-on-save t)
   (setq rustic-format-trigger 'on-save)
-  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook))
-;; (setq lsp-rust-analyzer-server-display-inlay-hints t)
+  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
+  (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
+
 
 (defun my/rustic-mode-hook ()
   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
@@ -971,8 +970,6 @@
   (dotenv-update-env (dotenv-load% env-file)))
 
 (use-package! logview)
-
-(use-package! wgrep)
 
 (use-package! fancy-dabbrev
   :hook

@@ -60,11 +60,9 @@
        (latex +latexmk +cdlatex)
        markdown
        nix
-       (org +journal
-	    +hugo
+       (org +hugo
 	    +jupyter
-            +roam2
-            )
+            +roam2)
        python
        (rust +lsp)
        ;; rust

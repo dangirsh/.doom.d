@@ -17,7 +17,7 @@
 (package! helpful)
 ;; (package! jest)
 (package! key-chord)
-;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
+;; (package! mathpix :recipe (:host github :repo "dangirsh/mathpix"))
 ;; (package! nano-emacs
 ;;   :recipe (:host github :repo "rougier/nano-emacs"))
 (package! org-cliplink)
@@ -58,7 +58,6 @@
 (package! embark-consult)
 
 (package! logview)
-(package! wgrep)
 
 (package! fancy-dabbrev)
 

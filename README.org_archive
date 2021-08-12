@@ -468,3 +468,53 @@ Type=XSession
         org-roam-server-network-label-wrap-length 20))
 #+end_src
 
+
+* org-journal: Managing daily journal files
+:PROPERTIES:
+:ID:       49793723-4ced-45f7-bd4a-26ce616efe53
+:ARCHIVE_TIME: 2021-08-10 Tue 20:45
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package! org-journal
+  :after org
+  :config
+  (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
+  (customize-set-variable 'org-journal-file-format "private-%Y-%m-%d.org")
+  (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
+  (customize-set-variable 'org-journal-time-prefix "* ")
+  (customize-set-variable 'org-journal-time-format "")
+  (customize-set-variable 'org-journal-carryover-items "TODO=\"TODO\"")
+  (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
+  (map! :leader
+        (:prefix-map ("n" . "notes")
+         (:prefix ("j" . "journal")
+          :desc "Today" "t" #'org-journal-today)))
+  (defun org-journal-today ()
+    (interactive)
+    (org-journal-new-entry t)))
+
+#+END_SRC
+
+
+* wgrep
+:PROPERTIES:
+:ID:       499bd407-ced9-4184-971d-80f87f496074
+:ARCHIVE_TIME: 2021-08-12 Thu 09:38
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+Replaced by deadgrep-edit-mode
+
+#+begin_src emacs-lisp
+(use-package! wgrep
+  :config
+  (autoload 'wgrep-deadgrep-setup "wgrep-deadgrep")
+  (add-hook 'deadgrep-finished-hook 'wgrep-deadgrep-setup))
+#+end_src
+

@@ -53,7 +53,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#org][Org]]
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
     - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
-    - [[#org-journal-managing-daily-journal-files][org-journal: Managing daily journal files]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
@@ -91,7 +90,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
   - [[#dotenv][Dotenv]]
   - [[#logview][Logview]]
-  - [[#wgrep][wgrep]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
   - [[#registers][Registers]]
   - [[#performance-tweaks][Performance Tweaks]]
@@ -184,11 +182,9 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        (latex +latexmk +cdlatex)
        markdown
        nix
-       (org +journal
-	    +hugo
+       (org +hugo
 	    +jupyter
-            +roam2
-            )
+            +roam2)
        python
        (rust +lsp)
        ;; rust
@@ -279,7 +275,7 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq  doom-font (font-spec :family "Hack" :size 16)
+(setq  doom-font (font-spec :family "Hack" :size 32)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -307,7 +303,7 @@ clients, file templates and snippets.
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-light t)
+  ;; (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
@@ -779,6 +775,7 @@ I use org as a primary interface. It currently manages:
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
   (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
+  (add-to-list 'org-structure-template-alist '("r" . "src rust"))
   (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
 
   (setq org-refile-use-outline-path 'file
@@ -945,32 +942,6 @@ I use org as a primary interface. It currently manages:
         "n p" 'my/org-ref-noter-at-point))
 #+END_SRC
 
-*** org-journal: Managing daily journal files
-:PROPERTIES:
-:ID:       49793723-4ced-45f7-bd4a-26ce616efe53
-:END:
-
-#+BEGIN_SRC emacs-lisp
-(use-package! org-journal
-  :after org
-  :config
-  (customize-set-variable 'org-journal-dir (concat org-roam-directory "journal"))
-  (customize-set-variable 'org-journal-file-format "private-%Y-%m-%d.org")
-  (customize-set-variable 'org-journal-date-prefix "#+TITLE: ")
-  (customize-set-variable 'org-journal-time-prefix "* ")
-  (customize-set-variable 'org-journal-time-format "")
-  (customize-set-variable 'org-journal-carryover-items "TODO=\"TODO\"")
-  (customize-set-variable 'org-journal-date-format "%Y-%m-%d")
-  (map! :leader
-        (:prefix-map ("n" . "notes")
-         (:prefix ("j" . "journal")
-          :desc "Today" "t" #'org-journal-today)))
-  (defun org-journal-today ()
-    (interactive)
-    (org-journal-new-entry t)))
-
-#+END_SRC
-
 *** org-roam: Graph layer on top of Org
 :PROPERTIES:
 :ID:       2252cd6a-0724-4bd1-9174-ccf6e51488d1
@@ -986,7 +957,9 @@ aka my exocortex
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
-        org-roam-graph-exclude-matcher '("private" "todo" "daily")))
+        org-roam-mode-section-functions (list #'org-roam-backlinks-section
+                                              #'org-roam-reflinks-section
+                                              #'org-roam-unlinked-references-section)))
 #+end_src
 
 #+RESULTS:
@@ -998,15 +971,29 @@ aka my exocortex
 :END:
 
 #+begin_src emacs-lisp
-(setq org-roam-dailies-directory "daily/")
+(after! org-roam-dailies
+  (setq org-roam-dailies-directory "daily/")
 
-(setq org-roam-dailies-capture-templates
-      '(("d" "default" entry
-         "* %?"
-         :if-new (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n#+filetags:daily"
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: daily"
 
-        ))))
+                              )))))
+
+(defun my/today ()
+  (interactive)
+  (save-excursion
+    (dired (concat my/sync-base-dir "org-roam2"))
+    (org-roam-dailies-goto-today)))
+
+;; leader-n-r-d-t also works, but this muscle-memory from the org-journal days is easier to type
+(map! :leader
+      (:prefix-map ("n" . "notes")
+       (:prefix ("j" . "journal")
+        :desc "Today" "j" #'my/today)))
+
 #+end_src
 
 #+RESULTS:
@@ -1494,7 +1481,7 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
   (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-(setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
 #+end_src
 
 #+RESULTS:
@@ -1521,11 +1508,12 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
 
-  ;; (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-on-save t)
   (setq rustic-format-trigger 'on-save)
-  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook))
-;; (setq lsp-rust-analyzer-server-display-inlay-hints t)
+  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
+  (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
+
 
 (defun my/rustic-mode-hook ()
   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
@@ -1534,6 +1522,7 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
   ;; no longer be necessary.
   (when buffer-file-name
     (setq-local buffer-save-without-query t)))
+
 
 #+end_src
 
@@ -1949,6 +1938,8 @@ space of all valid inputs. It's well-supported in Doom.
 (use-package! deadgrep)
 #+END_SRC
 
+Edit results with =deadgrep-edit-mode= (replaces wgrep). Save changes with =save-some-buffers= (=C-x s !=).
+
 *** Scanning occurances within a buffer
 :PROPERTIES:
 :ID:       54d5efa9-5b0e-4461-963f-eeb5e8ddebfa
@@ -2154,15 +2145,6 @@ Including the Doom =javascript= module does most of the work...
 
 #+begin_src emacs-lisp
 (use-package! logview)
-#+end_src
-
-** wgrep
-:PROPERTIES:
-:ID:       499bd407-ced9-4184-971d-80f87f496074
-:END:
-
-#+begin_src emacs-lisp
-(use-package! wgrep)
 #+end_src
 
 ** Better Expansions with Fancy Dabbrev
@@ -2985,7 +2967,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! helpful)
 ;; (package! jest)
 (package! key-chord)
-;; (package! mathpix :recipe (:host github :repo "jethrokuan/mathpix"))
+;; (package! mathpix :recipe (:host github :repo "dangirsh/mathpix"))
 ;; (package! nano-emacs
 ;;   :recipe (:host github :repo "rougier/nano-emacs"))
 (package! org-cliplink)
@@ -3026,7 +3008,6 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! embark-consult)
 
 (package! logview)
-(package! wgrep)
 
 (package! fancy-dabbrev)
 

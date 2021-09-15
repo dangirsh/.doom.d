@@ -286,20 +286,29 @@ Use `set-region-read-only' to set this property."
     (remove-text-properties begin end '(read-only t))))
 
 
-(defun my/get-yubikey-token ()
+(defun my/copy-yubikey-token (account-name)
   "Expects ykman to be installed."
-  (interactive)
-  (with-temp-buffer
-    (message "Touch Yubikey!")
-    (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" "yubi")
-    (let* ((output (buffer-string))
-           (cells (split-string output)))
-      (car (last cells)))))
+  (interactive (list (completing-read "Account: " '("yubi" "yubi3") nil t)))
+  (kill-new (my/get-yubikey-token account-name)))
 
+(defun my/get-yubikey-token (account-name)
+  "Expects ykman to be installed."
+  (format "%s"
+          (with-temp-buffer
+            (message "Touch Yubikey!")
+            (call-process-region (point-min) (point-max) "ykman" t t nil "oath" "code" account-name)
+            (let* ((output (buffer-string))
+                   (cells (split-string output)))
+              (car (last cells))))))
 
-(defun my/copy-yubikey-token ()
-  (interactive)
-  (kill-new (format "%s" (my/get-yubikey-token))))
+(defun my/save-yubikey-token (account-name)
+  (let ((yubikey-token-file (format "/tmp/current-yubi-token/%s" account-name)))
+    (save-window-excursion
+      (find-file yubikey-token-file)
+      (erase-buffer)
+      (insert (my/get-yubikey-token account-name))
+      (save-buffer))
+    yubikey-token-file))
 
 
 ;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
@@ -323,11 +332,11 @@ When the command terminates, the shell remains open, but when the
 shell exits, the buffer is killed."
   (interactive)
   ;; Ensure the vterm is opened in the right directory
-  (dired dir)
-  (with-current-buffer (+vterm/here t)
-    (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
-    (vterm-send-string command)
-    (vterm-send-return)))
+  (let ((default-directory dir))
+    (with-current-buffer (+vterm/here t)
+      (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
+      (vterm-send-string command)
+      (vterm-send-return))))
 
 ;; https://github.com/org-roam/org-roam/wiki/Hitchhiker's-Rough-Guide-to-Org-roam-V2#hiding-the-properties-drawer
 (defun org-hide-properties ()

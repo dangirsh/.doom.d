@@ -3,7 +3,8 @@
 (package! ace-window)
 (package! aggressive-indent)
 ;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
-
+(package! codex-completion :recipe (:host github :repo "dangirsh/codex-completion"))
+(package! company-org-block)
 ;; (package! company-posframe)
 ;; (package! dap-mode)
 (package! deadgrep)
@@ -20,6 +21,7 @@
 ;; (package! mathpix :recipe (:host github :repo "dangirsh/mathpix"))
 ;; (package! nano-emacs
 ;;   :recipe (:host github :repo "rougier/nano-emacs"))
+(package! ob-graphql)
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)

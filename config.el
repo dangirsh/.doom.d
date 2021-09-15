@@ -10,13 +10,12 @@
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Work/WC/org-roam/"
-      ;; org-roam-directory (concat my/sync-base-dir "org-roam/")
+      org-roam-directory "/home/dan/Sync/org-roam2/"
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 32)
+(setq  doom-font (font-spec :family "Hack" :size 16)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -36,7 +35,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-acario-light t)
+  (load-theme 'doom-acario-light t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
@@ -66,7 +65,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.03))
+        key-chord-two-keys-delay 0.07))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -322,8 +321,7 @@
         org-use-speed-commands t
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
-        org-goto-interface 'outline-path-completion
-        org-preview-latex-image-directory "/tmp/ltximg/")
+        org-goto-interface 'outline-path-completion)
   (setq org-file-apps '((auto-mode . emacs)
                         (directory . emacs)
                         ("\\.mm\\'" . default)
@@ -341,7 +339,7 @@
   (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "listen.org"))
                                         "* TODO %?\n%i"))
 
-  (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
+  ;; (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
   ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/04/Redirecting-stderr-in-org-mode-shell-blocks/
   ;; NOTE: This will affect (break) tangled output. Use directly on top of code blocks when needed instead.
@@ -355,35 +353,32 @@
 
   (setq org-confirm-babel-evaluate nil
         org-use-property-inheritance t
-        org-export-with-sub-superscripts nil
         org-export-use-babel nil
-        org-startup-indented t
         org-pretty-entities nil
         org-use-speed-commands t
         org-return-follows-link t
         org-outline-path-complete-in-steps nil
         org-ellipsis ""
-        org-html-htmlize-output-type 'css
         org-fontify-whole-heading-line t
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t
         org-image-actual-width nil
         org-src-fontify-natively t
         org-src-tab-acts-natively t
+        org-startup-indented t
         org-src-preserve-indentation t
         org-edit-src-content-indentation 0
         org-adapt-indentation nil
         org-hide-emphasis-markers t
         org-special-ctrl-a/e t
         org-special-ctrl-k t
-        org-export-with-broken-links t
         org-yank-adjusted-subtrees t
         org-src-window-setup 'reorganize-frame
         org-src-ask-before-returning-to-edit-buffer nil
         org-insert-heading-respect-content nil)
 
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  (add-hook 'org-babel-after-execute-hook 'org-toggle-latex-fragment 'append)
+  ;; (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  ;; (add-hook 'org-babel-after-execute-hook 'org-toggle-latex-fragment 'append)
 
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
@@ -395,11 +390,11 @@
         org-outline-path-complete-in-steps nil
         org-refile-allow-creating-parent-nodes 'confirm)
 
-  (setq org-format-latex-options
-        (quote (:foreground default
-                :background default
-                :scale 2.0
-                :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+  ;; (setq org-format-latex-options
+  ;;       (quote (:foreground default
+  ;;               :background default
+  ;;               :scale 2.0
+  ;;               :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "DELEGATED(o)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
@@ -444,7 +439,7 @@
   (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
   ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
-  ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/pixel-incoming.org")
+  (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/pixel-incoming.org")
   )
 
 (use-package! toc-org
@@ -492,7 +487,7 @@
         '(("d" "default" entry
            "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>\n#+filetags: daily"
+                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily"
 
                               )))))
 
@@ -525,7 +520,7 @@
     (consult-ripgrep dir)))
 
 ;; FIXME: Switch back to org-roam-directory after migration
-(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam")))
+(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam-old")))
 
 (after! org
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
@@ -534,6 +529,10 @@
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
                                         "* TODO %?  #[[%F][%(my/org-get-title \"%F\")]]\n%i\n%a"))
   )
+
+(use-package! org-transclusion
+  ;; :hook (org-mode . org-transclusion-mode)
+  :hook (org-transclusion-mode . org-indent-mode))
 
 (use-package! org-download
   :config
@@ -550,7 +549,7 @@
                  (file ,(concat org-directory "drill.org"))
                  "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
 
-(setq org-start-day "+0d"      ; start today
+(setq org-agenda-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
@@ -568,7 +567,6 @@
           (:discard (:todo "QUESTION"))
           (:name "WIP"
            :todo "WIP")
-          ;; https://github.com/alphapapa/org-super-agenda/issues/192
           (:name "High Priority"
            :priority "A")
           (:name "Med Priority"
@@ -590,8 +588,24 @@
 
     (org-agenda nil "t")))
 
+(use-package! company-org-block
+  :ensure t
+  :custom
+  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
+  :hook ((org-mode . (lambda ()
+                       (setq-local company-backends '(company-org-block))
+                       (company-mode +1)))))
+
+(use-package! ob-graphql)
+
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+(use-package! codex-completion
+  :config
+  (setq codex-completion-openai-api-token (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
+  (add-to-dk-keymap
+   '(("TAB" . codex-complete))))
 
 (use-package! lispy
   :config
@@ -718,8 +732,7 @@
         "C-c C-c s" #'lsp-rust-analyzer-status)
 
   (setq lsp-enable-symbol-highlighting nil)
-  (setq rustic-format-on-save t)
-  (setq rustic-format-trigger 'on-save)
+  (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
   (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
 
@@ -731,6 +744,10 @@
   ;; no longer be necessary.
   (when buffer-file-name
     (setq-local buffer-save-without-query t)))
+
+(customize-set-variable 'rustic-babel-display-compilation-buffer t)
+(add-to-list 'org-structure-template-alist '("or" . "src orb-rust"))
+(customize-set-variable 'rustic-babel-format-src-block t)
 
 (use-package! jupyter
   :init
@@ -798,7 +815,7 @@
         ;; override default binding for org-goto
         "." 'consult-outline)
   :config
-  (setq consult-async-split-style 'space)
+  (setq consult-async-split-style 'nil)
   (autoload 'projectile-project-root "projectile")
   (setq consult-project-root-function #'projectile-project-root)
   (setq consult-ripgrep-command "rg --null --ignore-case --line-buffered --color=ansi --max-columns=1000   --no-heading --line-number . -e ARG OPTS")
@@ -1018,8 +1035,9 @@
  "C-S-z" 'undo-fu-only-redo
 
  "C-/"   'undo-fu-only-undo
- "C-?" 'undo-fu-only-redo)
-
+ "C-?" 'undo-fu-only-redo
+ "C-x C-z" nil)
+  ;; remove binding for suspend-frame
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
@@ -1092,8 +1110,9 @@
 (setq recentf-max-saved-items 10000)
 
 (after! vterm
-  (setq vterm-buffer-name-string "vterm: %s")
-  (setq vterm-copy-exclude-prompt t))
+  (setq vterm-max-scrollback 100000
+        vterm-buffer-name-string "vterm: %s"
+        vterm-copy-exclude-prompt t))
 
 
 ;; Emacs 28: Hide commands in M-x which do not work in the current mode.

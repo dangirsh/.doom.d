@@ -518,3 +518,23 @@ Replaced by deadgrep-edit-mode
   (add-hook 'deadgrep-finished-hook 'wgrep-deadgrep-setup))
 #+end_src
 
+
+* Old
+:PROPERTIES:
+:ID:       9dc40ef1-1f13-4558-b630-3529b10fd0a0
+:ARCHIVE_TIME: 2021-09-11 Sat 15:17
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust/Org-babel setup
+:ARCHIVE_CATEGORY: README
+:END:
+#+begin_src emacs-lisp
+(use-package! ob-rust)
+#+end_src
+
+=cargo-script= required for org-babel blocks (otherwise each requires a =main= function)
+
+#+begin_example sh
+cargo install cargo-script
+#+end_example
+
+

@@ -8,7 +8,7 @@
     (save-window-excursion
       (org-babel-tangle)
       (my/run-in-fresh-compilation
-       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home))
+       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home) "~/")
       ;; TODO: Is there cleaner way to compile over TRAMP?
       (find-file host-root)
       (compile "nixos-rebuild switch --show-trace")))

@@ -15,6 +15,7 @@
 (package! google-this)
 (package! google-translate)
 (package! helpful)
+(package! iedit)
 ;; (package! jest)
 (package! key-chord)
 ;; (package! mathpix :recipe (:host github :repo "dangirsh/mathpix"))

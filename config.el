@@ -9,14 +9,14 @@
 (setq my/work-base-dir (concat my/home-dir "Work/"))
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
-;; (setq org-directory my/sync-base-dir
-;;       org-roam-directory "/home/dan/Sync/org-roam2/"
-;;       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
-
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Work/Worldcoin/org-roam/"
-      org-roam-db-location "/home/dan/Work/Worldcoin/org-roam/org-roam.db"
-      my/org-roam-todo-file (concat org-roam-directory "orgzly/worldcoin-todo.org"))
+      org-roam-directory "/home/dan/Sync/org-roam2/"
+      org-roam-db-location (concat org-roam-directory "org-roam.db")
+      my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
+
+(save-window-excursion
+  (find-file my/org-roam-todo-file)
+  (save-buffer))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
@@ -333,8 +333,6 @@
                         ("\\.x?html?\\'" . default)
                         ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
-(use-package! org-contrib)
-
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
   (require 'ob-async)
@@ -485,11 +483,7 @@
   :after org)
 
 (after! org-roam
-  ;; (add-hook 'org-journal-mode 'org-roam-mode)
-  ;; (set-company-backend! 'org-roam-mode 'company-capf)
-  ;; (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
-  (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
-        +org-roam-open-buffer-on-find-file nil
+  (setq +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
         org-roam-mode-section-functions (list #'org-roam-backlinks-section
                                               #'org-roam-reflinks-section
@@ -502,9 +496,7 @@
         '(("d" "default" entry
            "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily"
-
-                              )))))
+                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
 
 (defun my/today ()
   (interactive)
@@ -534,7 +526,6 @@
   (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
     (consult-ripgrep dir)))
 
-;; FIXME: Switch back to org-roam-directory after migration
 (map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam-old")))
 
 (after! org
@@ -1121,7 +1112,7 @@
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
-(setq enable-local-variables :all)
+(setq-default enable-local-variables :all)
 
 ;; This is usually just annoying
 (setq compilation-ask-about-save nil)

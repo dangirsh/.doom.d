@@ -178,7 +178,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        pdf
 
        :lang
-       cc
+       ;; cc
        common-lisp
        data
        emacs-lisp
@@ -258,10 +258,16 @@ clients, file templates and snippets.
 :ID:       a8ee5123-de16-4100-8f61-4254ad41a35a
 :END:
 
+
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
       org-roam-directory "/home/dan/Sync/org-roam2/"
+      org-roam-db-location (concat org-roam-directory "org-roam.db")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
+
+(save-window-excursion
+  (find-file my/org-roam-todo-file)
+  (save-buffer))
 #+end_src
 
 #+RESULTS:
@@ -723,8 +729,6 @@ I largely live inside Org. It currently manages:
                         ("\\.x?html?\\'" . default)
                         ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
-(use-package! org-contrib)
-
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
   (require 'ob-async)
@@ -960,11 +964,7 @@ aka my exocortex
 
 #+begin_src emacs-lisp
 (after! org-roam
-  ;; (add-hook 'org-journal-mode 'org-roam-mode)
-  ;; (set-company-backend! 'org-roam-mode 'company-capf)
-  ;; (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
-  (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
-        +org-roam-open-buffer-on-find-file nil
+  (setq +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
         org-roam-mode-section-functions (list #'org-roam-backlinks-section
                                               #'org-roam-reflinks-section
@@ -987,9 +987,7 @@ aka my exocortex
         '(("d" "default" entry
            "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily"
-
-                              )))))
+                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
 
 (defun my/today ()
   (interactive)
@@ -1039,7 +1037,6 @@ https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searc
   (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
     (consult-ripgrep dir)))
 
-;; FIXME: Switch back to org-roam-directory after migration
 (map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam-old")))
 #+end_src
 
@@ -2299,7 +2296,7 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
-(setq enable-local-variables :all)
+(setq-default enable-local-variables :all)
 
 ;; This is usually just annoying
 (setq compilation-ask-about-save nil)
@@ -2980,6 +2977,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! google-this)
 (package! google-translate)
 (package! helpful)
+(package! iedit)
 ;; (package! jest)
 (package! key-chord)
 ;; (package! mathpix :recipe (:host github :repo "dangirsh/mathpix"))

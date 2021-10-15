@@ -49,7 +49,7 @@
        pdf
 
        :lang
-       cc
+       ;; cc
        common-lisp
        data
        emacs-lisp

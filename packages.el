@@ -3,7 +3,6 @@
 (package! ace-window)
 (package! aggressive-indent)
 ;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
-(package! codex-completion :recipe (:host github :repo "dangirsh/codex-completion"))
 (package! company-org-block)
 ;; (package! company-posframe)
 ;; (package! dap-mode)
@@ -22,6 +21,7 @@
 ;; (package! nano-emacs
 ;;   :recipe (:host github :repo "rougier/nano-emacs"))
 (package! ob-graphql)
+(package! openai-api :recipe (:host github :repo "dangirsh/openai-api.el"))
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)
@@ -40,6 +40,7 @@
 ;; (package! ob-rust)
 (package! real-auto-save)
 (package! rust-mode)
+(package! s3ed)
 (package! smartscan)
 (package! string-inflection)
 (package! toc-org)
@@ -65,13 +66,11 @@
 
 
 ;; Julia
-;; (package! julia-mode :pin "1c122f1dff")
+(package! julia-mode)
 ;; (package! julia-snail)
 
-;; ;; Use the branch that supports the vterm backend
-;; ;; https://github.com/tpapp/julia-repl/pull/84
-;; (package! julia-repl
-;;   :recipe (:host github :repo "tpapp/julia-repl"))
+(package! julia-repl
+  :recipe (:host github :repo "tpapp/julia-repl"))
 
 ;; (package! julia-formatter
 ;;   :recipe (:host github :repo "ki-chi/julia-formatter"))

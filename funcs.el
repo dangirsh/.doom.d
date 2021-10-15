@@ -262,6 +262,10 @@ narrowed."
 
 ;; (my/set-timezone)
 
+(defun my/insert-jupyter-julia-block ()
+  (interactive)
+  (org-insert-structure-template "src jupyter-julia"))
+
 (defun my/insert-jupyter-python-block ()
   (interactive)
   (org-insert-structure-template "src jupyter-python"))

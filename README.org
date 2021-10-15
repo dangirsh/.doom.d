@@ -54,7 +54,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
     - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
-    - [[#org-transclusion][org-transclusion]]
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
     - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
@@ -62,13 +61,18 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-sidebar][org-sidebar]]
     - [[#better-org-babel][Better Org Babel]]
     - [[#graphql-in-org-babel][Graphql in Org Babel]]
-  - [[#tramp][TRAMP]]
+  - [[#remote-machine-interfaces][Remote Machine Interfaces]]
+    - [[#tramp][Tramp]]
+    - [[#s3-interface][S3 Interface]]
   - [[#effective-editing][Effective Editing]]
     - [[#language-model-interfaces][Language Model Interfaces]]
     - [[#structure-editing][Structure Editing]]
     - [[#mathpix-ocr-latex-from-images][Mathpix: OCR LaTeX From Images]]
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
+    - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
+  - [[#julia][Julia]]
+    - [[#convert-julia-markdown-blocks-to-org-blocks][Convert Julia Markdown Blocks to Org Blocks]]
   - [[#haskell][Haskell]]
   - [[#rust][Rust]]
     - [[#only-checklint-on-host-target-arch][Only check/lint on host target arch]]
@@ -92,12 +96,10 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#avoiding-automatic-horizontal-splits][Avoiding Automatic Horizontal Splits]]
   - [[#autosave][Autosave]]
   - [[#google-translate][Google Translate]]
-  - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
   - [[#dotenv][Dotenv]]
   - [[#logview][Logview]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
   - [[#registers][Registers]]
-  - [[#performance-tweaks][Performance Tweaks]]
   - [[#load-untracked-elisp][Load Untracked Elisp]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#avoid-long-line-performance-hit][Avoid Long-line Performance Hit]]
@@ -176,6 +178,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        pdf
 
        :lang
+       cc
        common-lisp
        data
        emacs-lisp
@@ -279,7 +282,7 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq  doom-font (font-spec :family "Hack" :size 16)
+(setq  doom-font (font-spec :family "Hack" :size 22)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -307,13 +310,13 @@ clients, file templates and snippets.
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-light t)
+  ;; (load-theme 'doom-vibrant t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one t)
   ;; (load-theme 'doom-one-light t)
-  ;; (load-theme 'doom-nord-light t)
+  (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -361,8 +364,8 @@ Set hardware-specific delay. Tweak this if:
 (use-package! key-chord
   :config
   (key-chord-mode 1)
-  (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.07))
+  (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
+        key-chord-two-keys-delay 0.10))
 #+end_src
 
 *** Setup for binding chords as leaders
@@ -488,7 +491,7 @@ Sets caps to control and sets a snappy key repeat / delay.
 (defun fix-keyboard ()
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 60"))
+  (shell-command "xset r rate 160 200"))
 #+end_src
 
 *** Toggle Touchpad
@@ -686,7 +689,7 @@ Set brightness by writing directly to system brightness file.
 "Notes aren’t a record of my thinking process. They are my thinking process." – Richard Feynman
 #+end_quote
 
-I use org as a primary interface. It currently manages:
+I largely live inside Org. It currently manages:
 
 - My second brain with org-roam & org-journal
 - literate programming with babel and emacs-jupyter (e.g. this file)
@@ -720,6 +723,7 @@ I use org as a primary interface. It currently manages:
                         ("\\.x?html?\\'" . default)
                         ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
+(use-package! org-contrib)
 
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
@@ -832,7 +836,16 @@ I use org as a primary interface. It currently manages:
 
   ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
   (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/pixel-incoming.org")
-  )
+
+  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
+  (require 'ox-latex))
+
+;; Setup syntax highlighting for code block pdf exports
+(after! ox-latex
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+        org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -900,10 +913,6 @@ I use org as a primary interface. It currently manages:
         org-ref-bibliography-notes "~/Sync/pdf_notes.org"
         org-ref-pdf-directory "~/Sync/pdf/"
         org-ref-notes-function #'org-ref-notes-function-one-file)
-  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
-
-  (setq org-latex-listings 'minted
-        org-latex-packages-alist '(("" "minted")))
   
   (defun get-pdf-filename (key)
     (let ((results (bibtex-completion-find-pdf key)))
@@ -953,7 +962,7 @@ aka my exocortex
 (after! org-roam
   ;; (add-hook 'org-journal-mode 'org-roam-mode)
   ;; (set-company-backend! 'org-roam-mode 'company-capf)
-  (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
+  ;; (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
@@ -1108,10 +1117,12 @@ The =org-capture-templates= templates used here:
   )
 #+end_src
 
-*** org-transclusion
+*** COMMENT org-transclusion
 :PROPERTIES:
 :ID:       73004e15-f4ed-4900-9f58-3c3f07c1fece
 :END:
+
+Still buggy
 
 #+begin_src emacs-lisp
 (use-package! org-transclusion
@@ -1245,15 +1256,30 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 (use-package! ob-graphql)
 #+end_src
 
-** TRAMP
+** Remote Machine Interfaces
 :PROPERTIES:
 :ID:       c54e2755-745b-44fa-b9b3-a965695ad67c
+:END:
+
+*** Tramp
+:PROPERTIES:
+:ID:       28f4562c-2dd8-40df-9791-2d92d06f5fdd
 :END:
 
 #+begin_src emacs-lisp
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
+
+*** S3 Interface
+:PROPERTIES:
+:ID:       5bffd69c-544e-4049-9a54-cc81f0d9a4ca
+:END:
+
+#+begin_src emacs-lisp
+(use-package! s3ed)
+#+end_src
+
 
 ** Effective Editing
 
@@ -1266,16 +1292,33 @@ To eventually make everything else in this project obsolete...
 :ID:       94e0c496-b27b-4139-8aa4-4ca7e184ff57
 :END:
 
-[[https://github.com/dangirsh/codex-completion][GitHub - dangirsh/codex-completion: Generate, Complete Code in Emacs using Op...]]
+[[https://github.com/dangirsh/openai-api.el][dangirsh/openai-api.el · GitHub]]
 
 #+begin_src emacs-lisp
-(use-package! codex-completion
+(use-package! openai-api
   :config
-  (setq codex-completion-openai-api-token (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
+  (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
+  (setq openai-api-engine "davinci-codex")
+  (setq openai-api-completion-params '((max_tokens . 100)
+                                       (temperature . 0.2)
+                                       (frequency_penalty . 0.1)
+                                       (presence_penalty . 0)
+                                       (n . 3)))
+
+  (defun my/openai-complete-region ()
+    (interactive)
+    (let ((selectrum-max-window-height nil)
+          (selectrum-fix-vertical-window-height nil))
+      (openai-api-consult-complete-region)))
+
   (add-to-dk-keymap
-   '(("TAB" . codex-complete))))
+   '(("TAB" . my/openai-complete-region))))
+
+
 #+end_src
 
+#+RESULTS:
+: t
 
 *** Structure Editing
 :PROPERTIES:
@@ -1448,7 +1491,19 @@ x There was an unexpected error:
   (global-undo-tree-mode 1))
 #+END_SRC
 
-** COMMENT Julia
+*** CamelCase to snake_case conversion
+:PROPERTIES:
+:ID:       4a429f7f-55a4-409b-9240-13f395c3f52a
+:END:
+
+#+begin_src emacs-lisp
+(use-package! string-inflection)
+#+end_src
+
+** Julia
+:PROPERTIES:
+:ID:       2bc88f03-b567-498d-8fab-5002b49a5ba9
+:END:
 
 Doom's Julia module is opinionated. I'd like full control, so I'm configuring
 Julia myself here.
@@ -1481,6 +1536,9 @@ Julia myself here.
 #+END_SRC
 
 *** Convert Julia Markdown Blocks to Org Blocks
+:PROPERTIES:
+:ID:       d46a24db-41f6-4e60-a2d2-ace9b45b1204
+:END:
 
 Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 
@@ -1554,7 +1612,6 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
         "C-c C-c q" #'lsp-workspace-restart
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
-
   (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
@@ -1687,41 +1744,6 @@ Added to [[file:~/.emacs.d/.local/straight/repos/rustic/rustic.el::(when rustic-
   :hook (rustic-mode-hook . evcxr-minor-mode))
 #+end_src
 
-** COMMENT Debugging
-
-#+begin_src emacs-lisp
-(use-package! dap-mode
-  :config
-  ;; (dap-ui-mode)
-  ;; (dap-ui-controls-mode 1)
-
-  (require 'dap-lldb)
-  (require 'dap-gdb-lldb)
-  ;; installs .extension/vscode
-  (dap-gdb-lldb-setup)
-  (dap-register-debug-template
-   "Rust::LLDB Run Configuration"
-   (list :type "lldb"
-         :request "launch"
-         :name "LLDB::Run"
-	 :gdbpath "rust-lldb"
-         :target nil
-         :cwd nil)))
-#+end_src
-
-*** For Rust
-
-Had to build =lldb= from source to get =lldb-mi=. Required installing =lldb= and =liblldb-dev= to build.
-
-Hit when debugin with =char= types: [[https://github.com/rust-lang/rust/issues/29154][rust-lang/rust#29154 Floating point exception when debugging with lldb on Mac...]]
-
-#+begin_example
-undefinederror: need to add support for DW_TAG_base_type 'char' encoded with DW_ATE = 0x8, bit_size = 32
-#+end_example
-
-
-Also, breaks swiper :(
-
 ** Jupyter
 :PROPERTIES:
 :ID:       f909e8c0-e43d-44d6-810f-757cd509ff62
@@ -1761,36 +1783,6 @@ Also, breaks swiper :(
     :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
     :desc "Eval string"      "w" #'jupyter-eval-string
     :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
-#+END_SRC
-
-** COMMENT Ivy
-:PROPERTIES:
-:ID:       a97d18d1-59c2-46dd-bd73-b2ba61308451
-:END:
-
-Ivy allows you to find the input to a command by incrementally searching the
-space of all valid inputs. It's well-supported in Doom.
-
-#+BEGIN_SRC emacs-lisp
-(after! ivy
-  ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
-  (setq ivy-use-virtual-buffers t
-        counsel-find-file-at-point t
-        ivy-wrap nil
-        ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-        ivy-posframe-height-alist '((t . 20))
-        ivy-posframe-parameters '((internal-border-width . 1))
-        ivy-posframe-width 100)
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (eshell-cmpl-initialize)
-              (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))
-  (add-to-dk-keymap
-   '(("g" . +ivy/project-search)
-     ("h" . +ivy/projectile-find-file)
-     ("i" . counsel-semantic-or-imenu)
-     ("j" . ivy-switch-buffer))))
-
 #+END_SRC
 
 ** Selectrum etc...
@@ -1891,8 +1883,8 @@ space of all valid inputs. It's well-supported in Doom.
 
 (consult-customize consult-buffer consult-ripgrep
                    consult-git-grep consult-grep consult-bookmark
-                   consult-recent-file consult-xref consult--source-file
-                   consult--source-project-file consult--source-bookmark
+                   consult-recent-file consult--source-file
+                   consult--source-project-file consult-xref consult--source-bookmark
                    consult-theme
                    :preview-key
                    (list (kbd "M-.") ))
@@ -2138,19 +2130,6 @@ to ace-window.
   (org-mode . real-auto-save-mode))
 #+end_src
 
-** COMMENT Additional Web Dev Tooling
-:PROPERTIES:
-:ID:       0df85fc1-cd60-42f1-9604-1eff5050ced2
-:END:
-
-Including the Doom =javascript= module does most of the work...
-
-#+begin_src emacs-lisp
-(use-package! jest
-  :hook
-  (typescript-mode . jest-minor-mode))
-#+end_src
-
 ** Google Translate
 :PROPERTIES:
 :ID:       f3bdc502-8bdd-4a42-8605-e6386697ab9a
@@ -2163,15 +2142,6 @@ Including the Doom =javascript= module does most of the work...
   :config
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   (setq google-translate-output-destination 'kill-ring))
-#+end_src
-
-** CamelCase to snake_case conversion
-:PROPERTIES:
-:ID:       4a429f7f-55a4-409b-9240-13f395c3f52a
-:END:
-
-#+begin_src emacs-lisp
-(use-package! string-inflection)
 #+end_src
 
 ** Dotenv
@@ -2223,14 +2193,6 @@ Including the Doom =javascript= module does most of the work...
   (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1))))
 #+end_src
 
-** COMMENT Poly Markdown
-
-Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#Weave.jl-Scientific-Reports-Using-Julia-1][Weave.jl]])
-
-#+begin_src emacs-lisp
-(use-package! poly-markdown)
-#+end_src
-
 ** Registers
 :PROPERTIES:
 :ID:       aebbfcb7-7c2c-4e95-a21d-b9f3d9491392
@@ -2245,22 +2207,6 @@ Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#
 
 #+RESULTS:
 : (file . ~/Sync/resume/resume.tex)
-
-** Performance Tweaks
-
-*** COMMENT Swiper
-:PROPERTIES:
-:ID:       00108066-21b8-4f67-b934-5eb32ec70aa2
-:END:
-
-Seems like a good solution to swiper being slow is to [[https://oremacs.com/2019/04/07/swiper-isearch/][just use swiper-isearch]], but I find swiper's handling of multiple results on a line more convenient most of the time.
-
-Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/swiper_is_extreamly_slow/euamwwt?utm_source=share&utm_medium=web2x][this Reddit comment]] to make swiper ignore visual line mode. Seems to help for now.
-
-#+begin_src emacs-lisp
-(setq swiper-use-visual-line nil)
-(setq swiper-use-visual-line-p (lambda (a) nil))
-#+end_src
 
 ** Load Untracked Elisp
 :PROPERTIES:
@@ -2691,6 +2637,10 @@ narrowed."
 
 ;; (my/set-timezone)
 
+(defun my/insert-jupyter-julia-block ()
+  (interactive)
+  (org-insert-structure-template "src jupyter-julia"))
+
 (defun my/insert-jupyter-python-block ()
   (interactive)
   (org-insert-structure-template "src jupyter-python"))
@@ -3018,7 +2968,6 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! ace-window)
 (package! aggressive-indent)
 ;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
-(package! codex-completion :recipe (:host github :repo "dangirsh/codex-completion"))
 (package! company-org-block)
 ;; (package! company-posframe)
 ;; (package! dap-mode)
@@ -3037,6 +2986,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;; (package! nano-emacs
 ;;   :recipe (:host github :repo "rougier/nano-emacs"))
 (package! ob-graphql)
+(package! openai-api :recipe (:host github :repo "dangirsh/openai-api.el"))
 (package! org-cliplink)
 (package! org-download)
 (package! org-drill)
@@ -3055,6 +3005,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;; (package! ob-rust)
 (package! real-auto-save)
 (package! rust-mode)
+(package! s3ed)
 (package! smartscan)
 (package! string-inflection)
 (package! toc-org)
@@ -3080,13 +3031,11 @@ Any desired package not declared in a Doom module must be declared here. This se
 
 
 ;; Julia
-;; (package! julia-mode :pin "1c122f1dff")
+(package! julia-mode)
 ;; (package! julia-snail)
 
-;; ;; Use the branch that supports the vterm backend
-;; ;; https://github.com/tpapp/julia-repl/pull/84
-;; (package! julia-repl
-;;   :recipe (:host github :repo "tpapp/julia-repl"))
+(package! julia-repl
+  :recipe (:host github :repo "tpapp/julia-repl"))
 
 ;; (package! julia-formatter
 ;;   :recipe (:host github :repo "ki-chi/julia-formatter"))

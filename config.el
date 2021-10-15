@@ -9,13 +9,18 @@
 (setq my/work-base-dir (concat my/home-dir "Work/"))
 (setq my/media-base-dir (concat my/home-dir "Media/"))
 
+;; (setq org-directory my/sync-base-dir
+;;       org-roam-directory "/home/dan/Sync/org-roam2/"
+;;       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
+
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Sync/org-roam2/"
-      my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
+      org-roam-directory "/home/dan/Work/Worldcoin/org-roam/"
+      org-roam-db-location "/home/dan/Work/Worldcoin/org-roam/org-roam.db"
+      my/org-roam-todo-file (concat org-roam-directory "orgzly/worldcoin-todo.org"))
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 16)
+(setq  doom-font (font-spec :family "Hack" :size 22)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -35,13 +40,13 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
         doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-light t)
+  ;; (load-theme 'doom-vibrant t)
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
   ;; (load-theme 'doom-one t)
   ;; (load-theme 'doom-one-light t)
-  ;; (load-theme 'doom-nord-light t)
+  (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -64,8 +69,8 @@
 (use-package! key-chord
   :config
   (key-chord-mode 1)
-  (setq key-chord-one-keys-delay 0.02
-        key-chord-two-keys-delay 0.07))
+  (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
+        key-chord-two-keys-delay 0.10))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -161,7 +166,7 @@
 (defun fix-keyboard ()
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 60"))
+  (shell-command "xset r rate 160 200"))
 
 (defun toggle-touchpad ()
   (interactive)
@@ -328,6 +333,7 @@
                         ("\\.x?html?\\'" . default)
                         ("\\.pdf\\'" . (lambda (file link) (org-pdftools-open link))))))
 
+(use-package! org-contrib)
 
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
@@ -440,7 +446,16 @@
 
   ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
   (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/pixel-incoming.org")
-  )
+
+  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
+  (require 'ox-latex))
+
+;; Setup syntax highlighting for code block pdf exports
+(after! ox-latex
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+        org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -472,7 +487,7 @@
 (after! org-roam
   ;; (add-hook 'org-journal-mode 'org-roam-mode)
   ;; (set-company-backend! 'org-roam-mode 'company-capf)
-  (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
+  ;; (add-hook 'org-roam-find-file-hook 'org-hide-properties 100)
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db")
         +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
@@ -529,10 +544,6 @@
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
                                         "* TODO %?  #[[%F][%(my/org-get-title \"%F\")]]\n%i\n%a"))
   )
-
-(use-package! org-transclusion
-  ;; :hook (org-mode . org-transclusion-mode)
-  :hook (org-transclusion-mode . org-indent-mode))
 
 (use-package! org-download
   :config
@@ -601,11 +612,26 @@
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-(use-package! codex-completion
+(use-package! s3ed)
+
+(use-package! openai-api
   :config
-  (setq codex-completion-openai-api-token (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
+  (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
+  (setq openai-api-engine "davinci-codex")
+  (setq openai-api-completion-params '((max_tokens . 100)
+                                       (temperature . 0.2)
+                                       (frequency_penalty . 0.1)
+                                       (presence_penalty . 0)
+                                       (n . 3)))
+
+  (defun my/openai-complete-region ()
+    (interactive)
+    (let ((selectrum-max-window-height nil)
+          (selectrum-fix-vertical-window-height nil))
+      (openai-api-consult-complete-region)))
+
   (add-to-dk-keymap
-   '(("TAB" . codex-complete))))
+   '(("TAB" . my/openai-complete-region))))
 
 (use-package! lispy
   :config
@@ -707,6 +733,37 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
+(use-package! string-inflection)
+
+(defvar inferior-julia-program-name "julia")
+
+(use-package! julia
+  :interpreter "julia"
+  :hook (julia-mode . julia-repl-mode))
+
+;; (defun my/julia-repl-hook ()
+;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
+
+(use-package! julia-repl
+  :config
+                                        ; See: https://github.com/tpapp/julia-repl/pull/84
+  ;; (require 'vterm)
+  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
+  )
+
+;; https://github.com/gcv/julia-snail
+;; (use-package! julia-snail
+;;   :hook (julia-mode . julia-snail-mode))
+
+;; (use-package! eglot-jl
+;;   :hook (julia-mode . eglot)
+;;   :config
+;;   (eglot-jl-init))
+
+(defun jmd-block-to-jupyter-julia ()
+  (interactive)
+   (kmacro-lambda-form [?\C-  ?\C-e backspace ?\C-c ?\C-, ?j down ?\C-  ?\C-s ?` return left ?\C-w up ?\C-y down ?\C-k] 0 "%d"))
+
 (setq haskell-mode-stylish-haskell-path "brittany")
 
 (after! rustic-flycheck
@@ -730,7 +787,6 @@
         "C-c C-c q" #'lsp-workspace-restart
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
-
   (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
@@ -843,8 +899,8 @@
 
 (consult-customize consult-buffer consult-ripgrep
                    consult-git-grep consult-grep consult-bookmark
-                   consult-recent-file consult-xref consult--source-file
-                   consult--source-project-file consult--source-bookmark
+                   consult-recent-file consult--source-file
+                   consult--source-project-file consult-xref consult--source-bookmark
                    consult-theme
                    :preview-key
                    (list (kbd "M-.") ))
@@ -977,8 +1033,6 @@
   :config
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   (setq google-translate-output-destination 'kill-ring))
-
-(use-package! string-inflection)
 
 (use-package! dotenv)
 

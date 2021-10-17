@@ -20,7 +20,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 22)
+(setq  doom-font (font-spec :family "Hack" :size 20)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -166,7 +166,7 @@
 (defun fix-keyboard ()
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 200"))
+  (shell-command "xset r rate 160 100"))
 
 (defun toggle-touchpad ()
   (interactive)
@@ -204,6 +204,13 @@
 
 (map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
 (map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
+
+
+(defun my/set-brightness-lg-5k (level)
+  (interactive "nBrightness level: ")
+  (save-window-excursion
+    (shell-command
+     (format "echo \"0i%s\n\" | sudo /home/dan/repos/LG-ultrafine-brightness/build/LG_ultrafine_brightness" level) nil nil)))
 
 (setq my/redshift-min 500)
 (setq my/redshift-max 6000)
@@ -1089,7 +1096,7 @@
 (after! so-long
   (setq so-long-threshold 10000))
 
-(setq warning-minimum-level :emergency)
+;; (setq warning-minimum-level :emergency)
 
 (setq isearch-allow-scroll t)
 

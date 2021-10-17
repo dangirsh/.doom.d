@@ -4,7 +4,7 @@
 Archived entries from file /home/dan/.doom.d/README.org
 
 
-* COMMENT Emacs X Window Management (EXWM)
+* Emacs X Window Management (EXWM)
 :PROPERTIES:
 :ARCHIVE_TIME: 2021-05-14 Fri 21:58
 :ARCHIVE_FILE: ~/.doom.d/README.org
@@ -417,7 +417,7 @@ Exec=/home/dan/.doom.d/modules/desktop/exwm/launch-exwm.sh
 Type=XSession
 #+end_src
 
-* COMMENT Deft: Note search
+* Deft: Note search
 :PROPERTIES:
 :ID:       69587a08-56f4-49a9-b040-0394d5524487
 :ARCHIVE_TIME: 2021-08-04 Wed 14:32
@@ -443,7 +443,7 @@ Type=XSession
 : 100
 
 
-* COMMENT org-roam-server: Graph visualization / navigation
+* org-roam-server: Graph visualization / navigation
 :PROPERTIES:
 :ID:       6e670688-8f77-4b7e-9baa-2eb4889a5972
 :ARCHIVE_TIME: 2021-08-04 Wed 14:32
@@ -547,7 +547,7 @@ cargo install cargo-script
 :ARCHIVE_CATEGORY: README
 :END:
 
-** COMMENT Swiper
+** Swiper
 :PROPERTIES:
 :ID:       00108066-21b8-4f67-b934-5eb32ec70aa2
 :END:
@@ -562,7 +562,7 @@ Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/s
 #+end_src
 
 
-* COMMENT Ivy
+* Ivy
 :PROPERTIES:
 :ID:       a97d18d1-59c2-46dd-bd73-b2ba61308451
 :ARCHIVE_TIME: 2021-10-13 Wed 17:23
@@ -597,7 +597,7 @@ space of all valid inputs. It's well-supported in Doom.
 #+END_SRC
 
 
-* COMMENT Debugging
+* Debugging
 :PROPERTIES:
 :ARCHIVE_TIME: 2021-10-13 Wed 17:23
 :ARCHIVE_FILE: ~/.doom.d/README.org
@@ -639,7 +639,7 @@ undefinederror: need to add support for DW_TAG_base_type 'char' encoded with DW_
 Also, breaks swiper :(
 
 
-* COMMENT Poly Markdown
+* Poly Markdown
 :PROPERTIES:
 :ARCHIVE_TIME: 2021-10-13 Wed 17:23
 :ARCHIVE_FILE: ~/.doom.d/README.org
@@ -654,7 +654,7 @@ Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#
 #+end_src
 
 
-* COMMENT Additional Web Dev Tooling
+* Additional Web Dev Tooling
 :PROPERTIES:
 :ID:       0df85fc1-cd60-42f1-9604-1eff5050ced2
 :ARCHIVE_TIME: 2021-10-13 Wed 17:23

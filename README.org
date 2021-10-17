@@ -288,7 +288,7 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq  doom-font (font-spec :family "Hack" :size 22)
+(setq  doom-font (font-spec :family "Hack" :size 20)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -497,8 +497,11 @@ Sets caps to control and sets a snappy key repeat / delay.
 (defun fix-keyboard ()
   (interactive)
   (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 200"))
+  (shell-command "xset r rate 160 100"))
 #+end_src
+
+#+RESULTS:
+: fix-keyboard
 
 *** Toggle Touchpad
 :PROPERTIES:
@@ -554,6 +557,13 @@ Set brightness by writing directly to system brightness file.
 
 (map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
 (map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
+
+
+(defun my/set-brightness-lg-5k (level)
+  (interactive "nBrightness level: ")
+  (save-window-excursion
+    (shell-command
+     (format "echo \"0i%s\n\" | sudo /home/dan/repos/LG-ultrafine-brightness/build/LG_ultrafine_brightness" level) nil nil)))
 #+end_src
 
 **** Redshift
@@ -2273,7 +2283,7 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
 
 
 #+begin_src emacs-lisp
-(setq warning-minimum-level :emergency)
+;; (setq warning-minimum-level :emergency)
 
 (setq isearch-allow-scroll t)
 

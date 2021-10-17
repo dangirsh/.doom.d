@@ -538,3 +538,136 @@ cargo install cargo-script
 #+end_example
 
 
+
+* Performance Tweaks
+:PROPERTIES:
+:ARCHIVE_TIME: 2021-10-13 Wed 17:23
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+** COMMENT Swiper
+:PROPERTIES:
+:ID:       00108066-21b8-4f67-b934-5eb32ec70aa2
+:END:
+
+Seems like a good solution to swiper being slow is to [[https://oremacs.com/2019/04/07/swiper-isearch/][just use swiper-isearch]], but I find swiper's handling of multiple results on a line more convenient most of the time.
+
+Instead, I follow advice from [[https://www.reddit.com/r/emacs/comments/cfdv1y/swiper_is_extreamly_slow/euamwwt?utm_source=share&utm_medium=web2x][this Reddit comment]] to make swiper ignore visual line mode. Seems to help for now.
+
+#+begin_src emacs-lisp
+(setq swiper-use-visual-line nil)
+(setq swiper-use-visual-line-p (lambda (a) nil))
+#+end_src
+
+
+* COMMENT Ivy
+:PROPERTIES:
+:ID:       a97d18d1-59c2-46dd-bd73-b2ba61308451
+:ARCHIVE_TIME: 2021-10-13 Wed 17:23
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+Ivy allows you to find the input to a command by incrementally searching the
+space of all valid inputs. It's well-supported in Doom.
+
+#+BEGIN_SRC emacs-lisp
+(after! ivy
+  ;; Causes open buffers and recentf to be combined in ivy-switch-buffer
+  (setq ivy-use-virtual-buffers t
+        counsel-find-file-at-point t
+        ivy-wrap nil
+        ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+        ivy-posframe-height-alist '((t . 20))
+        ivy-posframe-parameters '((internal-border-width . 1))
+        ivy-posframe-width 100)
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (eshell-cmpl-initialize)
+              (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))
+  (add-to-dk-keymap
+   '(("g" . +ivy/project-search)
+     ("h" . +ivy/projectile-find-file)
+     ("i" . counsel-semantic-or-imenu)
+     ("j" . ivy-switch-buffer))))
+
+#+END_SRC
+
+
+* COMMENT Debugging
+:PROPERTIES:
+:ARCHIVE_TIME: 2021-10-13 Wed 17:23
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! dap-mode
+  :config
+  ;; (dap-ui-mode)
+  ;; (dap-ui-controls-mode 1)
+
+  (require 'dap-lldb)
+  (require 'dap-gdb-lldb)
+  ;; installs .extension/vscode
+  (dap-gdb-lldb-setup)
+  (dap-register-debug-template
+   "Rust::LLDB Run Configuration"
+   (list :type "lldb"
+         :request "launch"
+         :name "LLDB::Run"
+	 :gdbpath "rust-lldb"
+         :target nil
+         :cwd nil)))
+#+end_src
+
+** For Rust
+
+Had to build =lldb= from source to get =lldb-mi=. Required installing =lldb= and =liblldb-dev= to build.
+
+Hit when debugin with =char= types: [[https://github.com/rust-lang/rust/issues/29154][rust-lang/rust#29154 Floating point exception when debugging with lldb on Mac...]]
+
+#+begin_example
+undefinederror: need to add support for DW_TAG_base_type 'char' encoded with DW_ATE = 0x8, bit_size = 32
+#+end_example
+
+
+Also, breaks swiper :(
+
+
+* COMMENT Poly Markdown
+:PROPERTIES:
+:ARCHIVE_TIME: 2021-10-13 Wed 17:23
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+Used with *.jmd literate Julia files (see [[http://weavejl.mpastell.com/stable/#Weave.jl-Scientific-Reports-Using-Julia-1][Weave.jl]])
+
+#+begin_src emacs-lisp
+(use-package! poly-markdown)
+#+end_src
+
+
+* COMMENT Additional Web Dev Tooling
+:PROPERTIES:
+:ID:       0df85fc1-cd60-42f1-9604-1eff5050ced2
+:ARCHIVE_TIME: 2021-10-13 Wed 17:23
+:ARCHIVE_FILE: ~/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+Including the Doom =javascript= module does most of the work...
+
+#+begin_src emacs-lisp
+(use-package! jest
+  :hook
+  (typescript-mode . jest-minor-mode))
+#+end_src
+

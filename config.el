@@ -20,14 +20,9 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 20)
+(setq  doom-font (font-spec :family "Hack" :size 22)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
-
-(when (file-exists-p "~/.doom.d/banners")
-  (setq +doom-dashboard-banner-padding '(0 . 2)
-        +doom-dashboard-banner-file "deepfield-window.png"
-        +doom-dashboard-banner-dir "~/.doom.d/banners"))
 
 (setq display-line-numbers-type nil)
 
@@ -44,9 +39,9 @@
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
-  ;; (load-theme 'doom-one t)
+  (load-theme 'doom-one t)
   ;; (load-theme 'doom-one-light t)
-  (load-theme 'doom-nord-light t)
+  ;; (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -407,15 +402,6 @@
   ;;               :scale 2.0
   ;;               :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "DELEGATED(o)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
-
-  (setq org-todo-keyword-faces (quote (("TODO" :foreground "#2E2E8B8B5757" :weight bold)
-                                       ("DONE" :foreground "black" :weight bold)
-                                       ("WAITING" :foreground "yellow4" :weight bold)
-                                       ("CANCELED" :foreground "orangered" :weight bold)
-                                       ("WIP" :foreground "DarkBlue" :weight bold))))
-
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
     (interactive)
@@ -486,9 +472,6 @@
   ;;     (apply orig-fn args)))
   )
 
-(use-package! org-recoll
-  :after org)
-
 (after! org-roam
   (setq +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
@@ -505,11 +488,8 @@
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
 
-(defun my/today ()
-  (interactive)
-  (save-excursion
-    (dired (concat my/sync-base-dir "org-roam2"))
-    (org-roam-dailies-goto-today)))
+(add-to-dk-keymap
+ '(("J" . org-roam-dailies-goto-today)))
 
 ;; leader-n-r-d-t also works, but this muscle-memory from the org-journal days is easier to type
 (map! :leader
@@ -550,14 +530,6 @@
 
 (use-package! org-cliplink)
 
-(use-package! org-drill
-  :after org
-  :config
-  (add-to-list 'org-capture-templates
-               `("d" "Drill" entry
-                 (file ,(concat org-directory "drill.org"))
-                 "* %^{Heading} :drill:\n\n%^{Question}\n\n** Answer\n\n%^{Answer}")))
-
 (setq org-agenda-start-day "+0d"      ; start today
       org-agenda-show-current-time-in-grid t
       org-agenda-timegrid-use-ampm t
@@ -572,10 +544,9 @@
   :after org-agenda
   :config
   (setq org-super-agenda-groups
-        '((:discard (:todo "SOMEDAY"))
-          (:discard (:todo "QUESTION"))
+        '((:discard (:todo "HOLD" :todo "IDEA"))
           (:name "WIP"
-           :todo "WIP")
+           :todo "[-]")
           (:name "High Priority"
            :priority "A")
           (:name "Med Priority"
@@ -588,14 +559,6 @@
            :deadline today)
           (:auto-todo t)))
   (org-super-agenda-mode))
-
-(defun my/open-questions ()
-  (interactive)
-  (let ((org-super-agenda-groups
-         '((:discard (:not (:todo "QUESTION")))
-           (:auto-todo t))))
-
-    (org-agenda nil "t")))
 
 (use-package! company-org-block
   :ensure t
@@ -1032,12 +995,6 @@
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   (setq google-translate-output-destination 'kill-ring))
 
-(use-package! dotenv)
-
-(defun my/load-env-file (env-file)
-  (interactive "f")
-  (dotenv-update-env (dotenv-load% env-file)))
-
 (use-package! logview)
 
 (use-package! fancy-dabbrev
@@ -1059,8 +1016,9 @@
 (set-register ?h '(file . "~/Sync/home/config.org"))
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))
 
-(load-file "/home/dan/Work/WC/emacs/wc-config.el")
-(require 'wc-config)
+(when (getenv "EMACS_WORK_MODE")
+  (load-file "/home/dan/Work/w/emacs/work-config.el")
+  (require 'work-config))
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

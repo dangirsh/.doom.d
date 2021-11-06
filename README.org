@@ -52,11 +52,9 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#bluetooth][Bluetooth]]
   - [[#org][Org]]
     - [[#org-noter-syncing-notes-to-pdfs][org-noter: Syncing notes to PDFs]]
-    - [[#org-recoll-interface-to-recoll---pdf-content-search][org-recoll: Interface to Recoll - PDF content search]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
-    - [[#org-drill-spaced-repetition][org-drill: Spaced Repetition]]
     - [[#org-agenda][Org Agenda]]
     - [[#org-sidebar][org-sidebar]]
     - [[#better-org-babel][Better Org Babel]]
@@ -96,11 +94,10 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#avoiding-automatic-horizontal-splits][Avoiding Automatic Horizontal Splits]]
   - [[#autosave][Autosave]]
   - [[#google-translate][Google Translate]]
-  - [[#dotenv][Dotenv]]
   - [[#logview][Logview]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
   - [[#registers][Registers]]
-  - [[#load-untracked-elisp][Load Untracked Elisp]]
+  - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#avoid-long-line-performance-hit][Avoid Long-line Performance Hit]]
   - [[#misc][Misc]]
@@ -130,18 +127,14 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-       ;; :desktop
-       ;; exwm
 
        :personal
        neurosys
 
        :completion
        (company)
-       ;; (ivy +prescient +childframe)
 
        :ui
-       ;; deft
        doom
        hl-todo
        modeline
@@ -149,7 +142,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        zen
 
        :editor
-       ;; Nice, but messes with org-journal
        lispy
        multiple-cursors
        word-wrap
@@ -168,7 +160,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        syntax
 
        :tools
-       direnv
        (eval +overlay)
        docker
        lookup
@@ -195,18 +186,12 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
             +roam2)
        python
        (rust +lsp)
-       ;; rust
        sh
        yaml
 
-       :app
-       ;; calendar
-
        :config
        literate
-       (default +bindings)
-       ;; (default +bindings +smartparens)
-       )
+       (default +bindings))
 #+end_src
 
 * Package Configuration
@@ -288,14 +273,9 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq  doom-font (font-spec :family "Hack" :size 20)
+(setq  doom-font (font-spec :family "Hack" :size 22)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
-
-(when (file-exists-p "~/.doom.d/banners")
-  (setq +doom-dashboard-banner-padding '(0 . 2)
-        +doom-dashboard-banner-file "deepfield-window.png"
-        +doom-dashboard-banner-dir "~/.doom.d/banners"))
 
 (setq display-line-numbers-type nil)
 
@@ -320,9 +300,9 @@ clients, file templates and snippets.
   ;; (load-theme 'leuven t)
   ;; (load-theme 'doom-dark+ t)
   ;; (load-theme 'doom-solarized-light t)
-  ;; (load-theme 'doom-one t)
+  (load-theme 'doom-one t)
   ;; (load-theme 'doom-one-light t)
-  (load-theme 'doom-nord-light t)
+  ;; (load-theme 'doom-nord-light t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -806,15 +786,6 @@ I largely live inside Org. It currently manages:
   ;;               :scale 2.0
   ;;               :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "WIP(p)" "WAITING(w)" "DELEGATED(o)" "SOMEDAY(s)" "QUESTION(q)" "|" "DONE(d)" "CANCELLED(c)")))
-
-  (setq org-todo-keyword-faces (quote (("TODO" :foreground "#2E2E8B8B5757" :weight bold)
-                                       ("DONE" :foreground "black" :weight bold)
-                                       ("WAITING" :foreground "yellow4" :weight bold)
-                                       ("CANCELED" :foreground "orangered" :weight bold)
-                                       ("WIP" :foreground "DarkBlue" :weight bold))))
-
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
     (interactive)
@@ -893,7 +864,7 @@ I largely live inside Org. It currently manages:
   )
 #+END_SRC
 
-*** org-recoll: Interface to Recoll - PDF content search
+*** COMMENT org-recoll: Interface to Recoll - PDF content search
 :PROPERTIES:
 :ID:       6355d4d1-45ed-4995-97a5-45b572666f99
 :END:
@@ -999,11 +970,8 @@ aka my exocortex
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
 
-(defun my/today ()
-  (interactive)
-  (save-excursion
-    (dired (concat my/sync-base-dir "org-roam2"))
-    (org-roam-dailies-goto-today)))
+(add-to-dk-keymap
+ '(("J" . org-roam-dailies-goto-today)))
 
 ;; leader-n-r-d-t also works, but this muscle-memory from the org-journal days is easier to type
 (map! :leader
@@ -1160,7 +1128,7 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 (use-package! org-cliplink)
 #+end_src
 
-*** org-drill: Spaced Repetition
+*** COMMENT org-drill: Spaced Repetition
 :PROPERTIES:
 :ID:       cc74feb5-1381-4314-8eef-9faf52294d14
 :END:
@@ -1204,10 +1172,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
   :after org-agenda
   :config
   (setq org-super-agenda-groups
-        '((:discard (:todo "SOMEDAY"))
-          (:discard (:todo "QUESTION"))
+        '((:discard (:todo "HOLD" :todo "IDEA"))
           (:name "WIP"
-           :todo "WIP")
+           :todo "[-]")
           (:name "High Priority"
            :priority "A")
           (:name "Med Priority"
@@ -1220,14 +1187,6 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
            :deadline today)
           (:auto-todo t)))
   (org-super-agenda-mode))
-
-(defun my/open-questions ()
-  (interactive)
-  (let ((org-super-agenda-groups
-         '((:discard (:not (:todo "QUESTION")))
-           (:auto-todo t))))
-
-    (org-agenda nil "t")))
 #+end_src
 
 **** COMMENT elegant-agenda-mode: Prettier Org Agenda
@@ -1599,7 +1558,6 @@ Put cursor at beginning of =```julia= line and run =jmd-block-to-jupyter-julia=.
 #+RESULTS:
 : clippy
 
-
 *** Rustic
 :PROPERTIES:
 :ID:       45aa37f9-6fbf-4111-bb66-90d490f5f405
@@ -1739,7 +1697,6 @@ Added to [[file:~/.emacs.d/.local/straight/repos/rustic/rustic.el::(when rustic-
 
 #+RESULTS:
 : t
-
 
 **** COMMENT EVCXR Mode
 :PROPERTIES:
@@ -2151,7 +2108,7 @@ to ace-window.
   (setq google-translate-output-destination 'kill-ring))
 #+end_src
 
-** Dotenv
+** COMMENT Dotenv
 :PROPERTIES:
 :ID:       482fa444-39e1-46f0-a1f2-a7d11383e21b
 :END:
@@ -2215,14 +2172,17 @@ to ace-window.
 #+RESULTS:
 : (file . ~/Sync/resume/resume.tex)
 
-** Load Untracked Elisp
+** Load Untracked Elisp (work-specific)
 :PROPERTIES:
 :ID:       52472b2d-ec59-4629-88c6-83dcab02b49e
 :END:
 
+Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
+
 #+begin_src emacs-lisp
-(load-file "/home/dan/Work/WC/emacs/wc-config.el")
-(require 'wc-config)
+(when (getenv "EMACS_WORK_MODE")
+  (load-file "/home/dan/Work/w/emacs/work-config.el")
+  (require 'work-config))
 #+end_src
 
 ** Misc Global Keybindings
@@ -2631,7 +2591,8 @@ narrowed."
     (with-temp-buffer
       (insert-file-contents path)
       (org-mode)
-      (org-roam--file-keyword-get "TITLE"))))
+      (cadr (assoc "TITLE" (org-collect-keywords '("title"))
+                   #'string-equal)))))
 
 
 (defun my/set-timezone ()
@@ -2872,7 +2833,7 @@ SCOPE can be 'file or 'tree."
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
-   "TODO=\"DONE\"|TODO=\"CANCELLED\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
+   "TODO=\"DONE\"|TODO=\"KILL\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
 
 
 (defun my/org-jupyter-execute-subtree-by-id (id)
@@ -2920,7 +2881,7 @@ Elisp related to my [[nerusos][neurosys]].
     (save-window-excursion
       (org-babel-tangle)
       (my/run-in-fresh-compilation
-       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home) "~/")
+       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home) neurosys/base-dir)
       ;; TODO: Is there cleaner way to compile over TRAMP?
       (find-file host-root)
       (compile "nixos-rebuild switch --show-trace")))

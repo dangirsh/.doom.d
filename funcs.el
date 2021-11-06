@@ -249,7 +249,8 @@ narrowed."
     (with-temp-buffer
       (insert-file-contents path)
       (org-mode)
-      (org-roam--file-keyword-get "TITLE"))))
+      (cadr (assoc "TITLE" (org-collect-keywords '("title"))
+                   #'string-equal)))))
 
 
 (defun my/set-timezone ()
@@ -473,7 +474,7 @@ SCOPE can be 'file or 'tree."
    (lambda ()
      (org-archive-subtree)
      (setq org-map-continue-from (outline-previous-heading)))
-   "TODO=\"DONE\"|TODO=\"CANCELLED\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
+   "TODO=\"DONE\"|TODO=\"KILL\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
 
 
 (defun my/org-jupyter-execute-subtree-by-id (id)

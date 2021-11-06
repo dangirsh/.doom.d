@@ -1,18 +1,14 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
-       ;; :desktop
-       ;; exwm
 
        :personal
        neurosys
 
        :completion
        (company)
-       ;; (ivy +prescient +childframe)
 
        :ui
-       ;; deft
        doom
        hl-todo
        modeline
@@ -20,7 +16,6 @@
        zen
 
        :editor
-       ;; Nice, but messes with org-journal
        lispy
        multiple-cursors
        word-wrap
@@ -39,7 +34,6 @@
        syntax
 
        :tools
-       direnv
        (eval +overlay)
        docker
        lookup
@@ -66,15 +60,9 @@
             +roam2)
        python
        (rust +lsp)
-       ;; rust
        sh
        yaml
 
-       :app
-       ;; calendar
-
        :config
        literate
-       (default +bindings)
-       ;; (default +bindings +smartparens)
-       )
+       (default +bindings))

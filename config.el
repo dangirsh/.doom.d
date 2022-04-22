@@ -20,7 +20,7 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 22)
+(setq  doom-font (font-spec :family "Hack" :size 24)
        doom-variable-pitch-font (font-spec :family "Libre Baskerville")
        doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -65,7 +65,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.10))
+        key-chord-two-keys-delay 0.05))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -312,6 +312,14 @@
   (interactive)
   (shell-command "bluetoothctl -- disconnect 4C:87:5D:27:B8:63"))
 
+(defun my/connect-to-pixel-buds ()
+  (interactive)
+  (shell-command "bluetoothctl -- connect E4:5E:1B:C8:B2:9F"))
+
+(defun my/disconnect-to-pixel-buds ()
+  (interactive)
+  (shell-command "bluetoothctl -- disconnect E4:5E:1B:C8:B2:9F"))
+
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
   :init
@@ -342,8 +350,10 @@
   ;; Clear Doom's default templates
   (setq org-capture-templates '())
 
-  (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "listen.org"))
+  (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "org-roam2/orgzly/listen.org"))
                                         "* TODO %?\n%i"))
+  (add-to-list 'org-capture-templates `("i" "Incoming" entry (file ,(concat org-directory "org-roam2/orgzly/incoming.org"))
+                                        "* %?\n%i"))
 
   ;; (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
 
@@ -416,14 +426,6 @@
   (setq org-image-actual-width nil)
 
   (setq org-agenda-files '())
-  (setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
-                                   (todo . " %i %b")
-                                   (tags . " %i %-12:c %b")
-                                   (search . " %i %-12:c %b")))
-  (setq org-agenda-category-icon-alist
-        `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-          ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center)))
-
 
   ;; Update parent TODO state when all children TODOs are done
   ;; NOTE: Only works if the parent has a "[/]" or "[%]" in the heading!!
@@ -530,11 +532,24 @@
 
 (use-package! org-cliplink)
 
-(setq org-agenda-start-day "+0d"      ; start today
-      org-agenda-show-current-time-in-grid t
+(setq org-agenda-start-day "+0d"        ; start today
+      org-agenda-show-current-time-in-grid nil
       org-agenda-timegrid-use-ampm t
-      org-agenda-use-time-grid nil    ; Toggle it with 'G' in agenda view
-      org-agenda-span 3)
+      org-agenda-use-time-grid nil      ; Toggle it with 'G' in agenda view
+      org-agenda-span 1
+      org-agenda-skip-timestamp-if-done t
+      org-agenda-skip-deadline-if-done t
+      org-agenda-overriding-header "⚡ Agenda"
+      org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                 (todo . " %i %b")
+                                 (tags . " %i %-12:c %b")
+                                 (search . " %i %-12:c %b"))
+      org-agenda-category-icon-alist
+      `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
+        ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
+      org-agenda-todo-keyword-format ""
+      org-agenda-scheduled-leaders '("" "")
+      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
 
 (defun my/org-agenda ()
   (interactive)
@@ -579,11 +594,12 @@
   :config
   (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
   (setq openai-api-engine "davinci-codex")
+  ;; (setq openai-api-engine "davinci")
   (setq openai-api-completion-params '((max_tokens . 100)
-                                       (temperature . 0.2)
+                                       (temperature . 0.1)
                                        (frequency_penalty . 0.1)
-                                       (presence_penalty . 0)
-                                       (n . 3)))
+                                       (presence_penalty . 0.1)
+                                       (n . 6)))
 
   (defun my/openai-complete-region ()
     (interactive)
@@ -593,6 +609,8 @@
 
   (add-to-dk-keymap
    '(("TAB" . my/openai-complete-region))))
+
+(require 'openai-api)
 
 (use-package! lispy
   :config
@@ -751,6 +769,7 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
+  (customize-set-variable 'lsp-ui-doc-enable nil)
   (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
 
 

@@ -536,7 +536,7 @@
       org-agenda-show-current-time-in-grid nil
       org-agenda-timegrid-use-ampm t
       org-agenda-use-time-grid nil      ; Toggle it with 'G' in agenda view
-      org-agenda-span 1
+      org-agenda-span 3
       org-agenda-skip-timestamp-if-done t
       org-agenda-skip-deadline-if-done t
       org-agenda-overriding-header "⚡ Agenda"

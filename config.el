@@ -306,7 +306,8 @@
 
 (defun my/connect-to-bose-700s ()
   (interactive)
-  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63"))
+  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63")
+  (shell-command "pacmd set-card-profile 3 headset_head_unit"))
 
 (defun my/disconnect-to-bose-700s ()
   (interactive)

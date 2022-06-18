@@ -666,7 +666,8 @@ Set brightness by writing directly to system brightness file.
 #+begin_src emacs-lisp
 (defun my/connect-to-bose-700s ()
   (interactive)
-  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63"))
+  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63")
+  (shell-command "pacmd set-card-profile 3 headset_head_unit"))
 
 (defun my/disconnect-to-bose-700s ()
   (interactive)
@@ -2252,6 +2253,12 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
   (setq so-long-threshold 10000))
 #+end_src
 
+** COMMENT Don't save passwords to clipboard history
+
+#+begin_src emacs-lisp
+(defun password-store--save-field-in-kill-ring)
+#+end_src
+
 ** Misc
 :PROPERTIES:
 :ID:       84c57526-9ea1-4c89-b247-084651330d97
@@ -2851,6 +2858,15 @@ SCOPE can be 'file or 'tree."
      (setq org-map-continue-from (outline-previous-heading)))
    "TODO=\"DONE\"|TODO=\"KILL\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
 
+(defun my/org-titlify-link-or-noop ()
+  (interactive)
+  (org-beginning-of-line)
+  (kill-line)
+  (condition-case nil
+      (progn
+        (org-cliplink)
+        (sleep-for 5))
+    (error (yank))))
 
 (defun my/org-jupyter-execute-subtree-by-id (id)
   (save-window-excursion

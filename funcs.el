@@ -476,6 +476,15 @@ SCOPE can be 'file or 'tree."
      (setq org-map-continue-from (outline-previous-heading)))
    "TODO=\"DONE\"|TODO=\"KILL\"" (or scope (if (org-before-first-heading-p) 'file 'tree))))
 
+(defun my/org-titlify-link-or-noop ()
+  (interactive)
+  (org-beginning-of-line)
+  (kill-line)
+  (condition-case nil
+      (progn
+        (org-cliplink)
+        (sleep-for 5))
+    (error (yank))))
 
 (defun my/org-jupyter-execute-subtree-by-id (id)
   (save-window-excursion

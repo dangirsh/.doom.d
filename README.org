@@ -2720,6 +2720,12 @@ shell exits, the buffer is killed."
   (if (eq (get 'org-toggle-properties-hide-state 'state) 'hidden)
       (org-show-properties)
     (org-hide-properties)))
+
+(defun alist-get-nested (alist &rest path)
+  (let ((result))
+    (dolist (key path)
+      (setq result (alist-get key alist)))
+    result))
 #+end_src
 
 #+RESULTS:

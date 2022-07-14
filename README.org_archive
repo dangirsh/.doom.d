@@ -671,3 +671,24 @@ Including the Doom =javascript= module does most of the work...
   (typescript-mode . jest-minor-mode))
 #+end_src
 
+
+* Better Org Babel
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-07-13 Wed 16:11
+:ARCHIVE_FILE: ~/Sync/home/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org
+:ARCHIVE_CATEGORY: README
+:END:
+** Fast Block Insertion
+:PROPERTIES:
+:ID:       b9dd4ca5-ac53-4016-96bc-d3aeed770e48
+:END:
+
+#+begin_src emacs-lisp
+(use-package! company-org-block
+  :custom
+  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
+  :hook ((org-mode . (lambda ()
+                       (setq-local company-backends '(company-org-block))
+                       (company-mode +1)))))
+#+end_src

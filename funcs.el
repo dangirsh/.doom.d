@@ -316,16 +316,14 @@ Use `set-region-read-only' to set this property."
     yubikey-token-file))
 
 
-;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
 (defun my/run-in-vterm-kill (process event)
   "A process sentinel. Kills PROCESS's buffer if it is live."
   (let ((b (process-buffer process)))
     (and (buffer-live-p b)
          (kill-buffer b))))
 
-
 ;; https://www.reddit.com/r/emacs/comments/ft84xy/run_shell_command_in_new_vterm/
-(defun my/run-in-vterm (command dir)
+(defun my/run-in-vterm (command dir &optional term-name)
   "Execute string COMMAND in a new vterm.
 
 Like `async-shell-command`, but run in a vterm for full terminal features.
@@ -338,7 +336,7 @@ shell exits, the buffer is killed."
   (interactive)
   ;; Ensure the vterm is opened in the right directory
   (let ((default-directory dir))
-    (with-current-buffer (+vterm/here t)
+    (with-current-buffer (vterm (if term-name term-name (format "*%s*" command)))
       (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
       (vterm-send-string command)
       (vterm-send-return))))

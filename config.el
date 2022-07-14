@@ -440,6 +440,7 @@
 
   ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
   (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/pixel-incoming.org")
+  (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/incoming.org")
 
   (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
   (require 'ox-latex))
@@ -576,16 +577,6 @@
           (:auto-todo t)))
   (org-super-agenda-mode))
 
-(use-package! company-org-block
-  :ensure t
-  :custom
-  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
-  :hook ((org-mode . (lambda ()
-                       (setq-local company-backends '(company-org-block))
-                       (company-mode +1)))))
-
-(use-package! ob-graphql)
-
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
@@ -594,10 +585,10 @@
 (use-package! openai-api
   :config
   (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
-  (setq openai-api-engine "davinci-codex")
+  (setq openai-api-engine "text-davinci-001")
   ;; (setq openai-api-engine "davinci")
   (setq openai-api-completion-params '((max_tokens . 100)
-                                       (temperature . 0.1)
+                                       (temperature . 0.3)
                                        (frequency_penalty . 0.1)
                                        (presence_penalty . 0.1)
                                        (n . 6)))
@@ -714,35 +705,6 @@
   (global-undo-tree-mode 1))
 
 (use-package! string-inflection)
-
-(defvar inferior-julia-program-name "julia")
-
-(use-package! julia
-  :interpreter "julia"
-  :hook (julia-mode . julia-repl-mode))
-
-;; (defun my/julia-repl-hook ()
-;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
-
-(use-package! julia-repl
-  :config
-                                        ; See: https://github.com/tpapp/julia-repl/pull/84
-  ;; (require 'vterm)
-  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
-  )
-
-;; https://github.com/gcv/julia-snail
-;; (use-package! julia-snail
-;;   :hook (julia-mode . julia-snail-mode))
-
-;; (use-package! eglot-jl
-;;   :hook (julia-mode . eglot)
-;;   :config
-;;   (eglot-jl-init))
-
-(defun jmd-block-to-jupyter-julia ()
-  (interactive)
-   (kmacro-lambda-form [?\C-  ?\C-e backspace ?\C-c ?\C-, ?j down ?\C-  ?\C-s ?` return left ?\C-w up ?\C-y down ?\C-k] 0 "%d"))
 
 (setq haskell-mode-stylish-haskell-path "brittany")
 
@@ -1141,9 +1103,8 @@
 
 (after! vterm
   (setq vterm-max-scrollback 100000
-        vterm-buffer-name-string "vterm: %s"
         vterm-copy-exclude-prompt t))
-
+(customize-set-variable 'vterm-buffer-name-string nil)
 
 ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
 ;; Vertico commands are hidden in normal buffers.

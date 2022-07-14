@@ -6,7 +6,7 @@
        neurosys
 
        :completion
-       (company)
+       (company +childframe)
 
        :ui
        doom

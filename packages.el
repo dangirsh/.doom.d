@@ -5,6 +5,8 @@
 ;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
 (package! company-org-block)
 ;; (package! company-posframe)
+(package! copilot
+  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 ;; (package! dap-mode)
 (package! deadgrep)
 (package! dired-narrow)

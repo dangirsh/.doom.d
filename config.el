@@ -549,7 +549,7 @@
       org-agenda-category-icon-alist
       `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
         ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
-      org-agenda-todo-keyword-format ""
+      org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
       org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
 

@@ -367,6 +367,12 @@ shell exits, the buffer is killed."
       (org-show-properties)
     (org-hide-properties)))
 
+(defun alist-get-nested (alist &rest path)
+  (let ((result))
+    (dolist (key path)
+      (setq result (alist-get key alist)))
+    result))
+
 (defun my/edit-resume ()
   (interactive)
   (find-file "~/Sync/resume/resume.tex"))

@@ -368,9 +368,9 @@ shell exits, the buffer is killed."
     (org-hide-properties)))
 
 (defun alist-get-nested (alist &rest path)
-  (let ((result))
+  (let ((result alist))
     (dolist (key path)
-      (setq result (alist-get key alist)))
+      (setq result (alist-get key result)))
     result))
 
 (defun my/edit-resume ()

@@ -57,8 +57,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
     - [[#org-agenda][Org Agenda]]
     - [[#org-sidebar][org-sidebar]]
-    - [[#better-org-babel][Better Org Babel]]
-    - [[#graphql-in-org-babel][Graphql in Org Babel]]
   - [[#remote-machine-interfaces][Remote Machine Interfaces]]
     - [[#tramp][Tramp]]
     - [[#s3-interface][S3 Interface]]
@@ -69,8 +67,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
     - [[#camelcase-to-snake_case-conversion][CamelCase to snake_case conversion]]
-  - [[#julia][Julia]]
-    - [[#convert-julia-markdown-blocks-to-org-blocks][Convert Julia Markdown Blocks to Org Blocks]]
   - [[#haskell][Haskell]]
   - [[#rust][Rust]]
     - [[#only-checklint-on-host-target-arch][Only check/lint on host target arch]]
@@ -132,7 +128,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        neurosys
 
        :completion
-       (company)
+       (company +childframe)
 
        :ui
        doom
@@ -824,6 +820,7 @@ I largely live inside Org. It currently manages:
 
   ;; (add-to-list 'org-agenda-files "~/Sync/org-roam/orgzly/boox-incoming.org")
   (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/pixel-incoming.org")
+  (add-to-list 'org-agenda-files "~/Sync/org-roam2/orgzly/incoming.org")
 
   (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
   (require 'ox-latex))
@@ -1213,23 +1210,7 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+end_src
 
 *** TODO org-sidebar
-*** Better Org Babel
-**** Fast Block Insertion
-:PROPERTIES:
-:ID:       b9dd4ca5-ac53-4016-96bc-d3aeed770e48
-:END:
-
-#+begin_src emacs-lisp
-(use-package! company-org-block
-  :ensure t
-  :custom
-  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
-  :hook ((org-mode . (lambda ()
-                       (setq-local company-backends '(company-org-block))
-                       (company-mode +1)))))
-#+end_src
-
-*** Graphql in Org Babel
+*** COMMENT Graphql in Org Babel
 :PROPERTIES:
 :ID:       f9e23e89-faab-43ed-b312-f070c31b9337
 :END:
@@ -1273,16 +1254,18 @@ To eventually make everything else in this project obsolete...
 :ID:       94e0c496-b27b-4139-8aa4-4ca7e184ff57
 :END:
 
+***** openai-api
+
 [[https://github.com/dangirsh/openai-api.el][dangirsh/openai-api.el · GitHub]]
 
 #+begin_src emacs-lisp
 (use-package! openai-api
   :config
   (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
-  (setq openai-api-engine "davinci-codex")
+  (setq openai-api-engine "text-davinci-001")
   ;; (setq openai-api-engine "davinci")
   (setq openai-api-completion-params '((max_tokens . 100)
-                                       (temperature . 0.1)
+                                       (temperature . 0.3)
                                        (frequency_penalty . 0.1)
                                        (presence_penalty . 0.1)
                                        (n . 6)))
@@ -1300,7 +1283,14 @@ To eventually make everything else in this project obsolete...
 #+end_src
 
 #+RESULTS:
-: t
+: openai-api
+
+***** COMMENT copilot.el
+
+#+begin_src emacs-lisp
+(use-package! copilot
+  :hook (prog-mode . copilot-mode))
+#+end_src
 
 *** Structure Editing
 :PROPERTIES:
@@ -1482,7 +1472,7 @@ x There was an unexpected error:
 (use-package! string-inflection)
 #+end_src
 
-** Julia
+** COMMENT Julia
 :PROPERTIES:
 :ID:       2bc88f03-b567-498d-8fab-5002b49a5ba9
 :END:
@@ -1491,21 +1481,21 @@ Doom's Julia module is opinionated. I'd like full control, so I'm configuring
 Julia myself here.
 
 #+BEGIN_SRC emacs-lisp
-(defvar inferior-julia-program-name "julia")
+;; (defvar inferior-julia-program-name "julia")
 
-(use-package! julia
-  :interpreter "julia"
-  :hook (julia-mode . julia-repl-mode))
+;; (use-package! julia
+;;   :interpreter "julia"
+;;   :hook (julia-mode . julia-repl-mode))
 
 ;; (defun my/julia-repl-hook ()
 ;;   (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm)))
 
-(use-package! julia-repl
-  :config
-                                        ; See: https://github.com/tpapp/julia-repl/pull/84
-  ;; (require 'vterm)
-  ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
-  )
+;; (use-package! julia-repl
+;;   :config
+;;                                         ; See: https://github.com/tpapp/julia-repl/pull/84
+;;   ;; (require 'vterm)
+;;   ;; (setq julia-repl-terminal-backend (make-julia-repl--buffer-vterm))
+;;   )
 
 ;; https://github.com/gcv/julia-snail
 ;; (use-package! julia-snail
@@ -2970,6 +2960,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 ;; (package! burly :recipe (:host github :repo "alphapapa/burly.el"))
 (package! company-org-block)
 ;; (package! company-posframe)
+(package! copilot
+  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 ;; (package! dap-mode)
 (package! deadgrep)
 (package! dired-narrow)

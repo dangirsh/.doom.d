@@ -41,6 +41,7 @@
        lsp
        pass
        pdf
+       tree-sitter
 
        :lang
        ;; cc

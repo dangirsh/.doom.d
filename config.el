@@ -20,9 +20,10 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq  doom-font (font-spec :family "Hack" :size 24)
-       doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-       doom-serif-font (font-spec :family "Libre Baskerville"))
+(setq
+ doom-font (font-spec :family "Hack" :size 24)
+ doom-variable-pitch-font (font-spec :family "Libre Baskerville")
+ doom-serif-font (font-spec :family "Libre Baskerville"))
 
 (setq display-line-numbers-type nil)
 
@@ -580,8 +581,6 @@
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-(use-package! s3ed)
-
 (use-package! openai-api
   :config
   (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
@@ -673,18 +672,18 @@
      (format "$$\n%s\n$$" (buffer-string)))))
 
 (use-package! multiple-cursors
-              :init
-              (setq mc/always-run-for-all t)
-              :config
-              (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
-              :bind (("C-S-c" . mc/edit-lines)
-                     ("C-M-g" . mc/mark-all-like-this-dwim)
-                     ("C->" . mc/mark-next-like-this)
-                     ("C-<" . mc/mark-previous-like-this)
-                     ("C-)" . mc/skip-to-next-like-this)
-                     ("C-M->" . mc/skip-to-next-like-this)
-                     ("C-(" . mc/skip-to-previous-like-this)
-                     ("C-M-<" . mc/skip-to-previous-like-this)))
+  :init
+  (setq mc/always-run-for-all t)
+  :config
+  (add-to-list 'mc/unsupported-minor-modes 'lispy-mode)
+  :bind (("C-S-c" . mc/edit-lines)
+         ("C-M-g" . mc/mark-all-like-this-dwim)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-)" . mc/skip-to-next-like-this)
+         ("C-M->" . mc/skip-to-next-like-this)
+         ("C-(" . mc/skip-to-previous-like-this)
+         ("C-M-<" . mc/skip-to-previous-like-this)))
 
 (use-package! iedit
   :init
@@ -693,7 +692,8 @@
 
 (use-package! undo-tree
   :init
-  (setq undo-tree-visualizer-timestamps t
+  (setq undo-tree-auto-save-history nil
+        undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t)
   :config
   ;; stolen from layers/+spacemacs/spacemacs-editing/package.el
@@ -709,7 +709,8 @@
 (setq haskell-mode-stylish-haskell-path "brittany")
 
 (after! rustic-flycheck
-  (setq rustic-flycheck-clippy-params (concat rustic-flycheck-clippy-params " --target x86_64-unknown-linux-gnu"))
+  (customize-set-variable 'rustic-flycheck-clippy-params-stable
+                          (concat rustic-flycheck-clippy-params-stable " --target x86_64-unknown-linux-gnu"))
   (add-to-list 'flycheck-checkers 'rustic-clippy)
   (delete 'rust-clippy flycheck-checkers)
   (delete 'rust-cargo flycheck-checkers)
@@ -732,6 +733,7 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (customize-set-variable 'lsp-ui-doc-enable nil)
   (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
 
@@ -840,17 +842,17 @@
 
 (use-package! consult-projectile)
 
-(consult-customize consult-buffer consult-ripgrep
-                   consult-git-grep consult-grep consult-bookmark
-                   consult-recent-file consult--source-file
-                   consult--source-project-file consult-xref consult--source-bookmark
-                   consult-theme
-                   :preview-key
-                   (list (kbd "M-.") ))
+;; (consult-customize consult-buffer consult-ripgrep
+;;                    consult-git-grep consult-grep consult-bookmark
+;;                    consult-recent-file consult--source-project-file
+;;                    consult-xref consult--source-bookmark
+;;                    consult-theme
+;;                    :preview-key
+;;                    (list (kbd "M-.") ))
 
-(consult-customize
- consult--source-file consult--source-project-file consult--source-bookmark
- :preview-key (kbd "M-."))
+;; (consult-customize
+;;  consult--source-file consult--source-project-file consult--source-bookmark
+;;  :preview-key (kbd "M-."))
 
 (add-to-dk-keymap
  '(("<SPC>" . deadgrep)
@@ -870,32 +872,6 @@
   (("M-A" . marginalia-cycle)
    :map minibuffer-local-map
    ("M-A" . marginalia-cycle)))
-
-(use-package! embark
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("M-<RET>" . embark-dwim)    ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  :init
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-  :config
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none))))
-  (setq embark-prompter 'embark-completing-read-prompter)
-  )
-
-;; Consult users will also want the embark-consult package.
-(use-package! embark-consult
-  :after (embark consult)
-  :demand t ; only necessary if you have the hook below
-  ;; if you want to have consult previews as you move around an
-  ;; auto-updating embark collect buffer
-  :hook
-  (embark-collect-mode . embark-consult-preview-minor-mode))
 
 (after! dired
   (setq dired-listing-switches "-aBhlv --group-directories-first"
@@ -970,13 +946,6 @@
   (prog-mode . real-auto-save-mode)
   (org-mode . real-auto-save-mode))
 
-(use-package! google-translate
-  :custom
-  (google-translate-backend-method 'curl)
-  :config
-  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
-  (setq google-translate-output-destination 'kill-ring))
-
 (use-package! logview)
 
 (use-package! fancy-dabbrev
@@ -998,7 +967,7 @@
 (set-register ?h '(file . "~/Sync/home/config.org"))
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))
 
-(when (getenv "EMACS_WORK_MODE")
+(unless (getenv "EMACS_NON_WORK_MODE")
   (load-file "/home/dan/Work/w/emacs/work-config.el")
   (require 'work-config))
 
@@ -1037,6 +1006,10 @@
   (setq so-long-threshold 10000))
 
 ;; (setq warning-minimum-level :emergency)
+
+;; (when doom-debug-p
+;;   (require 'benchmark-init)
+;;   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
 
 (setq isearch-allow-scroll t)
 

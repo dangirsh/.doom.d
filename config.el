@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Hack" :size 24)
+ doom-font (font-spec :family "Iosevka" :size 28)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -429,6 +429,23 @@
 
   (setq org-agenda-files '())
 
+  (setq org-todo-keywords
+        '((sequence
+           "TODO(t)"  
+           "WAIT(w)"  
+           "HOLD(h)"  
+           "IDEA(i)"  
+           "DELEGATED(e)"  
+           "|"
+           "DONE(d)"  
+           "KILL(k)") 
+          )
+        org-todo-keyword-faces
+        '(("WAIT" . +org-todo-onhold)
+          ("HOLD" . +org-todo-onhold)
+          ("DELEGATED" . +org-todo-onhold)
+          ("KILL" . +org-todo-cancel)))
+  
   ;; Update parent TODO state when all children TODOs are done
   ;; NOTE: Only works if the parent has a "[/]" or "[%]" in the heading!!
   ;; https://orgmode.org/manual/Breaking-Down-Tasks.html#Breaking-Down-Tasks

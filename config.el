@@ -494,6 +494,59 @@
   ;;     (apply orig-fn args)))
   )
 
+;; Note that this pulls in Helm :/
+;; https://github.com/jkitchin/org-ref/issues/202
+(use-package! org-ref
+  :after (org bibtex)
+  :init
+  (setq org-ref-default-bibliography '("~/Sync/references.bib"))
+  (setq bibtex-completion-bibliography org-ref-default-bibliography)
+  :config
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+        org-ref-bibliography-notes "~/Sync/pdf_notes.org"
+        org-ref-pdf-directory "~/Sync/pdf/"
+        org-ref-notes-function #'org-ref-notes-function-one-file)
+  
+  (defun get-pdf-filename (key)
+    (let ((results (bibtex-completion-find-pdf key)))
+      (if (equal 0 (length results))
+          (org-ref-get-pdf-filename key)
+        (car results))))
+
+  (add-hook 'org-ref-create-notes-hook
+            (lambda ()
+              (org-entry-put
+               nil
+               "NOTER_DOCUMENT"
+               (get-pdf-filename (org-entry-get
+                                  (point) "Custom_ID")))) )
+
+  (defun my/org-ref-noter-at-point ()
+    (interactive)
+    (let* ((results (org-ref-get-bibtex-key-and-file))
+           (key (car results))
+           (pdf-file (funcall org-ref-get-pdf-filename-function key))
+           (orig-bibtex-dialect bibtex-dialect))
+      (if (file-exists-p pdf-file)
+          (save-window-excursion
+            ;; using the local flag for bibtex-set-dialect doesn't work
+            ;; likely because org-ref-open-notes-at-point loses the buffer context
+            (bibtex-set-dialect 'BibTeX)
+            (org-ref-open-notes-at-point)
+            (bibtex-set-dialect orig-bibtex-dialect)
+            (find-file-other-window pdf-file)
+            (org-noter))
+        (message "no pdf found for %s" key))))
+
+  (map! :leader
+        :map org-mode-map
+        :desc "org-noter from ref"
+        "n p" 'my/org-ref-noter-at-point))
+
 (after! org-roam
   (setq +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
@@ -598,6 +651,23 @@
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
+(defun teleport-tramp-add-method ()
+  "Add teleport tramp method."
+  (add-to-list 'tramp-methods `("tsh"
+                                (tramp-login-program "tsh-tramp-wrapper")
+                                (tramp-login-args
+                                 (("%u")
+                                  ("%h")))
+                                (tramp-copy-program "tsh-scp-tramp-wrapper")
+                                (tramp-remote-shell       "/bin/sh")
+                                (tramp-remote-shell-args  ("-i" "-c")))))
+
+
+;;;###autoload
+(eval-after-load 'tramp
+  '(progn
+     (teleport-tramp-add-method)))
+
 (use-package! openai-api
   :config
   (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
@@ -619,6 +689,8 @@
    '(("TAB" . my/openai-complete-region))))
 
 (require 'openai-api)
+
+(use-package! copilot)
 
 (use-package! lispy
   :config
@@ -734,7 +806,7 @@
   (delete 'rust flycheck-checkers))
 
 (after! lsp-rust
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy"))
+  (setq lsp-rust-analyzer-cargo-watch-command "check"))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -750,7 +822,7 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
-  (setq lsp-rust-analyzer-server-display-inlay-hints t)
+  (setq lsp-rust-analyzer-server-display-inlay-hints nil)
   (customize-set-variable 'lsp-ui-doc-enable nil)
   (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
 
@@ -762,10 +834,6 @@
   ;; no longer be necessary.
   (when buffer-file-name
     (setq-local buffer-save-without-query t)))
-
-(customize-set-variable 'rustic-babel-display-compilation-buffer t)
-(add-to-list 'org-structure-template-alist '("or" . "src orb-rust"))
-(customize-set-variable 'rustic-babel-format-src-block t)
 
 (use-package! jupyter
   :init
@@ -859,13 +927,14 @@
 
 (use-package! consult-projectile)
 
-;; (consult-customize consult-buffer consult-ripgrep
-;;                    consult-git-grep consult-grep consult-bookmark
-;;                    consult-recent-file consult--source-project-file
-;;                    consult-xref consult--source-bookmark
-;;                    consult-theme
-;;                    :preview-key
-;;                    (list (kbd "M-.") ))
+(consult-customize
+ consult-ripgrep consult-git-grep consult-grep
+ consult-bookmark consult-recent-file consult-xref
+ consult--source-bookmark consult--source-recent-file
+ consult--source-project-recent-file
+ ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
+ :preview-key (kbd "M-."))
+
 
 ;; (consult-customize
 ;;  consult--source-file consult--source-project-file consult--source-bookmark
@@ -1022,6 +1091,8 @@
 (after! so-long
   (setq so-long-threshold 10000))
 
+(after! recentf
+  (add-to-list 'recentf-keep `remote-file-p))
 ;; (setq warning-minimum-level :emergency)
 
 ;; (when doom-debug-p

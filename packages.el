@@ -30,7 +30,7 @@
 ;; (package! org-gcal)
 (package! org-noter)
 ;; (package! org-recoll :recipe (:host github :repo "alraban/org-recoll"))
-;; (package! org-ref)
+(package! org-ref)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
 ;; (package! org-roam-bibtex)
 (package! websocket)

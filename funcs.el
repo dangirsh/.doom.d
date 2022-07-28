@@ -367,7 +367,7 @@ shell exits, the buffer is killed."
       (org-show-properties)
     (org-hide-properties)))
 
-(defun alist-get-nested (alist &rest path)
+(defun alist-get-nested (alist path)
   (let ((result alist))
     (dolist (key path)
       (setq result (alist-get key result)))

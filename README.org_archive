@@ -692,3 +692,130 @@ Including the Doom =javascript= module does most of the work...
                        (setq-local company-backends '(company-org-block))
                        (company-mode +1)))))
 #+end_src
+
+* Custom rustic-org-babel
+:PROPERTIES:
+:ID:       377acdc5-6a98-43b2-8321-7362972b9742
+:ARCHIVE_TIME: 2022-07-23 Sa 11:57
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust/Org-babel setup
+:ARCHIVE_CATEGORY: README
+:END:
+
+[[file:~/.emacs.d/.local/straight/repos/rustic/rustic-orb-babel.el][file:~/.emacs.d/.local/straight/repos/rustic/rustic-orb-babel.el]]
+
+Added to [[file:~/.emacs.d/.local/straight/repos/rustic/rustic.el::(when rustic-load-optional-libraries][Rustic optional lib load]]
+
+#+begin_src emacs-lisp
+(customize-set-variable 'rustic-babel-display-compilation-buffer t)
+(add-to-list 'org-structure-template-alist '("or" . "src org-rust"))
+(customize-set-variable 'rustic-babel-format-src-block t)
+#+end_src
+
+#+RESULTS:
+: t
+
+
+* COMMENT EVCXR Mode
+:PROPERTIES:
+:ID:       0164b6a8-15df-4036-a5e6-443040e4f963
+:ARCHIVE_TIME: 2022-07-23 Sa 11:57
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust/Org-babel setup
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! evcxr
+  :hook (rustic-mode-hook . evcxr-minor-mode))
+#+end_src
+
+
+* Org-babel setup
+:PROPERTIES:
+:ID:       3c1fb6c5-243a-4718-b4f6-883468cc898f
+:ARCHIVE_TIME: 2022-07-23 Sa 11:57
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust
+:ARCHIVE_CATEGORY: README
+:END:
+
+
+* Remote
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-07-23 Sa 11:57
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust/COMMENT Language Server/Over TRAMP
+:ARCHIVE_CATEGORY: README
+:END:
+#+begin_src emacs-lisp
+(defun my/register-remote-rust-analyzer ()
+  (interactive)
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-tramp-connection "rust-analyzer")
+    ;; (lsp-tramp-connection
+    ;;  (lambda ()
+    ;;    `(,(or (executable-find
+    ;;            (cl-first lsp-rust-analyzer-server-command))
+    ;;           (lsp-package-path 'rust-analyzer)
+    ;;           "rust-analyzer")
+    ;;      ,@(cl-rest lsp-rust-analyzer-server-args))))
+    :remote? t
+    :major-modes '(rust-mode rustic-mode)
+    :initialization-options 'lsp-rust-analyzer--make-init-options
+    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
+    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :after-open-fn (lambda ()
+                     (when lsp-rust-analyzer-server-display-inlay-hints
+                       (lsp-rust-analyzer-inlay-hints-mode)))
+    :ignore-messages nil
+    :server-id 'rust-analyzer-remote)))
+#+end_src
+
+#+RESULTS:
+: (standard-value (nil) custom-type hook custom-package-version (lsp-mode . 7.0.1) variable-documentation Hooks to run after `rust-analyzer-remote' server is run. custom-requests nil)
+
+
+* Over TRAMP
+:PROPERTIES:
+:ID:       c8b5cd73-81fd-4f01-9bc2-ebbdfc55f168
+:ARCHIVE_TIME: 2022-07-26 Di 22:15
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust/COMMENT Language Server
+:ARCHIVE_CATEGORY: README
+:END:
+
+[[https://github.com/brotzeit/rustic#lsp--tramp][GitHub - brotzeit/rustic: Rust development environment for Emacs]]
+
+#+begin_src emacs-lisp
+(defun start-file-process-shell-command@around (start-file-process-shell-command name buffer &rest args)
+  "Start a program in a subprocess.  Return the process object for it. Similar to `start-process-shell-command', but calls `start-file-process'."
+  ;; On remote hosts, the local `shell-file-name' might be useless.
+  (let ((command (mapconcat 'identity args " ")))
+    (funcall start-file-process-shell-command name buffer command)))
+
+(advice-add 'start-file-process-shell-command :around #'start-file-process-shell-command@around)
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp
+(with-eval-after-load "lsp-rust"
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-tramp-connection "rust-analyzer")
+    :remote? t
+    :major-modes '(rust-mode rustic-mode)
+    :initialization-options 'lsp-rust-analyzer--make-init-options
+    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
+    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :after-open-fn (lambda ()
+                     (when lsp-rust-analyzer-server-display-inlay-hints
+                       (lsp-rust-analyzer-inlay-hints-mode)))
+    :ignore-messages nil
+    :server-id 'rust-analyzer-remote)))
+#+end_src
+

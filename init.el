@@ -23,7 +23,7 @@
        snippets
 
        :emacs
-       dired
+       ;; dired
        electric
        vc
 

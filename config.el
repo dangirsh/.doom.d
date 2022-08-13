@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 28)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -66,7 +66,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.05))
+        key-chord-two-keys-delay 0.075))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -651,6 +651,8 @@
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
+(setq password-cache-expiry nil)
+
 (defun teleport-tramp-add-method ()
   "Add teleport tramp method."
   (add-to-list 'tramp-methods `("tsh"
@@ -1091,8 +1093,13 @@
 (after! so-long
   (setq so-long-threshold 10000))
 
+(doom/open-scratch-buffer nil nil t)
+
+(set-company-backend! 'text-mode nil)
+
+
 (after! recentf
-  (add-to-list 'recentf-keep `remote-file-p))
+  (add-to-list 'recentf-keep `file-remote-p))
 ;; (setq warning-minimum-level :emergency)
 
 ;; (when doom-debug-p

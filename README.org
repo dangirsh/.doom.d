@@ -2233,7 +2233,7 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
 
 #+begin_src emacs-lisp
 (after! recentf
-  (add-to-list 'recentf-keep `remote-file-p))
+  (add-to-list 'recentf-keep `file-remote-p))
 ;; (setq warning-minimum-level :emergency)
 
 ;; (when doom-debug-p

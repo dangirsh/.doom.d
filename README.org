@@ -270,7 +270,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 28)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -348,8 +348,11 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.05))
+        key-chord-two-keys-delay 0.075))
 #+end_src
+
+#+RESULTS:
+: t
 
 *** Setup for binding chords as leaders
 :PROPERTIES:
@@ -1250,6 +1253,8 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 #+begin_src emacs-lisp
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+(setq password-cache-expiry nil)
 #+end_src
 
 
@@ -2229,9 +2234,12 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
 :PROPERTIES:
 :ID:       84c57526-9ea1-4c89-b247-084651330d97
 :END:
-
-
 #+begin_src emacs-lisp
+(doom/open-scratch-buffer nil nil t)
+
+(set-company-backend! 'text-mode nil)
+
+
 (after! recentf
   (add-to-list 'recentf-keep `file-remote-p))
 ;; (setq warning-minimum-level :emergency)

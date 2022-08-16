@@ -1894,11 +1894,7 @@ sudo chmod +x /usr/local/bin/rust-analyzer
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t))
 
-(use-package! dired-narrow
-              :commands (dired-narrow-fuzzy)
-              :init
-              (map! :map dired-mode-map
-                    :desc "narrow" "/" #'dired-narrow-fuzzy))
+(use-package! dired-x)
 
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)

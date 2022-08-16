@@ -1263,37 +1263,19 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 :ID:       cd0e64f7-a8fe-494b-b2f1-498e0c973359
 :END:
 
-This wrapper is necessary to workaround the limitations of the =tramp-methods= specifications + the quirks of =tsh ssh=.
-
-#+begin_src sh :tangle /sudo:root@localhost:/usr/local/bin/tsh-tramp-wrapper :tangle-mode (identity #o775)
-#!/bin/sh
-set -eu
-
-TELEPORT_USER=$1
-TELEPORT_NODE=$2
-
-tsh ssh ${TELEPORT_USER}@${TELEPORT_NODE}
-#+end_src
-
-#+begin_src sh :tangle /sudo:root@localhost:/usr/local/bin/tsh-scp-tramp-wrapper :tangle-mode (identity #o775)
-#!/bin/sh
-set -eu
-
-LOCAL_FILE=$1
-SPEC=$2
-
-tsh scp ${LOCAL_FILE} ${SPEC}
-#+end_src
-
 #+begin_src emacs-lisp :results verbatim
 (defun teleport-tramp-add-method ()
   "Add teleport tramp method."
+  ;; For debugging remove the old method
+  (setf tramp-methods (assoc-delete-all "tsh" tramp-methods))
   (add-to-list 'tramp-methods `("tsh"
-                                (tramp-login-program "tsh-tramp-wrapper")
+                                (tramp-login-program "tsh ssh")
                                 (tramp-login-args
-                                 (("%u")
+                                 (("-l" "%u")
                                   ("%h")))
-                                (tramp-copy-program "tsh-scp-tramp-wrapper")
+                                (tramp-copy-program "tsh")
+                                (tramp-copy-args (("scp")))
+                                (tramp-copy-recursive t)
                                 (tramp-remote-shell       "/bin/sh")
                                 (tramp-remote-shell-args  ("-i" "-c")))))
 

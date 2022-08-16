@@ -655,12 +655,16 @@
 
 (defun teleport-tramp-add-method ()
   "Add teleport tramp method."
+  ;; For debugging remove the old method
+  (setf tramp-methods (assoc-delete-all "tsh" tramp-methods))
   (add-to-list 'tramp-methods `("tsh"
-                                (tramp-login-program "tsh-tramp-wrapper")
+                                (tramp-login-program "tsh ssh")
                                 (tramp-login-args
-                                 (("%u")
+                                 (("-l" "%u")
                                   ("%h")))
-                                (tramp-copy-program "tsh-scp-tramp-wrapper")
+                                (tramp-copy-program "tsh")
+                                (tramp-copy-args (("scp")))
+                                (tramp-copy-recursive t)
                                 (tramp-remote-shell       "/bin/sh")
                                 (tramp-remote-shell-args  ("-i" "-c")))))
 
@@ -969,11 +973,7 @@
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t))
 
-(use-package! dired-narrow
-              :commands (dired-narrow-fuzzy)
-              :init
-              (map! :map dired-mode-map
-                    :desc "narrow" "/" #'dired-narrow-fuzzy))
+(use-package! dired-x)
 
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)

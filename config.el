@@ -155,7 +155,7 @@
   (key-chord-define-global "kl" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xf" 'find-file)
+  (key-chord-define-global "xf" 'ffap)
 
   (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
 

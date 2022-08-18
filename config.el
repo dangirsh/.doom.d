@@ -547,12 +547,16 @@
         :desc "org-noter from ref"
         "n p" 'my/org-ref-noter-at-point))
 
+(defun my/org-roam-capture-new-node-hook ()
+  (org-entry-put (point) "header-args" ":noweb yes"))
+
 (after! org-roam
   (setq +org-roam-open-buffer-on-find-file nil
         org-id-link-to-org-use-id t
         org-roam-mode-section-functions (list #'org-roam-backlinks-section
                                               #'org-roam-reflinks-section
-                                              #'org-roam-unlinked-references-section)))
+                                              #'org-roam-unlinked-references-section))
+  (add-hook 'org-roam-capture-new-node-hook 'my/org-roam-capture-new-node-hook))
 
 (after! org-roam-dailies
   (setq org-roam-dailies-directory "daily/")

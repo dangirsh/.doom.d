@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 28)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -134,11 +134,7 @@
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
 
-  (key-chord-define-global "JJ" 'previous-buffer)
-  (key-chord-define-global "KK" 'next-buffer)
-
-
-  (key-chord-define-global "hh" 'helpful-at-point)
+  ;; (key-chord-define-global "hh" 'helpful-at-point)
   (key-chord-define-global "hk" 'helpful-key)
   (key-chord-define-global "hv" 'helpful-variable)
 
@@ -609,6 +605,15 @@
 
 (use-package! org-cliplink)
 
+(defun my/org-insert-image ()
+  "Select and insert an image at point."
+  (interactive)
+  (let* ((file-name (format "%s.png" (cl-random (expt 2 31))))
+         (path (format "%s%s/%s" org-directory "images" file-name)))
+    (let ((maim-exit (call-process "maim" nil nil nil "-s" path)))
+      (when (= maim-exit 0)
+        (insert (format "[[%s]]" path))))))
+
 (setq org-agenda-start-day "+0d"        ; start today
       org-agenda-show-current-time-in-grid nil
       org-agenda-timegrid-use-ampm t
@@ -653,7 +658,9 @@
   (org-super-agenda-mode))
 
 (after! tramp
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (setq tramp-use-scp-direct-remote-copying t)
+  (customize-set-variable 'tramp-default-method "scp"))
 
 (setq password-cache-expiry nil)
 
@@ -1101,9 +1108,11 @@
 
 (set-company-backend! 'text-mode nil)
 
+(defun my/file-local-p (f)
+  (not (file-remote-p f)))
 
 (after! recentf
-  (add-to-list 'recentf-keep `file-remote-p))
+  (add-to-list 'recentf-keep 'my/file-local-p))
 ;; (setq warning-minimum-level :emergency)
 
 ;; (when doom-debug-p

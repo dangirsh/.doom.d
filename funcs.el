@@ -255,10 +255,10 @@ narrowed."
 
 (defun my/set-timezone ()
   (interactive)
-  (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
+  ;; (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
   ;; (shell-command "sudo timedatectl set-timezone America/New_York")
   ;; (shell-command "sudo timedatectl set-timezone Europe/Paris")
-  ;; ;; (shell-command "sudo timedatectl set-timezone Europe/Berlin")
+  (shell-command "sudo timedatectl set-timezone Europe/Berlin")
   )
 
 ;; (my/set-timezone)

@@ -56,6 +56,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
     - [[#org-download-inserting-images-into-org-mode][org-download: Inserting images into org-mode]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
+    - [[#another-image-insertion-scheme][Another image insertion scheme]]
     - [[#org-agenda][Org Agenda]]
     - [[#org-sidebar][org-sidebar]]
   - [[#remote-machine-interfaces][Remote Machine Interfaces]]
@@ -270,7 +271,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 28)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -437,11 +438,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
 
-  (key-chord-define-global "JJ" 'previous-buffer)
-  (key-chord-define-global "KK" 'next-buffer)
-
-
-  (key-chord-define-global "hh" 'helpful-at-point)
+  ;; (key-chord-define-global "hh" 'helpful-at-point)
   (key-chord-define-global "hk" 'helpful-key)
   (key-chord-define-global "hv" 'helpful-variable)
 
@@ -1153,6 +1150,24 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 (use-package! org-cliplink)
 #+end_src
 
+*** Another image insertion scheme
+
+#+begin_src emacs-lisp
+(defun my/org-insert-image ()
+  "Select and insert an image at point."
+  (interactive)
+  (let* ((file-name (format "%s.png" (cl-random (expt 2 31))))
+         (path (format "%s%s/%s" org-directory "images" file-name)))
+    (let ((maim-exit (call-process "maim" nil nil nil "-s" path)))
+      (when (= maim-exit 0)
+        (insert (format "[[%s]]" path))))))
+#+end_src
+
+#+RESULTS:
+: my/org-insert-image
+
+[[/home/dan/Sync/images/638692214.png]]
+
 *** COMMENT org-drill: Spaced Repetition
 :PROPERTIES:
 :ID:       cc74feb5-1381-4314-8eef-9faf52294d14
@@ -1256,7 +1271,9 @@ I tried integrating with Anki first, since I thought it would be useful to go ov
 
 #+begin_src emacs-lisp
 (after! tramp
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (setq tramp-use-scp-direct-remote-copying t)
+  (customize-set-variable 'tramp-default-method "scp"))
 
 (setq password-cache-expiry nil)
 #+end_src
@@ -2221,9 +2238,11 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
 
 (set-company-backend! 'text-mode nil)
 
+(defun my/file-local-p (f)
+  (not (file-remote-p f)))
 
 (after! recentf
-  (add-to-list 'recentf-keep `file-remote-p))
+  (add-to-list 'recentf-keep 'my/file-local-p))
 ;; (setq warning-minimum-level :emergency)
 
 ;; (when doom-debug-p
@@ -2581,10 +2600,10 @@ narrowed."
 
 (defun my/set-timezone ()
   (interactive)
-  (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
+  ;; (shell-command "sudo timedatectl set-timezone America/Los_Angeles")
   ;; (shell-command "sudo timedatectl set-timezone America/New_York")
   ;; (shell-command "sudo timedatectl set-timezone Europe/Paris")
-  ;; ;; (shell-command "sudo timedatectl set-timezone Europe/Berlin")
+  (shell-command "sudo timedatectl set-timezone Europe/Berlin")
   )
 
 ;; (my/set-timezone)

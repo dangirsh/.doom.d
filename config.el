@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 28)
+ doom-font (font-spec :family "Iosevka" :size 30)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -66,7 +66,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.075))
+        key-chord-two-keys-delay 0.025))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -1103,6 +1103,19 @@
 
 (after! so-long
   (setq so-long-threshold 10000))
+
+(defun pause-greenclip-daemon ()
+  (shell-command "ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -20"))
+
+(defun resume-greenclip-daemon ()
+  (shell-command "greenclip print ' ' && ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -18"))
+
+(defadvice password-store-copy (around pause-and-resume-greenclip activate)
+  "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
+  (pause-greenclip-daemon)
+  ad-do-it
+  (sleep-for 5)
+  (resume-greenclip-daemon))
 
 (doom/open-scratch-buffer nil nil t)
 

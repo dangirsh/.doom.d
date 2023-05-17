@@ -2223,10 +2223,22 @@ When a file has lines longer than so-long-threshold, so-long mode is enabled. Th
   (setq so-long-threshold 10000))
 #+end_src
 
-** COMMENT Don't save passwords to clipboard history
+** Don't save passwords to clipboard history
 
 #+begin_src emacs-lisp
-(defun password-store--save-field-in-kill-ring)
+(defun pause-greenclip-daemon ()
+  (shell-command "ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -20"))
+
+(defun resume-greenclip-daemon ()
+  (shell-command "greenclip print ' ' && ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -18"))
+
+(defadvice password-store-copy (around pause-and-resume-greenclip activate)
+  "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
+  (pause-greenclip-daemon)
+  ad-do-it
+  (sleep-for 5)
+  (resume-greenclip-daemon))
+
 #+end_src
 
 ** Misc

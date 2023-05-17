@@ -95,6 +95,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#avoid-long-line-performance-hit][Avoid Long-line Performance Hit]]
+  - [[#dont-save-passwords-to-clipboard-history][Don't save passwords to clipboard history]]
   - [[#misc][Misc]]
 - [[#utility-functions][Utility functions.]]
   - [[#resume][Resume]]
@@ -271,7 +272,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 28)
+ doom-font (font-spec :family "Iosevka" :size 30)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -349,7 +350,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.075))
+        key-chord-two-keys-delay 0.025))
 #+end_src
 
 #+RESULTS:

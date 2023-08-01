@@ -61,6 +61,7 @@
 	    +jupyter
             +roam2)
        python
+       rest
        (rust +lsp)
        sh
        yaml

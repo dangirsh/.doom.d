@@ -183,6 +183,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	    +jupyter
             +roam2)
        python
+       rest
        (rust +lsp)
        sh
        yaml
@@ -1666,8 +1667,9 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
   (setq lsp-rust-analyzer-server-display-inlay-hints nil)
-  (customize-set-variable 'lsp-ui-doc-enable nil)
-  (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
+  ;; (customize-set-variable 'lsp-ui-doc-enable nil)
+  ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
+  )
 
 
 (defun my/rustic-mode-hook ()

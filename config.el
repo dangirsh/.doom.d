@@ -840,8 +840,9 @@
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
   (setq lsp-rust-analyzer-server-display-inlay-hints nil)
-  (customize-set-variable 'lsp-ui-doc-enable nil)
-  (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil))))
+  ;; (customize-set-variable 'lsp-ui-doc-enable nil)
+  ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
+  )
 
 
 (defun my/rustic-mode-hook ()

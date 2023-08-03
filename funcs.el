@@ -1,4 +1,4 @@
-;;; ~/.doom.d/funcs.el -*- lexical-binding: t; -*-
+;;; funcs.el -*- lexical-binding: t; -*-
 
 (defun my/open-literate-private-config-file ()
   "Open the private config.org file."
@@ -181,10 +181,10 @@ narrowed."
       (backward-char 1)
       (org-toggle-latex-fragment))))
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (org-cdlatex-mode)
-            (add-hook 'post-self-insert-hook #'my/org-latex-toggle-recent 'append 'local)))
+;; (add-hook 'org-mode-hook
+;;           (lambda ()
+;;             (org-cdlatex-mode)
+;;             (add-hook 'post-self-insert-hook #'my/org-latex-toggle-recent 'append 'local)))
 
 (defun my/save-shebanged-file-as-executable ()
   (and (save-excursion

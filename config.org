@@ -1,1 +1,1 @@
-README.org
+/home/dan/repos/.doom.d/README.org

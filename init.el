@@ -2,70 +2,61 @@
 
 (doom! :input
 
-       :personal
-       neurosys
+	 ;; :personal
+	 ;; neurosys
 
-       :completion
-       (company +childframe)
+	 :completion
+	 (company +childframe)
 
-       :ui
-       doom
-       hl-todo
-       modeline
-       nav-flash
-       zen
+	 :ui
+	 doom
+	 modeline
+	 zen
 
-       :editor
-       lispy
-       multiple-cursors
-       word-wrap
-       format
-       snippets
+	 :editor
+	 lispy
+	 multiple-cursors
+	 (format +onsave)
 
-       :emacs
-       ;; dired
-       electric
-       vc
+	 :emacs
+	 dired
+	 electric
 
-       :term
-       vterm
+	 :term
+	 vterm
 
-       :checkers
-       syntax
+	 :checkers
+	 syntax
 
-       :tools
-       (eval +overlay)
-       direnv
-       docker
-       lookup
-       (magit +forge)
-       lsp
-       pass
-       pdf
-       tree-sitter
+	 :tools
+	 (eval +overlay)
+	 direnv
+	 docker
+	 (magit +forge)
+	 lsp
+	 pass
+	 pdf
+	 ; tree-sitter
 
-       :lang
-       ;; cc
-       common-lisp
-       data
-       emacs-lisp
-       go
-       ;; javascript
-       (haskell +dante)
-       ;; (julia +lsp)
-       ;; julia
-       (latex +latexmk +cdlatex)
-       markdown
-       nix
-       (org +hugo
-	    +jupyter
-            +roam2)
-       python
-       rest
-       (rust +lsp)
-       sh
-       yaml
+	 :lang
+	 ;; cc
+	 ; common-lisp
+	 data
+	 emacs-lisp
+	 ; go
+	 ;; javascript
+	 (haskell +dante)
+	 ;; (julia +lsp)
+	 ; (latex +latexmk +cdlatex)
+	 markdown
+	 nix
+	 (org +roam2)
+	 python
+	 rest
+	 (rust +lsp)
+	 sh
+	 yaml
 
-       :config
-       literate
-       (default +bindings))
+	 :config
+	 literate
+	 (default +bindings))

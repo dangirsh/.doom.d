@@ -66,7 +66,9 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.025))
+        key-chord-two-keys-delay 0.1)
+  (customize-set-variable 'key-chord-safety-interval-forward 0.0)
+  (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
@@ -155,15 +157,6 @@
 
   (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
 
-(defun fix-keyboard ()
-  (interactive)
-  (shell-command "setxkbmap -option 'ctrl:nocaps'")
-  (shell-command "xset r rate 160 100"))
-
-(defun toggle-touchpad ()
-  (interactive)
-  (shell-command "/home/dan/my-config/scripts/toggle_trackpad.sh"))
-
 (setq my/brightness-min 1)
 (setq my/brightness-max 100)
 (setq my/brightness-step 5)
@@ -203,120 +196,6 @@
   (save-window-excursion
     (shell-command
      (format "echo \"0i%s\n\" | sudo /home/dan/repos/LG-ultrafine-brightness/build/LG_ultrafine_brightness" level) nil nil)))
-
-(setq my/redshift-min 500)
-(setq my/redshift-max 6000)
-(setq my/redshift-step 250)
-;; Since get-redshift is slow
-(setq my/redshift-val-cache nil)
-
-
-;; (defun my/query-redshift ()
-;;   (string-to-number (save-window-excursion
-;;                       (with-temp-buffer
-;;                         (insert (shell-command-to-string "redshift -p"))
-;;                         (beginning-of-buffer)
-;;                         (re-search-forward "Color temperature")
-;;                         (forward-char)
-;;                         (forward-char)
-;;                         (set-mark-command nil)
-;;                         (re-search-forward "K")
-;;                         (backward-char)
-;;                         (buffer-substring (mark) (point))))))
-
-;; (defun my/get-redshift-cache ()
-;;   (if my/redshift-val-cache
-;;       my/redshift-val-cache
-;;     (let ((val (my/query-redshift)))
-;;       (setq my/redshift-val-cache val)
-;;       val)))
-
-;; (defun my/get-redshift ()
-;;   (* my/redshift-step (round (my/get-redshift-cache)
-;;                              my/redshift-step)))
-
-
-(defun my/set-redshift (redness brightness-percent)
-  (interactive "nRedshift level: \nnBrightess percent: ")
-  (let* ((safe-redness
-          (cond ((< redness my/redshift-min) my/redshift-min)
-                ((> redness my/redshift-max) my/redshift-max)
-                (t redness)))
-         (safe-brightness-percent
-          (cond ((< brightness-percent 10) 10)
-                ((> brightness-percent 100) 100)
-                (t brightness-percent)))
-         (redshift-command (format "redshift -P -O %s -b %s" safe-redness (/ safe-brightness-percent 100.0))))
-    (message redshift-command)
-    (save-window-excursion
-      (shell-command redshift-command nil nil))))
-
-
-;; (defun my/redshift-step-change (delta)
-;;   (let ((new-val (+ delta (my/get-redshift-cache))))
-;;     (my/set-redshift new-val)
-;;     (setq my/redshift-val-cache new-val)))
-
-;; (defun my/redshift-increase ()
-;;   (interactive)
-;;   (my/redshift-step-change my/redshift-step))
-
-;; (defun my/redshift-decrease ()
-;;   (interactive)
-;;   (my/redshift-step-change (- my/redshift-step)))
-
-;; (map! "S-<f5>" 'my/redshift-decrease)
-;; (map! "S-<f6>" 'my/redshift-increase)
-
-(setq my/volume-min 1)
-(setq my/volume-max 100)
-(setq my/volume-step 5)
-
-(defun my/get-volume ()
-  (* my/volume-step (round (string-to-number
-                                (shell-command-to-string "awk -F\"[][]\" '/dB/ { print $2 }' <(amixer sget Master)"))
-                               my/volume-step)))
-
-(defun my/set-volume (level)
-  (interactive "nVolume level: ")
-  (let ((clipped-level
-         (cond ((< level my/volume-min) my/volume-min)
-               ((> level my/volume-max) my/volume-max)
-               (t level))))
-    (save-window-excursion
-      (shell-command
-       (format "amixer set Master %s%% &" clipped-level) nil nil))))
-
-(defun my/volume-step-change (delta)
-  (my/set-volume (+ delta (my/get-volume))))
-
-(defun my/volume-increase ()
-  (interactive)
-  (my/volume-step-change my/volume-step))
-
-(defun my/volume-decrease ()
-  (interactive)
-  (my/volume-step-change (- my/volume-step)))
-
-(map! "<XF86AudioRaiseVolume>" 'my/volume-increase)
-(map! "<XF86AudioLowerVolume>" 'my/volume-decrease)
-
-(defun my/connect-to-bose-700s ()
-  (interactive)
-  (shell-command "bluetoothctl -- connect 4C:87:5D:27:B8:63")
-  (shell-command "pacmd set-card-profile 3 headset_head_unit"))
-
-(defun my/disconnect-to-bose-700s ()
-  (interactive)
-  (shell-command "bluetoothctl -- disconnect 4C:87:5D:27:B8:63"))
-
-(defun my/connect-to-pixel-buds ()
-  (interactive)
-  (shell-command "bluetoothctl -- connect E4:5E:1B:C8:B2:9F"))
-
-(defun my/disconnect-to-pixel-buds ()
-  (interactive)
-  (shell-command "bluetoothctl -- disconnect E4:5E:1B:C8:B2:9F"))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -427,21 +306,21 @@
 
   (setq org-todo-keywords
         '((sequence
-           "TODO(t)"  
-           "WAIT(w)"  
-           "HOLD(h)"  
-           "IDEA(i)"  
-           "DELEGATED(e)"  
+           "TODO(t)"
+           "WAIT(w)"
+           "HOLD(h)"
+           "IDEA(i)"
+           "DELEGATED(e)"
            "|"
-           "DONE(d)"  
-           "KILL(k)") 
+           "DONE(d)"
+           "KILL(k)")
           )
         org-todo-keyword-faces
         '(("WAIT" . +org-todo-onhold)
           ("HOLD" . +org-todo-onhold)
           ("DELEGATED" . +org-todo-onhold)
           ("KILL" . +org-todo-cancel)))
-  
+
   ;; Update parent TODO state when all children TODOs are done
   ;; NOTE: Only works if the parent has a "[/]" or "[%]" in the heading!!
   ;; https://orgmode.org/manual/Breaking-Down-Tasks.html#Breaking-Down-Tasks
@@ -460,88 +339,14 @@
   (require 'ox-latex))
 
 ;; Setup syntax highlighting for code block pdf exports
-(after! ox-latex
-  (setq org-latex-pdf-process
-        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-        org-latex-listings 'minted
-        org-latex-packages-alist '(("" "minted"))))
+;; (after! ox-latex
+;;   (setq org-latex-pdf-process
+;;         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+;;         org-latex-listings 'minted
+;;         org-latex-packages-alist '(("" "minted"))))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
-
-(use-package! org-noter
-  :after org
-  :config
-  ;; helpful in EXWM, where there are no frames
-  (customize-set-variable 'org-noter-always-create-frame t)
-  (customize-set-variable 'org-noter-notes-window-behavior '(start))
-  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
-  (setq org-noter-notes-window-location 'other-frame
-        org-noter-notes-search-path '("~/Sync")
-        org-noter-auto-save-last-location t
-        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
-
-  ;; This works for assigning PDF paths, but then breaks when trying to find the tpath later.
-  ;; (defadvice! better-org-noter--get-or-read-document-property (orig-fn &rest args)
-  ;;   :around 'org-noter--get-or-read-document-property
-  ;;   (let ((default-directory (if (boundp 'my/noter-default-directory)
-  ;;                                my/noter-default-directory
-  ;;                              default-directory) ))
-  ;;     (apply orig-fn args)))
-  )
-
-;; Note that this pulls in Helm :/
-;; https://github.com/jkitchin/org-ref/issues/202
-(use-package! org-ref
-  :after (org bibtex)
-  :init
-  (setq org-ref-default-bibliography '("~/Sync/references.bib"))
-  (setq bibtex-completion-bibliography org-ref-default-bibliography)
-  :config
-  (setq org-latex-pdf-process
-        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "bibtex %b"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-        org-ref-bibliography-notes "~/Sync/pdf_notes.org"
-        org-ref-pdf-directory "~/Sync/pdf/"
-        org-ref-notes-function #'org-ref-notes-function-one-file)
-  
-  (defun get-pdf-filename (key)
-    (let ((results (bibtex-completion-find-pdf key)))
-      (if (equal 0 (length results))
-          (org-ref-get-pdf-filename key)
-        (car results))))
-
-  (add-hook 'org-ref-create-notes-hook
-            (lambda ()
-              (org-entry-put
-               nil
-               "NOTER_DOCUMENT"
-               (get-pdf-filename (org-entry-get
-                                  (point) "Custom_ID")))) )
-
-  (defun my/org-ref-noter-at-point ()
-    (interactive)
-    (let* ((results (org-ref-get-bibtex-key-and-file))
-           (key (car results))
-           (pdf-file (funcall org-ref-get-pdf-filename-function key))
-           (orig-bibtex-dialect bibtex-dialect))
-      (if (file-exists-p pdf-file)
-          (save-window-excursion
-            ;; using the local flag for bibtex-set-dialect doesn't work
-            ;; likely because org-ref-open-notes-at-point loses the buffer context
-            (bibtex-set-dialect 'BibTeX)
-            (org-ref-open-notes-at-point)
-            (bibtex-set-dialect orig-bibtex-dialect)
-            (find-file-other-window pdf-file)
-            (org-noter))
-        (message "no pdf found for %s" key))))
-
-  (map! :leader
-        :map org-mode-map
-        :desc "org-noter from ref"
-        "n p" 'my/org-ref-noter-at-point))
 
 (defun my/org-roam-capture-new-node-hook ()
   (org-entry-put (point) "header-args" ":noweb yes"))
@@ -572,24 +377,6 @@
        (:prefix ("j" . "journal")
         :desc "Today" "j" #'my/today)))
 
-(use-package! websocket
-    :after org-roam)
-
-(use-package! org-roam-ui
-    :after org-roam
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
-
-(defun my/org-dir-search (dir)
-  "Search an org directory using consult-ripgrep. With live-preview."
-  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
-    (consult-ripgrep dir)))
-
-(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam-old")))
-
 (after! org
   (add-to-list 'org-agenda-files my/org-roam-todo-file)
   (add-to-list 'org-capture-templates '("t" "Todo" entry (file my/org-roam-todo-file)
@@ -597,22 +384,6 @@
   (add-to-list 'org-capture-templates '("T" "Todo with Context" entry (file my/org-roam-todo-file)
                                         "* TODO %?  #[[%F][%(my/org-get-title \"%F\")]]\n%i\n%a"))
   )
-
-(use-package! org-download
-  :config
-  ;; take an image that is already on the clipboard
-  (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
-
-(use-package! org-cliplink)
-
-(defun my/org-insert-image ()
-  "Select and insert an image at point."
-  (interactive)
-  (let* ((file-name (format "%s.png" (cl-random (expt 2 31))))
-         (path (format "%s%s/%s" org-directory "images" file-name)))
-    (let ((maim-exit (call-process "maim" nil nil nil "-s" path)))
-      (when (= maim-exit 0)
-        (insert (format "[[%s]]" path))))))
 
 (setq org-agenda-start-day "+0d"        ; start today
       org-agenda-show-current-time-in-grid nil
@@ -657,6 +428,8 @@
           (:auto-todo t)))
   (org-super-agenda-mode))
 
+(use-package! org-cliplink)
+
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (setq tramp-use-scp-direct-remote-copying t)
@@ -664,50 +437,28 @@
 
 (setq password-cache-expiry nil)
 
-(defun teleport-tramp-add-method ()
-  "Add teleport tramp method."
-  ;; For debugging remove the old method
-  (setf tramp-methods (assoc-delete-all "tsh" tramp-methods))
-  (add-to-list 'tramp-methods `("tsh"
-                                (tramp-login-program "tsh ssh")
-                                (tramp-login-args
-                                 (("-l" "%u")
-                                  ("%h")))
-                                (tramp-copy-program "tsh")
-                                (tramp-copy-args (("scp")))
-                                (tramp-copy-recursive t)
-                                (tramp-remote-shell       "/bin/sh")
-                                (tramp-remote-shell-args  ("-i" "-c")))))
+(use-package! teleport
+  :init  (teleport-tramp-add-method)
+  :bind (:map teleport-list-nodes-mode-map
+              ("v" . vterm)
+              ("t" . term)
+              ("d" . dired)))
 
+(with-eval-after-load 'vterm
+  (add-to-list 'vterm-tramp-shells `(,teleport-tramp-method "/bin/bash")))
 
-;;;###autoload
-(eval-after-load 'tramp
-  '(progn
-     (teleport-tramp-add-method)))
+(with-eval-after-load 'dired-rsync
+  (defun teleport--is-file-on-teleport (filename)
+    (when (tramp-tramp-file-p filename)
+      (with-parsed-tramp-file-name filename v
+        (string= v-method teleport-tramp-method))))
 
-(use-package! openai-api
-  :config
-  (setq openai-api-secret-key (password-store-get (rot13 "bcranv/qna@jbeyqpbva.bet/pbqrk-ncv-xrl")))
-  (setq openai-api-engine "text-davinci-001")
-  ;; (setq openai-api-engine "davinci")
-  (setq openai-api-completion-params '((max_tokens . 100)
-                                       (temperature . 0.3)
-                                       (frequency_penalty . 0.1)
-                                       (presence_penalty . 0.1)
-                                       (n . 6)))
-
-  (defun my/openai-complete-region ()
-    (interactive)
-    (let ((selectrum-max-window-height nil)
-          (selectrum-fix-vertical-window-height nil))
-      (openai-api-consult-complete-region)))
-
-  (add-to-dk-keymap
-   '(("TAB" . my/openai-complete-region))))
-
-(require 'openai-api)
-
-(use-package! copilot)
+  (defun teleport-rsync-advice (orig-func sfiles dest)
+    (if (or (teleport--is-file-on-teleport (car sfiles)) (teleport--is-file-on-teleport dest))
+        (let ((dired-rsync-options (format "%s %s" dired-rsync-options "-e \"tsh ssh\"")))
+          (funcall orig-func sfiles dest))
+      (funcall orig-func sfiles dest)))
+  (advice-add 'dired-rsync--remote-to-from-local-cmd :around #'teleport-rsync-advice))
 
 (use-package! lispy
   :config
@@ -761,22 +512,6 @@
   (emacs-lisp-mode . aggressive-indent-mode)
   (common-lisp-mode . aggressive-indent-mode))
 
-(defun setup-mathpix ()
-  (load-file (concat doom-private-dir "mathpix.el"))
-  (require 'mathpix)
-  (customize-set-variable 'mathpix-app-id "dan_girsh_gmail_com_5d68dc")
-  (customize-set-variable 'mathpix-app-key "600336b7b2b932549ce4")
-  (customize-set-variable 'mathpix-screenshot-method "scrot -s %s"))
-
-(setup-mathpix)
-
-(defun my/mathpix-screenshot-to-clipboard ()
-  (interactive)
-  (with-temp-buffer
-    (mathpix-screenshot)
-    (kill-new
-     (format "$$\n%s\n$$" (buffer-string)))))
-
 (use-package! multiple-cursors
   :init
   (setq mc/always-run-for-all t)
@@ -791,10 +526,10 @@
          ("C-(" . mc/skip-to-previous-like-this)
          ("C-M-<" . mc/skip-to-previous-like-this)))
 
-(use-package! iedit
-  :init
-  (map! "C-;" 'company-complete)
-  (map! "M-i" 'iedit-mode))
+;; (use-package! iedit
+;;   :init
+;;   (map! "C-;" 'company-complete)
+;;   (map! "M-i" 'iedit-mode))
 
 (use-package! undo-tree
   :init
@@ -809,10 +544,6 @@
       (setq undo-tree-visualizer-diff t))
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
-
-(use-package! string-inflection)
-
-(setq haskell-mode-stylish-haskell-path "brittany")
 
 (after! rustic-flycheck
   (customize-set-variable 'rustic-flycheck-clippy-params-stable
@@ -853,44 +584,10 @@
   (when buffer-file-name
     (setq-local buffer-save-without-query t)))
 
-(use-package! jupyter
-  :init
-  (setq jupyter-eval-use-overlays t)
-
-  (map!
-   :map org-mode-map
-   :localleader
-   (:desc "Jupyter Org Hydra"       "j" #'jupyter-org-hydra/body))
-
-  (defun my/insert-julia-src-block ()
-    (interactive)
-    (jupyter-org-insert-src-block t current-prefix-arg))
-
-  ;; I locally modified jupyter-completion-at-point to check for this,
-  ;; since completions regularly crash the julia kernel for me :/
-  (setq my/jupyter-enable-completions nil)
-
-  ;; Better than `M-c C-, j` or `M-c j =`
-  (key-chord-define-global "jq" #'my/insert-julia-src-block)
-  (map!
-   :map julia-mode-map
-   :localleader
-   (:prefix ("j" . "jupyter")
-    :desc "Run REPL"         "o" #'jupyter-run-repl
-    :desc "Eval function"    "f" #'jupyter-eval-defun
-    :desc "Eval buffer"      "b" #'jupyter-eval-buffer
-    :desc "Eval region"      "r" #'jupyter-eval-region
-    :desc "Restart REPL"     "R" #'jupyter-repl-restart-kernel
-    :desc "Interrupt REPL"   "i" #'jupyter-repl-interrup-kernel
-    :desc "Scratch buffer"   "s" #'jupyter-repl-scratch-buffer
-    :desc "Remove overlays"  "O" #'jupyter-eval-remove-overlays
-    :desc "Eval string"      "w" #'jupyter-eval-string
-    :desc "Inspect at point" "d" #'jupyter-inspect-at-point)))
-
 (use-package! selectrum
   :config
   (selectrum-mode +1)
-  (setq selectrum-max-window-height 30)
+  (setq selectrum-max-window-height 15)
   (setq selectrum-fix-vertical-window-height t)
   (setq selectrum-group-format nil)
   (setq magit-completing-read-function #'selectrum-completing-read))
@@ -941,7 +638,7 @@
 
 (use-package! consult-flycheck
   :bind (:map flycheck-command-map
-         ("!" . consult-flycheck)))
+              ("!" . consult-flycheck)))
 
 (use-package! consult-projectile)
 
@@ -951,12 +648,12 @@
  consult--source-bookmark consult--source-recent-file
  consult--source-project-recent-file
  ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
- :preview-key (kbd "M-."))
+ :preview-key "M-.")
 
 
 ;; (consult-customize
 ;;  consult--source-file consult--source-project-file consult--source-bookmark
-;;  :preview-key (kbd "M-."))
+;;  :preview-key "M-.")
 
 (add-to-dk-keymap
  '(("<SPC>" . deadgrep)
@@ -976,19 +673,6 @@
   (("M-A" . marginalia-cycle)
    :map minibuffer-local-map
    ("M-A" . marginalia-cycle)))
-
-(after! dired
-  (setq dired-listing-switches "-aBhlv --group-directories-first"
-        dired-dwim-target t
-        dired-recursive-copies (quote always)
-        dired-recursive-deletes (quote top)
-        ;; Directly edit permisison bits!
-        wdired-allow-to-change-permissions t))
-
-(use-package! dired-x)
-
-;; Directly edit permission bits!
-(setq wdired-allow-to-change-permissions t)
 
 (use-package! deadgrep)
 
@@ -1027,40 +711,21 @@
      ("u" . magit-submodule-update)
      ("l" . magit-show-refs-head))))
 
-(after! pdf-tools
-  (map! :map pdf-isearch-minor-mode-map
-        "C-s" 'isearch-forward-regexp))
+(after! dired
+  (setq dired-listing-switches "-aBhlv --group-directories-first"
+        dired-dwim-target t
+        dired-recursive-copies (quote always)
+        dired-recursive-deletes (quote top)
+        ;; Directly edit permisison bits!
+        wdired-allow-to-change-permissions t))
 
-(use-package! dmenu)
+(use-package! dired-x)
 
-(use-package! ace-window
-  :config
-  (map! "C-M-SPC" #'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+;; Directly edit permission bits!
+(setq wdired-allow-to-change-permissions t)
 
 ;; prevents horizontal splits when split-window-sensibly is used
 (setq split-width-threshold nil)
-
-(use-package! real-auto-save
-  :hook
-  (prog-mode . real-auto-save-mode)
-  (org-mode . real-auto-save-mode))
-
-(use-package! logview)
-
-(use-package! fancy-dabbrev
-  :hook
-  (prog-mode . fancy-dabbrev-mode)
-  (org-mode . fancy-dabbrev-mode)
-  :config
-  ;; (setq fancy-dabbrev-preview-delay 0.1)
-  (setq fancy-dabbrev-preview-context 'before-non-word)
-  ;; Let dabbrev searches ignore case and expansions preserve case:
-  (setq dabbrev-case-distinction nil)
-  (setq dabbrev-case-fold-search t)
-  (setq dabbrev-case-replace nil)
-  (add-hook 'minibuffer-setup-hook (lambda () (fancy-dabbrev-mode 0)))
-  (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1))))
 
 (delete 'register-alist savehist-additional-variables)
 
@@ -1102,9 +767,6 @@
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
-(after! so-long
-  (setq so-long-threshold 10000))
-
 (defun pause-greenclip-daemon ()
   (shell-command "ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -20"))
 
@@ -1115,8 +777,7 @@
   "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
   (pause-greenclip-daemon)
   ad-do-it
-  (sleep-for 5)
-  (resume-greenclip-daemon))
+  (run-with-idle-timer 5 1 #'resume-greenclip-daemon))
 
 (doom/open-scratch-buffer nil nil t)
 
@@ -1133,13 +794,9 @@
 ;;   (require 'benchmark-init)
 ;;   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
 
-(setq isearch-allow-scroll t)
-
 (setq async-shell-command-buffer 'new-buffer)
 
-(setq direnv-always-show-summary nil)
-
-(add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
 
 ;; all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -1150,7 +807,7 @@
 ;; Coordinate between kill ring and system clipboard
 (setq save-interprogram-paste-before-kill t)
 
-(setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
+;; (setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
@@ -1209,9 +866,29 @@
 (defun crm-indicator (args)
   (cons (concat "[CRM] " (car args)) (cdr args)))
 
+
 (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
 (defun my-compilation-mode-hook ()
   (visual-line-mode 1))
 
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+
+(use-package! real-auto-save
+  :hook
+  (prog-mode . real-auto-save-mode)
+  (org-mode . real-auto-save-mode))
+
+(use-package! fancy-dabbrev
+  :hook
+  (prog-mode . fancy-dabbrev-mode)
+  (org-mode . fancy-dabbrev-mode)
+  :config
+  ;; (setq fancy-dabbrev-preview-delay 0.1)
+  (setq fancy-dabbrev-preview-context 'before-non-word)
+  ;; Let dabbrev searches ignore case and expansions preserve case:
+  (setq dabbrev-case-distinction nil)
+  (setq dabbrev-case-fold-search t)
+  (setq dabbrev-case-replace nil)
+  (add-hook 'minibuffer-setup-hook (lambda () (fancy-dabbrev-mode 0)))
+  (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1))))

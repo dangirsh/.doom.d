@@ -10,6 +10,7 @@
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
 (package! fancy-dabbrev)
 (package! google-this)
+(package! gptel)
 (package! helpful)
 (package! key-chord)
 (package! marginalia)

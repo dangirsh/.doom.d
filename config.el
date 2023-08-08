@@ -460,6 +460,8 @@
       (funcall orig-func sfiles dest)))
   (advice-add 'dired-rsync--remote-to-from-local-cmd :around #'teleport-rsync-advice))
 
+(use-package! gptel)
+
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -642,13 +644,13 @@
 
 (use-package! consult-projectile)
 
-(consult-customize
- consult-ripgrep consult-git-grep consult-grep
- consult-bookmark consult-recent-file consult-xref
- consult--source-bookmark consult--source-recent-file
- consult--source-project-recent-file
- ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
- :preview-key "M-.")
+;; (consult-customize
+;;  consult-ripgrep consult-git-grep consult-grep
+;;  consult-bookmark consult-recent-file consult-xref
+;;  consult--source-bookmark consult--source-recent-file
+;;  consult--source-project-recent-file
+;;  ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
+;;  :preview-key "M-.")
 
 
 ;; (consult-customize

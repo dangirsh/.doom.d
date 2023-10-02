@@ -337,7 +337,7 @@ shell exits, the buffer is killed."
   ;; Ensure the vterm is opened in the right directory
   (let ((default-directory dir))
     (with-current-buffer (vterm (if term-name term-name (format "*%s*" command)))
-      (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
+      ;; (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
       (vterm-send-string command)
       (vterm-send-return))))
 

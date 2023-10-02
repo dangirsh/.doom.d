@@ -2,8 +2,8 @@
 
 (doom! :input
 
-	 ;; :personal
-	 ;; neurosys
+	 :personal
+	 neurosys
 
 	 :completion
 	 (company +childframe)
@@ -43,7 +43,7 @@
 	 ; common-lisp
 	 data
 	 emacs-lisp
-	 ; go
+	 go
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)

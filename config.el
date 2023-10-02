@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 30)
+ doom-font (font-spec :family "Iosevka" :size 28)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -66,7 +66,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.1)
+        key-chord-two-keys-delay 0.05)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -713,7 +713,10 @@
      ("u" . magit-submodule-update)
      ("l" . magit-show-refs-head))))
 
+(setq dired-omit-extensions nil)
+
 (after! dired
+  (remove-hook 'dired-mode-hook 'dired-omit-mode)
   (setq dired-listing-switches "-aBhlv --group-directories-first"
         dired-dwim-target t
         dired-recursive-copies (quote always)
@@ -779,7 +782,8 @@
   "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
   (pause-greenclip-daemon)
   ad-do-it
-  (run-with-idle-timer 5 1 #'resume-greenclip-daemon))
+  (run-with-idle-timer 10 1 #'resume-greenclip-daemon)
+  )
 
 (doom/open-scratch-buffer nil nil t)
 

@@ -81,6 +81,13 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
 - [[#utility-functions][Utility functions.]]
   - [[#resume][Resume]]
   - [[#org-1][Org]]
+- [[#neurosys-module][Neurosys Module]]
+  - [[#globals][Globals]]
+  - [[#helpers][Helpers]]
+    - [[#deployment][Deployment]]
+    - [[#upgrading-02][Upgrading]]
+    - [[#misc-1][Misc]]
+  - [[#keybindings][Keybindings]]
 - [[#package-declarations][Package declarations]]
 - [[#future][Future]]
 #+END_QUOTE
@@ -98,8 +105,8 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 
   (doom! :input
 
-	 ;; :personal
-	 ;; neurosys
+	 :personal
+	 neurosys
 
 	 :completion
 	 (company +childframe)
@@ -139,7 +146,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 ; common-lisp
 	 data
 	 emacs-lisp
-	 ; go
+	 go
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)
@@ -238,7 +245,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 30)
+ doom-font (font-spec :family "Iosevka" :size 28)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -316,7 +323,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.1)
+        key-chord-two-keys-delay 0.05)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 #+end_src
@@ -1387,7 +1394,10 @@ Stunningly useful.
 :END:
 
 #+BEGIN_SRC emacs-lisp
+(setq dired-omit-extensions nil)
+
 (after! dired
+  (remove-hook 'dired-mode-hook 'dired-omit-mode)
   (setq dired-listing-switches "-aBhlv --group-directories-first"
         dired-dwim-target t
         dired-recursive-copies (quote always)
@@ -1524,9 +1534,13 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
   "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
   (pause-greenclip-daemon)
   ad-do-it
-  (run-with-idle-timer 5 1 #'resume-greenclip-daemon))
+  (run-with-idle-timer 10 1 #'resume-greenclip-daemon)
+  )
 
 #+end_src
+
+#+RESULTS:
+: password-store-copy
 
 ** Misc
 :PROPERTIES:
@@ -2012,7 +2026,7 @@ shell exits, the buffer is killed."
   ;; Ensure the vterm is opened in the right directory
   (let ((default-directory dir))
     (with-current-buffer (vterm (if term-name term-name (format "*%s*" command)))
-      (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
+      ;; (set-process-sentinel vterm--process #'my/run-in-vterm-kill)
       (vterm-send-string command)
       (vterm-send-return))))
 
@@ -2195,7 +2209,7 @@ SCOPE can be 'file or 'tree."
 #+RESULTS:
 : my/org-jupyter-execute-subtree-by-id
 
-* COMMENT Neurosys Module
+* Neurosys Module
 :PROPERTIES:
 :header-args: :tangle ./modules/personal/neurosys/config.el
 :END:

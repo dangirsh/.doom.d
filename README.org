@@ -395,7 +395,6 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)
      ("p" . my/publish-dangirsh.org)
-     ("r" . my/set-redshift)
      ("s" . save-buffer)
      ("t" . +vterm/here)
      ("T" . google-translate-at-point)
@@ -1831,15 +1830,12 @@ text.
 (defun my/night-mode ()
   (interactive)
   (load-theme 'doom-dark+ t)
-  (doom/reload-theme)
-  (my/set-redshift 1500 30))
+  (doom/reload-theme))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-nord-light t)
-  (doom/reload-theme)
-  (my/set-redshift 5500 100))
-
+  (doom/reload-theme))
 
 (defun narrow-or-widen-dwim (p)
   "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.

@@ -1405,6 +1405,10 @@ Stunningly useful.
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t))
 
+(use-package! dired-rsync
+  :bind (:map dired-mode-map
+              ("C-c C-r" . dired-rsync)))
+
 (use-package! dired-x)
 
 ;; Directly edit permission bits!
@@ -2300,6 +2304,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
 (package! ctrlf)
 (package! deadgrep)
+(package! dired-rsync)
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
 (package! fancy-dabbrev)
 (package! google-this)

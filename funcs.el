@@ -138,15 +138,12 @@ text.
 (defun my/night-mode ()
   (interactive)
   (load-theme 'doom-dark+ t)
-  (doom/reload-theme)
-  (my/set-redshift 1500 30))
+  (doom/reload-theme))
 
 (defun my/day-mode ()
   (interactive)
   (load-theme 'doom-nord-light t)
-  (doom/reload-theme)
-  (my/set-redshift 5500 100))
-
+  (doom/reload-theme))
 
 (defun narrow-or-widen-dwim (p)
   "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.

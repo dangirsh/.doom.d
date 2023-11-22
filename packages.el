@@ -7,6 +7,7 @@
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
 (package! ctrlf)
 (package! deadgrep)
+(package! dired-rsync)
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
 (package! fancy-dabbrev)
 (package! google-this)

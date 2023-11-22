@@ -117,7 +117,6 @@
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)
      ("p" . my/publish-dangirsh.org)
-     ("r" . my/set-redshift)
      ("s" . save-buffer)
      ("t" . +vterm/here)
      ("T" . google-translate-at-point)
@@ -723,6 +722,10 @@
         dired-recursive-deletes (quote top)
         ;; Directly edit permisison bits!
         wdired-allow-to-change-permissions t))
+
+(use-package! dired-rsync
+  :bind (:map dired-mode-map
+              ("C-c C-r" . dired-rsync)))
 
 (use-package! dired-x)
 

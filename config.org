@@ -1,1 +1,1 @@
-/home/dan/repos/.doom.d/README.org
+/System/Volumes/Data/Users/dan.girshovich/.doom.d/README.org

@@ -195,7 +195,7 @@ narrowed."
        (message
         (concat "Saved as script: " buffer-file-name))))
 
-(add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
+;; (add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
 
 ;; https://llazarek.com/2018/10/images-in-org-mode.html
 (defun my/org-link-file-path-at-point ()
@@ -463,6 +463,7 @@ context.  When called with an argument, unconditionally call
       (if (file-readable-p file)
           (find-file file)
         (error "Cannot open tangle file %S" file)))))
+
 
 
 ;; https://sachachua.com/blog/2019/07/tweaking-emacs-on-android-via-termux-xclip-xdg-open-syncthing-conflicts/

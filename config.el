@@ -3,14 +3,14 @@
 (setq user-full-name "Dan Girshovich"
       user-mail-address (rot13 "qna.tvefu@tznvy.pbz"))
 
-(setq my/home-dir "/home/dan/")
+(setq my/home-dir "/Users/dan.girshovich/")
 
 (setq my/sync-base-dir (concat my/home-dir "Sync/"))
-(setq my/work-base-dir (concat my/home-dir "Work/"))
-(setq my/media-base-dir (concat my/home-dir "Media/"))
+(setq my/work-base-dir (concat my/home-dir "work/"))
+(setq my/media-base-dir (concat my/home-dir "media/"))
 
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Sync/org-roam2/"
+      org-roam-directory (concat my/home-dir "Sync/org-roam2/")
       org-roam-db-location (concat org-roam-directory "org-roam.db")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
@@ -20,10 +20,14 @@
 
 (load-file (concat doom-private-dir "funcs.el"))
 
-(setq
- doom-font (font-spec :family "Iosevka" :size 28)
- doom-variable-pitch-font (font-spec :family "Libre Baskerville")
- doom-serif-font (font-spec :family "Libre Baskerville"))
+;; Set the default font
+(setq doom-font (font-spec :family "Iosevka" :size 15))
+
+;; Optionally, set the variable-pitch font if you use it for non-monospace text
+(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 15))
+
+;; Optionally, set a larger font for presentations or larger displays
+(setq doom-big-font (font-spec :family "Iosevka" :size 19))
 
 (setq display-line-numbers-type nil)
 
@@ -155,46 +159,6 @@
   (key-chord-define-global "xf" 'ffap)
 
   (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
-
-(setq my/brightness-min 1)
-(setq my/brightness-max 100)
-(setq my/brightness-step 5)
-
-(defun my/get-brightness ()
-  (* my/brightness-step (round (string-to-number
-                                (shell-command-to-string "xbacklight -get"))
-                               my/brightness-step)))
-
-(defun my/set-brightness (level)
-  (interactive "nBrightness level: ")
-  (let ((safe-level
-         (cond ((< level my/brightness-min) my/brightness-min)
-               ((> level my/brightness-max) my/brightness-max)
-               (t level))))
-    (save-window-excursion
-      (shell-command
-       (format "xbacklight -set %s &" safe-level) nil nil))))
-
-(defun my/brightness-step-change (delta)
-  (my/set-brightness (+ delta (my/get-brightness))))
-
-(defun my/brightness-increase ()
-  (interactive)
-  (my/brightness-step-change my/brightness-step))
-
-(defun my/brightness-decrease ()
-  (interactive)
-  (my/brightness-step-change (- my/brightness-step)))
-
-(map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
-(map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
-
-
-(defun my/set-brightness-lg-5k (level)
-  (interactive "nBrightness level: ")
-  (save-window-excursion
-    (shell-command
-     (format "echo \"0i%s\n\" | sudo /home/dan/repos/LG-ultrafine-brightness/build/LG_ultrafine_brightness" level) nil nil)))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -396,9 +360,9 @@
                                  (todo . " %i %b")
                                  (tags . " %i %-12:c %b")
                                  (search . " %i %-12:c %b"))
-      org-agenda-category-icon-alist
-      `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-        ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
+      ;; org-agenda-category-icon-alist
+      ;; `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
+      ;;   ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
       org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
@@ -735,15 +699,6 @@
 ;; prevents horizontal splits when split-window-sensibly is used
 (setq split-width-threshold nil)
 
-(delete 'register-alist savehist-additional-variables)
-
-(set-register ?h '(file . "~/Sync/home/config.org"))
-(set-register ?r '(file . "~/Sync/resume/resume.tex"))
-
-(unless (getenv "EMACS_NON_WORK_MODE")
-  (load-file "/home/dan/Work/w/emacs/work-config.el")
-  (require 'work-config))
-
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))
  "M-n" (lambda () (interactive) (scroll-up 4))
@@ -774,19 +729,6 @@
   ;; remove binding for suspend-frame
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
-
-(defun pause-greenclip-daemon ()
-  (shell-command "ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -20"))
-
-(defun resume-greenclip-daemon ()
-  (shell-command "greenclip print ' ' && ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -18"))
-
-(defadvice password-store-copy (around pause-and-resume-greenclip activate)
-  "Pause the greenclip daemon before saving the password to the kill ring, then resume the daemon after saving."
-  (pause-greenclip-daemon)
-  ad-do-it
-  (run-with-idle-timer 10 1 #'resume-greenclip-daemon)
-  )
 
 (doom/open-scratch-buffer nil nil t)
 

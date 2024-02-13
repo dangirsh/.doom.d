@@ -1,6 +1,6 @@
 #+TITLE: Doom Configuration
 #+author: Dan Girshovich
-#+PROPERTY: header-args :tangle-mode (identity #o444)
+
 
 * About
 
@@ -17,6 +17,8 @@ I use [[https://github.com/hlissner/doom-emacs/][Doom Emacs]] as a base Emacs co
 If you're reading this in a browser, consider opening it in Emacs Org mode for the full experience.
 
 ** Inspirations:
+
+
 
 - [[https://github.com/jethrokuan/dots/tree/master/.doom.d][Jethro Kuan's dotfiles]]
 - [[https://matthewbauer.us/bauer/][bauer: an Emacs+Nix IDE]]
@@ -43,8 +45,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#enable-the-key-chord-package][Enable the key chord package]]
     - [[#setup-for-binding-chords-as-leaders][Setup for binding chords as leaders]]
     - [[#define-global-key-chords][Define global key-chords]]
-  - [[#hardware-settings][Hardware Settings]]
-    - [[#display-brightness][Display Brightness]]
   - [[#org][Org]]
     - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
     - [[#org-agenda][Org Agenda]]
@@ -71,23 +71,13 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#dired][Dired]]
   - [[#window-management][Window Management]]
     - [[#avoiding-automatic-horizontal-splits][Avoiding Automatic Horizontal Splits]]
-  - [[#registers][Registers]]
-  - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
-  - [[#dont-save-passwords-to-clipboard-history][Don't save passwords to clipboard history]]
   - [[#misc][Misc]]
   - [[#autosave][Autosave]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
 - [[#utility-functions][Utility functions.]]
   - [[#resume][Resume]]
   - [[#org-1][Org]]
-- [[#neurosys-module][Neurosys Module]]
-  - [[#globals][Globals]]
-  - [[#helpers][Helpers]]
-    - [[#deployment][Deployment]]
-    - [[#upgrading-02][Upgrading]]
-    - [[#misc-1][Misc]]
-  - [[#keybindings][Keybindings]]
 - [[#package-declarations][Package declarations]]
 - [[#future][Future]]
 #+END_QUOTE
@@ -132,31 +122,31 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 syntax
 
 	 :tools
-	 (eval +overlay)
-	 direnv
-	 docker
-	 (magit +forge)
-	 lsp
-	 pass
-	 pdf
+;	 (eval +overlay)
+;	 direnv
+;	 docker
+       magit
+;	 lsp
+       pass
+;	 pdf
 	 ; tree-sitter
 
 	 :lang
 	 ;; cc
 	 ; common-lisp
-	 data
+;	 data
 	 emacs-lisp
-	 go
+;	 go
 	 ;; javascript
-	 (haskell +dante)
+;	 (haskell +dante)
 	 ;; (julia +lsp)
 	 ; (latex +latexmk +cdlatex)
-	 markdown
-	 nix
+;	 markdown
+;	 nix
 	 (org +roam2)
-	 python
-	 rest
-	 (rust +lsp)
+;	 python
+;	 rest
+	 rust
 	 sh
 	 yaml
 
@@ -199,11 +189,11 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq my/home-dir "/home/dan/")
+(setq my/home-dir "/Users/dan.girshovich/")
 
 (setq my/sync-base-dir (concat my/home-dir "Sync/"))
-(setq my/work-base-dir (concat my/home-dir "Work/"))
-(setq my/media-base-dir (concat my/home-dir "Media/"))
+(setq my/work-base-dir (concat my/home-dir "work/"))
+(setq my/media-base-dir (concat my/home-dir "media/"))
 #+end_src
 
 #+RESULTS:
@@ -214,10 +204,9 @@ clients, file templates and snippets.
 :ID:       a8ee5123-de16-4100-8f61-4254ad41a35a
 :END:
 
-
 #+begin_src emacs-lisp
 (setq org-directory my/sync-base-dir
-      org-roam-directory "/home/dan/Sync/org-roam2/"
+      org-roam-directory (concat my/home-dir "Sync/org-roam2/")
       org-roam-db-location (concat org-roam-directory "org-roam.db")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
@@ -225,7 +214,7 @@ clients, file templates and snippets.
   (find-file my/org-roam-todo-file)
   (save-buffer))
 #+end_src
-
+p
 #+RESULTS:
 : /home/dan/Sync/org-roam/
 
@@ -244,10 +233,14 @@ clients, file templates and snippets.
 :END:
 
 #+begin_src emacs-lisp
-(setq
- doom-font (font-spec :family "Iosevka" :size 28)
- doom-variable-pitch-font (font-spec :family "Libre Baskerville")
- doom-serif-font (font-spec :family "Libre Baskerville"))
+;; Set the default font
+(setq doom-font (font-spec :family "Iosevka" :size 15))
+
+;; Optionally, set the variable-pitch font if you use it for non-monospace text
+(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 15))
+
+;; Optionally, set a larger font for presentations or larger displays
+(setq doom-big-font (font-spec :family "Iosevka" :size 19))
 
 (setq display-line-numbers-type nil)
 
@@ -255,6 +248,8 @@ clients, file templates and snippets.
 (set-face-background 'vertical-border "grey")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
 #+end_src
+
+#+RESULTS:
 
 *** Theme
 :PROPERTIES:
@@ -435,7 +430,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
 #+end_src
 
-** Hardware Settings
+** COMMENT Hardware Settings
 *** Display Brightness
 :PROPERTIES:
 :ID:       a704c311-cb1c-4b0d-aacb-f368a1af0600
@@ -834,9 +829,9 @@ The =org-capture-templates= templates used here:
                                  (todo . " %i %b")
                                  (tags . " %i %-12:c %b")
                                  (search . " %i %-12:c %b"))
-      org-agenda-category-icon-alist
-      `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-        ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
+      ;; org-agenda-category-icon-alist
+      ;; `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
+      ;;   ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
       org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
@@ -1454,7 +1449,7 @@ to ace-window.
 (use-package! burly)
 #+end_src
 
-** Registers
+** COMMENT Registers
 :PROPERTIES:
 :ID:       aebbfcb7-7c2c-4e95-a21d-b9f3d9491392
 :END:
@@ -1468,8 +1463,7 @@ to ace-window.
 
 #+RESULTS:
 : (file . ~/Sync/resume/resume.tex)
-
-** Load Untracked Elisp (work-specific)
+** COMMENT Load Untracked Elisp (work-specific)
 :PROPERTIES:
 :ID:       52472b2d-ec59-4629-88c6-83dcab02b49e
 :END:
@@ -1521,7 +1515,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 #+END_SRC
 
-** Don't save passwords to clipboard history
+** COMMENT Don't save passwords to clipboard history
 :PROPERTIES:
 :ID:       8eebe3fb-e3a8-4704-9825-8220b53982ae
 :END:
@@ -1887,7 +1881,7 @@ narrowed."
        (message
         (concat "Saved as script: " buffer-file-name))))
 
-(add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
+;; (add-hook 'after-save-hook #'my/save-shebanged-file-as-executable)
 
 ;; https://llazarek.com/2018/10/images-in-org-mode.html
 (defun my/org-link-file-path-at-point ()
@@ -2174,6 +2168,7 @@ context.  When called with an argument, unconditionally call
         (error "Cannot open tangle file %S" file)))))
 
 
+
 ;; https://sachachua.com/blog/2019/07/tweaking-emacs-on-android-via-termux-xclip-xdg-open-syncthing-conflicts/
 (defun my/org-archive-done-tasks (&optional scope)
   "Archive finished or cancelled tasks.
@@ -2209,7 +2204,7 @@ SCOPE can be 'file or 'tree."
 #+RESULTS:
 : my/org-jupyter-execute-subtree-by-id
 
-* Neurosys Module
+* COMMENT Neurosys Module
 :PROPERTIES:
 :header-args: :tangle ./modules/personal/neurosys/config.el
 :END:

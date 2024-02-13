@@ -1,6 +1,6 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(doom! :input
+  (doom! :input
 
 	 :personal
 	 neurosys
@@ -29,31 +29,31 @@
 	 syntax
 
 	 :tools
-	 (eval +overlay)
-	 direnv
-	 docker
-	 (magit +forge)
-	 lsp
-	 pass
-	 pdf
+;	 (eval +overlay)
+;	 direnv
+;	 docker
+       magit
+;	 lsp
+       pass
+;	 pdf
 	 ; tree-sitter
 
 	 :lang
 	 ;; cc
 	 ; common-lisp
-	 data
+;	 data
 	 emacs-lisp
-	 go
+;	 go
 	 ;; javascript
-	 (haskell +dante)
+;	 (haskell +dante)
 	 ;; (julia +lsp)
 	 ; (latex +latexmk +cdlatex)
-	 markdown
-	 nix
+;	 markdown
+;	 nix
 	 (org +roam2)
-	 python
-	 rest
-	 (rust +lsp)
+;	 python
+;	 rest
+	 rust
 	 sh
 	 yaml
 

@@ -365,7 +365,17 @@
       ;;   ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
-      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
+      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: ")
+
+      org-priority-highest 1
+      org-priority-lowest 5
+      org-priority-default 3)
+
+(customize-set-variable 'org-priority-faces '((49 . error)
+                                              (50 . warning)
+                                              (51 . success)
+                                              (52 . success)
+                                              (53 . success)))
 
 (defun my/org-agenda ()
   (interactive)
@@ -379,11 +389,15 @@
           (:name "WIP"
            :todo "[-]")
           (:name "High Priority"
-           :priority "A")
+           :priority "1")
           (:name "Med Priority"
-           :priority "B")
+           :priority "2")
           (:name "Low Priority"
-           :priority "C")
+           :priority "3")
+          (:name "Lower Priority"
+           :priority "4")
+          (:name "Lowest Priority"
+           :priority "5")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
@@ -698,6 +712,17 @@
 
 ;; prevents horizontal splits when split-window-sensibly is used
 (setq split-width-threshold nil)
+
+(unless (getenv "EMACS_NON_WORK_MODE")
+  (load-file (concat my/home-dir "work/w/emacs/work-config.el"))
+  (require 'work-config))
+
+(when (eq system-type 'darwin)
+  ;; Use Command as Meta
+  (setq mac-command-modifier 'meta)
+  ;; Optional: Use Option as Super if you want
+  (setq mac-option-modifier 'super))
+
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))

@@ -1463,7 +1463,8 @@ to ace-window.
 
 #+RESULTS:
 : (file . ~/Sync/resume/resume.tex)
-** COMMENT Load Untracked Elisp (work-specific)
+
+** Load Untracked Elisp (work-specific)
 :PROPERTIES:
 :ID:       52472b2d-ec59-4629-88c6-83dcab02b49e
 :END:
@@ -1472,7 +1473,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 #+begin_src emacs-lisp
 (unless (getenv "EMACS_NON_WORK_MODE")
-  (load-file "/home/dan/Work/w/emacs/work-config.el")
+  (load-file (concat my/home-dir "work/w/emacs/work-config.el"))
   (require 'work-config))
 #+end_src
 

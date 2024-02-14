@@ -839,7 +839,17 @@ The =org-capture-templates= templates used here:
         ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
-      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
+      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: ")
+
+      org-priority-highest 1
+      org-priority-lowest 5
+      org-priority-default 3)
+
+(customize-set-variable 'org-priority-faces '((49 . error)
+                                              (50 . warning)
+                                              (51 . success)
+                                              (52 . success)
+                                              (53 . success)))
 
 (defun my/org-agenda ()
   (interactive)
@@ -860,11 +870,15 @@ The =org-capture-templates= templates used here:
           (:name "WIP"
            :todo "[-]")
           (:name "High Priority"
-           :priority "A")
+           :priority "1")
           (:name "Med Priority"
-           :priority "B")
+           :priority "2")
           (:name "Low Priority"
-           :priority "C")
+           :priority "3")
+          (:name "Lower Priority"
+           :priority "4")
+          (:name "Lowest Priority"
+           :priority "5")
           (:name "Today"
            ;; :time-grid t
            :scheduled today

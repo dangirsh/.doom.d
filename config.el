@@ -360,9 +360,10 @@
                                  (todo . " %i %b")
                                  (tags . " %i %-12:c %b")
                                  (search . " %i %-12:c %b"))
-      ;; org-agenda-category-icon-alist
-      ;; `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-      ;;   ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
+
+      org-agenda-category-icon-alist
+      `(("Personal" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center)
+        ("Incoming" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
       org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: ")
@@ -524,16 +525,8 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
-(after! rustic-flycheck
-  (customize-set-variable 'rustic-flycheck-clippy-params-stable
-                          (concat rustic-flycheck-clippy-params-stable " --target x86_64-unknown-linux-gnu"))
-  (add-to-list 'flycheck-checkers 'rustic-clippy)
-  (delete 'rust-clippy flycheck-checkers)
-  (delete 'rust-cargo flycheck-checkers)
-  (delete 'rust flycheck-checkers))
-
-(after! lsp-rust
-  (setq lsp-rust-analyzer-cargo-watch-command "check"))
+(setq rustic-lsp-client 'eglot)
+(add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -546,10 +539,10 @@
         "C-c C-c q" #'lsp-workspace-restart
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
-  (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
-  (setq lsp-rust-analyzer-server-display-inlay-hints nil)
+  ;; (setq lsp-rust-analyzer-server-display-inlay-hints nil)
   ;; (customize-set-variable 'lsp-ui-doc-enable nil)
   ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
   )
@@ -712,6 +705,11 @@
 
 ;; prevents horizontal splits when split-window-sensibly is used
 (setq split-width-threshold nil)
+
+(delete 'register-alist savehist-additional-variables)
+
+(set-register ?h '(file . "~/Sync/home/config.org"))
+(set-register ?r '(file . "~/Sync/resume/resume.tex"))
 
 (unless (getenv "EMACS_NON_WORK_MODE")
   (load-file (concat my/home-dir "work/w/emacs/work-config.el"))

@@ -130,7 +130,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
        magit
 ;	 lsp
        pass
-;	 pdf
+       pdf
 	 ; tree-sitter
 
 	 :lang

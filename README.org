@@ -71,6 +71,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#dired][Dired]]
   - [[#window-management][Window Management]]
     - [[#avoiding-automatic-horizontal-splits][Avoiding Automatic Horizontal Splits]]
+  - [[#registers][Registers]]
   - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#misc][Misc]]
@@ -1464,7 +1465,7 @@ to ace-window.
 (use-package! burly)
 #+end_src
 
-** COMMENT Registers
+** Registers
 :PROPERTIES:
 :ID:       aebbfcb7-7c2c-4e95-a21d-b9f3d9491392
 :END:

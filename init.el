@@ -33,9 +33,9 @@
 ;	 direnv
 ;	 docker
        magit
-;	 lsp
+       (lsp +eglot)
        pass
-;	 pdf
+       pdf
 	 ; tree-sitter
 
 	 :lang

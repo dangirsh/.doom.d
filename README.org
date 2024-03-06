@@ -58,7 +58,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
   - [[#rust][Rust]]
-    - [[#only-checklint-on-host-target-arch][Only check/lint on host target arch]]
     - [[#rustic][Rustic]]
   - [[#selectrum-etc][Selectrum etc...]]
     - [[#consult][Consult]]
@@ -1133,7 +1132,7 @@ To eventually make everything else in this project obsolete...
 :ID:       81b0ce9d-0850-4d9b-9c37-75d8f4b0ae51
 :END:
 
-*** Only check/lint on host target arch
+*** COMMENT Only check/lint on host target arch
 :PROPERTIES:
 :ID:       4db4d556-d6a1-4819-8d8a-6c2d9cfb985d
 :END:

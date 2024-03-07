@@ -1,6 +1,6 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(doom! :input
+  (doom! :input
 
 	 :personal
 	 neurosys
@@ -29,13 +29,13 @@
 	 syntax
 
 	 :tools
-	 (eval +overlay)
-	 direnv
-	 docker
-	 (magit +forge)
-	 lsp
-	 pass
-	 pdf
+;	 (eval +overlay)
+;	 direnv
+;	 docker
+       magit
+       (lsp +eglot)
+       pass
+       pdf
 	 ; tree-sitter
 
 	 :lang

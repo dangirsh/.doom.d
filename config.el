@@ -397,11 +397,21 @@
                                  (tags . " %i %-12:c %b")
                                  (search . " %i %-12:c %b"))
       org-agenda-category-icon-alist
-      `(("Personal" ,(list (all-the-icons-material "home" :height 1.2)) nil nil :ascent center)
-        ("Incoming" ,(list (all-the-icons-material "move_to_inbox" :height 1.2)) nil nil :ascent center))
+      `(("Personal" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center)
+        ("Incoming" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
-      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: "))
+      org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: ")
+
+      org-priority-highest 1
+      org-priority-lowest 5
+      org-priority-default 3)
+
+(customize-set-variable 'org-priority-faces '((49 . error)
+                                              (50 . warning)
+                                              (51 . success)
+                                              (52 . success)
+                                              (53 . success)))
 
 (defun my/org-agenda ()
   (interactive)
@@ -415,11 +425,15 @@
           (:name "WIP"
            :todo "[-]")
           (:name "High Priority"
-           :priority "A")
+           :priority "1")
           (:name "Med Priority"
-           :priority "B")
+           :priority "2")
           (:name "Low Priority"
-           :priority "C")
+           :priority "3")
+          (:name "Lower Priority"
+           :priority "4")
+          (:name "Lowest Priority"
+           :priority "5")
           (:name "Today"
            ;; :time-grid t
            :scheduled today
@@ -546,16 +560,8 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
-(after! rustic-flycheck
-  (customize-set-variable 'rustic-flycheck-clippy-params-stable
-                          (concat rustic-flycheck-clippy-params-stable " --target x86_64-unknown-linux-gnu"))
-  (add-to-list 'flycheck-checkers 'rustic-clippy)
-  (delete 'rust-clippy flycheck-checkers)
-  (delete 'rust-cargo flycheck-checkers)
-  (delete 'rust flycheck-checkers))
-
-(after! lsp-rust
-  (setq lsp-rust-analyzer-cargo-watch-command "check"))
+(setq rustic-lsp-client 'eglot)
+(add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -568,10 +574,10 @@
         "C-c C-c q" #'lsp-workspace-restart
         "C-c C-c Q" #'lsp-workspace-shutdown
         "C-c C-c s" #'lsp-rust-analyzer-status)
-  (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
-  (setq lsp-rust-analyzer-server-display-inlay-hints nil)
+  ;; (setq lsp-rust-analyzer-server-display-inlay-hints nil)
   ;; (customize-set-variable 'lsp-ui-doc-enable nil)
   ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
   )

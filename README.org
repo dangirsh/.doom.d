@@ -1,6 +1,6 @@
 #+TITLE: Doom Configuration
 #+author: Dan Girshovich
-#+PROPERTY: header-args :tangle-mode (identity #o444)
+#+PROPERTY: header-args
 
 * About
 

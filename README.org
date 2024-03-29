@@ -58,7 +58,6 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
   - [[#rust][Rust]]
-    - [[#rustic][Rustic]]
   - [[#selectrum-etc][Selectrum etc...]]
     - [[#consult][Consult]]
     - [[#marginalia][Marginalia]]
@@ -155,7 +154,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 (org +roam2)
 	 python
 	 rest
-	 (rust +lsp)
+       (rust +lsp)
 	 sh
 	 yaml
 
@@ -1135,7 +1134,7 @@ To eventually make everything else in this project obsolete...
 :ID:       81b0ce9d-0850-4d9b-9c37-75d8f4b0ae51
 :END:
 
-*** COMMENT Only check/lint on host target arch
+** COMMENT Only check/lint on host target arch
 :PROPERTIES:
 :ID:       4db4d556-d6a1-4819-8d8a-6c2d9cfb985d
 :END:
@@ -1166,7 +1165,6 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
 
 #+begin_src emacs-lisp
 (setq rustic-lsp-client 'eglot)
-(add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
 
 (after! rustic
   (map! :map rustic-mode-map
@@ -1181,11 +1179,16 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
         "C-c C-c s" #'lsp-rust-analyzer-status)
   ;; (setq lsp-enable-symbol-highlighting nil)
   (setq rustic-format-trigger nil)
+
   (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
   ;; (setq lsp-rust-analyzer-server-display-inlay-hints nil)
   ;; (customize-set-variable 'lsp-ui-doc-enable nil)
   ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
   )
+
+(after! eglot
+  (setq eglot-inlay-hints-mode nil)
+  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1))))
 
 
 (defun my/rustic-mode-hook ()

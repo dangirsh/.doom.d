@@ -131,16 +131,16 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 
 	 :tools
 ;	 (eval +overlay)
-;	 direnv
-;	 docker
-       magit
-       (lsp +eglot)
-       pass
-       pdf
-	 ; tree-sitter
+         direnv
+         docker
+         magit
+         (lsp +eglot)
+         pass
+         pdf
+         tree-sitter
 
 	 :lang
-	 ;; cc
+	 cc
 	 ; common-lisp
 	 data
 	 emacs-lisp
@@ -448,7 +448,7 @@ Set brightness by writing directly to system brightness file.
 
 (defun my/get-brightness ()
   (* my/brightness-step (round (string-to-number
-                                (shell-command-to-string "xbacklight -get"))
+                                (shell-command-to-string "light -G"))
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
@@ -459,7 +459,7 @@ Set brightness by writing directly to system brightness file.
                (t level))))
     (save-window-excursion
       (shell-command
-       (format "xbacklight -set %s &" safe-level) nil nil))))
+       (format "sudo light -S %s" safe-level) nil nil))))
 
 (defun my/brightness-step-change (delta)
   (my/set-brightness (+ delta (my/get-brightness))))

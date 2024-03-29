@@ -162,7 +162,7 @@
 
 (defun my/get-brightness ()
   (* my/brightness-step (round (string-to-number
-                                (shell-command-to-string "xbacklight -get"))
+                                (shell-command-to-string "light -G"))
                                my/brightness-step)))
 
 (defun my/set-brightness (level)
@@ -173,7 +173,7 @@
                (t level))))
     (save-window-excursion
       (shell-command
-       (format "xbacklight -set %s &" safe-level) nil nil))))
+       (format "sudo light -S %s" safe-level) nil nil))))
 
 (defun my/brightness-step-change (delta)
   (my/set-brightness (+ delta (my/get-brightness))))
@@ -559,37 +559,6 @@
       (setq undo-tree-visualizer-diff t))
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
-
-(setq rustic-lsp-client 'eglot)
-(add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
-
-(after! rustic
-  (map! :map rustic-mode-map
-        "M-j" #'lsp-ui-imenu
-        "M-?" #'lsp-find-references
-        "C-c C-c C-c" #'rustic-compile
-        "C-c C-c l" #'flycheck-list-errors
-        "C-c C-c a" #'lsp-execute-code-action
-        "C-c C-c r" #'lsp-rename
-        "C-c C-c q" #'lsp-workspace-restart
-        "C-c C-c Q" #'lsp-workspace-shutdown
-        "C-c C-c s" #'lsp-rust-analyzer-status)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  (setq rustic-format-trigger nil)
-  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
-  ;; (setq lsp-rust-analyzer-server-display-inlay-hints nil)
-  ;; (customize-set-variable 'lsp-ui-doc-enable nil)
-  ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
-  )
-
-
-(defun my/rustic-mode-hook ()
-  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
-  ;; save rust buffers that are not file visiting. Once
-  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-  ;; no longer be necessary.
-  (when buffer-file-name
-    (setq-local buffer-save-without-query t)))
 
 (use-package! selectrum
   :config

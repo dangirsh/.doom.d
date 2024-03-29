@@ -30,16 +30,16 @@
 
 	 :tools
 ;	 (eval +overlay)
-;	 direnv
-;	 docker
-       magit
-       (lsp +eglot)
-       pass
-       pdf
-	 ; tree-sitter
+         direnv
+         docker
+         magit
+         (lsp +eglot)
+         pass
+         pdf
+         tree-sitter
 
 	 :lang
-	 ;; cc
+	 cc
 	 ; common-lisp
 	 data
 	 emacs-lisp
@@ -53,7 +53,7 @@
 	 (org +roam2)
 	 python
 	 rest
-	 (rust +lsp)
+       (rust +lsp)
 	 sh
 	 yaml
 

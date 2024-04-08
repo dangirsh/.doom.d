@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 28)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -66,7 +66,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.05)
+        key-chord-two-keys-delay 0.06)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -89,10 +89,8 @@
   (key-chord-define-global "gh" 'send-doom-local-leader)
 
   (setq dk-keymap (make-sparse-keymap))
-  (setq sl-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
-  (key-chord-define-global "sl" sl-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -100,9 +98,6 @@
 
   (defun add-to-dk-keymap (bindings)
     (add-to-keymap dk-keymap bindings))
-
-  (defun add-to-sl-keymap (bindings)
-    (add-to-keymap sl-keymap bindings))
 
   (add-to-dk-keymap
    '(("." . jump-to-register)
@@ -398,7 +393,7 @@
                                  (search . " %i %-12:c %b"))
       org-agenda-category-icon-alist
       `(("Personal" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center)
-        ("Incoming" ,(list (nerd-icons-mdicon "nf-md-home" :height 1.2)) nil nil :ascent center))
+        ("Incoming" ,(list (nerd-icons-mdicon "nf-md-inbox_arrow_down" :height 1.2)) nil nil :ascent center))
       org-agenda-todo-keyword-format "%-1s"
       org-agenda-scheduled-leaders '("" "")
       org-agenda-deadline-leaders '("Deadline:  " "In %3d d.: " "%2d d. ago: ")
@@ -560,6 +555,13 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
+(setq rustic-lsp-client 'eglot)
+
+(add-hook 'eglot-managed-mode-hook
+          (lambda ()
+            (flymake-mode -1)
+            (eglot-inlay-hints-mode -1)))
+
 (use-package! selectrum
   :config
   (selectrum-mode +1)
@@ -678,14 +680,6 @@
   (setq git-commit-finish-query-functions nil)
   (setq magit-visit-ref-create 1)
   (setq magit-revision-show-gravatars nil))
-
-(after! (magit key-chord)
-  (add-to-sl-keymap
-   '(("k" . magit-dispatch-popup)
-     ("s" . magit-status)
-     ("o" . magit-log)
-     ("u" . magit-submodule-update)
-     ("l" . magit-show-refs-head))))
 
 (setq dired-omit-extensions nil)
 

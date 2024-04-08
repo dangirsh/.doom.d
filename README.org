@@ -365,10 +365,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "gh" 'send-doom-local-leader)
 
   (setq dk-keymap (make-sparse-keymap))
-  (setq sl-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
-  (key-chord-define-global "sl" sl-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -376,9 +374,6 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
   (defun add-to-dk-keymap (bindings)
     (add-to-keymap dk-keymap bindings))
-
-  (defun add-to-sl-keymap (bindings)
-    (add-to-keymap sl-keymap bindings))
 
   (add-to-dk-keymap
    '(("." . jump-to-register)
@@ -1396,14 +1391,6 @@ Stunningly useful.
   (setq git-commit-finish-query-functions nil)
   (setq magit-visit-ref-create 1)
   (setq magit-revision-show-gravatars nil))
-
-(after! (magit key-chord)
-  (add-to-sl-keymap
-   '(("k" . magit-dispatch-popup)
-     ("s" . magit-status)
-     ("o" . magit-log)
-     ("u" . magit-submodule-update)
-     ("l" . magit-show-refs-head))))
 #+END_SRC
 
 ** Dired

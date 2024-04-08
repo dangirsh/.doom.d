@@ -58,6 +58,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
   - [[#rust][Rust]]
+    - [[#rustic][Rustic]]
   - [[#selectrum-etc][Selectrum etc...]]
     - [[#consult][Consult]]
     - [[#marginalia][Marginalia]]
@@ -133,6 +134,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 ;	 (eval +overlay)
          direnv
          docker
+         lookup
          magit
          (lsp +eglot)
          pass
@@ -1129,7 +1131,7 @@ To eventually make everything else in this project obsolete...
 :ID:       81b0ce9d-0850-4d9b-9c37-75d8f4b0ae51
 :END:
 
-** COMMENT Only check/lint on host target arch
+*** COMMENT Only check/lint on host target arch
 :PROPERTIES:
 :ID:       4db4d556-d6a1-4819-8d8a-6c2d9cfb985d
 :END:
@@ -1161,40 +1163,10 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
 #+begin_src emacs-lisp
 (setq rustic-lsp-client 'eglot)
 
-(after! rustic
-  (map! :map rustic-mode-map
-        "M-j" #'lsp-ui-imenu
-        "M-?" #'lsp-find-references
-        "C-c C-c C-c" #'rustic-compile
-        "C-c C-c l" #'flycheck-list-errors
-        "C-c C-c a" #'lsp-execute-code-action
-        "C-c C-c r" #'lsp-rename
-        "C-c C-c q" #'lsp-workspace-restart
-        "C-c C-c Q" #'lsp-workspace-shutdown
-        "C-c C-c s" #'lsp-rust-analyzer-status)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  (setq rustic-format-trigger nil)
-
-  (add-hook 'rustic-mode-hook 'my/rustic-mode-hook)
-  ;; (setq lsp-rust-analyzer-server-display-inlay-hints nil)
-  ;; (customize-set-variable 'lsp-ui-doc-enable nil)
-  ;; (add-hook 'lsp-ui-mode-hook #'(lambda () (lsp-ui-sideline-enable nil)))
-  )
-
-(after! eglot
-  (setq eglot-inlay-hints-mode nil)
-  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1))))
-
-
-(defun my/rustic-mode-hook ()
-  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
-  ;; save rust buffers that are not file visiting. Once
-  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-  ;; no longer be necessary.
-  (when buffer-file-name
-    (setq-local buffer-save-without-query t)))
-
-
+(add-hook 'eglot-managed-mode-hook
+          (lambda ()
+            (flymake-mode -1)
+            (eglot-inlay-hints-mode -1)))
 #+end_src
 
 
@@ -1204,13 +1176,6 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
 **** Other deps
 
 - cargo-edit
-
-*** COMMENT Language Server
-
-#+begin_example sh :results verbatim
-sudo curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-linux -o /usr/local/bin/rust-analyzer
-sudo chmod +x /usr/local/bin/rust-analyzer
-#+end_example
 
 ** Selectrum etc...
 :PROPERTIES:

@@ -32,6 +32,7 @@
 ;	 (eval +overlay)
          direnv
          docker
+         lookup
          magit
          (lsp +eglot)
          pass

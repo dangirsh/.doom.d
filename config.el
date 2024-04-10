@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 38)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -99,7 +99,7 @@
   (defun add-to-dk-keymap (bindings)
     (add-to-keymap dk-keymap bindings))
 
-  (add-to-dk-keymap
+ (add-to-dk-keymap
    '(("." . jump-to-register)
      ("/" . org-recoll-search)
      ("<SPC>" . rgrep)
@@ -108,7 +108,8 @@
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
      ("k" . doom/kill-this-buffer-in-all-windows)
-     ("m" . my/mathpix-screenshot-to-clipboard)
+     ("l" . magit-show-refs-head)
+     ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)
      ("p" . my/publish-dangirsh.org)
@@ -130,13 +131,7 @@
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
 
-  ;; (key-chord-define-global "hh" 'helpful-at-point)
-  (key-chord-define-global "hk" 'helpful-key)
-  (key-chord-define-global "hv" 'helpful-variable)
-
-  ;; no bueno: e.g. "pathfinder", "highfidelity"
-  ;; (key-chord-define-global "hf" 'helpful-function)
-
+  
   (key-chord-define-global "vn" 'split-window-vertically-and-switch)
   (key-chord-define-global "vm" 'split-window-vertically-and-switch) ; ergodox
   (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
@@ -147,9 +142,7 @@
   (key-chord-define-global "kl" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xf" 'ffap)
-
-  (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
+  (key-chord-define-global "xf" 'ffap))
 
 (setq my/brightness-min 1)
 (setq my/brightness-max 100)
@@ -640,7 +633,6 @@
    ;; Project file search.
    ("h" . consult-projectile)
    ("i" . consult-imenu)
-   ("l" . consult-locate)
    ("j" . consult-buffer)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)

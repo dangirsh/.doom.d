@@ -386,7 +386,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
      ("k" . doom/kill-this-buffer-in-all-windows)
-     ("m" . my/mathpix-screenshot-to-clipboard)
+     ("l" . magit-show-refs-head)
+     ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)
      ("p" . my/publish-dangirsh.org)
@@ -408,13 +409,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
 
-  ;; (key-chord-define-global "hh" 'helpful-at-point)
-  (key-chord-define-global "hk" 'helpful-key)
-  (key-chord-define-global "hv" 'helpful-variable)
-
-  ;; no bueno: e.g. "pathfinder", "highfidelity"
-  ;; (key-chord-define-global "hf" 'helpful-function)
-
+  
   (key-chord-define-global "vn" 'split-window-vertically-and-switch)
   (key-chord-define-global "vm" 'split-window-vertically-and-switch) ; ergodox
   (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
@@ -425,9 +420,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "kl" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xf" 'ffap)
-
-  (key-chord-define-global "jp" 'my/insert-jupyter-python-block))
+  (key-chord-define-global "xf" 'ffap))
 #+end_src
 
 ** Hardware Settings
@@ -1270,7 +1263,6 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
    ;; Project file search.
    ("h" . consult-projectile)
    ("i" . consult-imenu)
-   ("l" . consult-locate)
    ("j" . consult-buffer)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)

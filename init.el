@@ -48,7 +48,7 @@
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)
-	 ; (latex +latexmk +cdlatex)
+	 (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)

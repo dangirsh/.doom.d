@@ -369,6 +369,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
+  ;; for voyager, the dk chord is mapped to f13/XF86Tools
+  (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)

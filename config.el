@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 38)
+ doom-font (font-spec :family "Iosevka" :size 36)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -91,6 +91,8 @@
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
+  ;; for voyager, the dk chord is mapped to f13/XF86Tools
+  (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -99,7 +101,7 @@
   (defun add-to-dk-keymap (bindings)
     (add-to-keymap dk-keymap bindings))
 
- (add-to-dk-keymap
+  (add-to-dk-keymap
    '(("." . jump-to-register)
      ("/" . org-recoll-search)
      ("<SPC>" . rgrep)
@@ -131,7 +133,7 @@
   (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
 
-  
+
   (key-chord-define-global "vn" 'split-window-vertically-and-switch)
   (key-chord-define-global "vm" 'split-window-vertically-and-switch) ; ergodox
   (key-chord-define-global "hj" 'split-window-horizontally-and-switch)

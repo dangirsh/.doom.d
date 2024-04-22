@@ -150,7 +150,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)
-	 ; (latex +latexmk +cdlatex)
+	 (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)

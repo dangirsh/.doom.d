@@ -33,34 +33,12 @@
 
 (use-package! doom-themes
   :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
-        doom-themes-enable-italic t)   ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-vibrant t)
-  ;; (load-theme 'leuven t)
-  ;; (load-theme 'doom-dark+ t)
-  ;; (load-theme 'doom-solarized-light t)
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
   (load-theme 'doom-one t)
-  ;; (load-theme 'doom-one-light t)
-  ;; (load-theme 'doom-nord-light t)
-
-  ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
-
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
-
-;; Waiting on https://github.com/hlissner/emacs-doom-themes/issues/252
-;; Currently, some things like italics and some links in org fail to render correctly.
-;; (use-package! poet-theme
-;;   :config
-;;   (load-theme 'poet))
-
-;; (use-package! almost-mono-themes
-;;   :config
-;;   ;; (load-theme 'almost-mono-black t)
-;;   (load-theme 'almost-mono-white t))
 
 (use-package! key-chord
   :config
@@ -73,7 +51,8 @@
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
 
-(defun send-doom-leader ()  (interactive)
+(defun send-doom-leader ()
+  (interactive)
   (simulate-seq "\C-c"))
 
 (setq doom-localleader-alt-key "M-c")
@@ -83,16 +62,17 @@
   (simulate-seq "\M-c"))
 
 (after! key-chord
+    ;; My external keyboard (Voyager) supports chords in the firmware
+    ;; For some cases, I find it less error prone to use these instead of
+    ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
 
   (key-chord-define-global "pl" 'send-doom-leader)
   (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
-  (global-set-key (kbd "<XF86Launch8>") 'send-doom-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "fu" dk-keymap)
-  ;; for voyager, the dk chord is mapped to f13/XF86Tools
   (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
@@ -118,7 +98,6 @@
      ("w" . google-this-noconfirm)))
 
   (key-chord-define-global ",." 'end-of-buffer)
-  ;; FIXME: accidentally triggered too often
   (key-chord-define-global "xc" 'beginning-of-buffer)
 
   (key-chord-define-global "qw" 'delete-window)
@@ -127,7 +106,6 @@
 
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
-
 
   (key-chord-define-global "vk" 'split-window-vertically-and-switch)
   (key-chord-define-global "vh" 'split-window-vertically-and-switch) ; ergodox
@@ -140,46 +118,6 @@
 
   (key-chord-define-global "xx" 'execute-extended-command)
   (key-chord-define-global "ct" 'ffap))
-
-(setq my/brightness-min 1)
-(setq my/brightness-max 100)
-(setq my/brightness-step 5)
-
-(defun my/get-brightness ()
-  (* my/brightness-step (round (string-to-number
-                                (shell-command-to-string "light -G"))
-                               my/brightness-step)))
-
-(defun my/set-brightness (level)
-  (interactive "nBrightness level: ")
-  (let ((safe-level
-         (cond ((< level my/brightness-min) my/brightness-min)
-               ((> level my/brightness-max) my/brightness-max)
-               (t level))))
-    (save-window-excursion
-      (shell-command
-       (format "sudo light -S %s" safe-level) nil nil))))
-
-(defun my/brightness-step-change (delta)
-  (my/set-brightness (+ delta (my/get-brightness))))
-
-(defun my/brightness-increase ()
-  (interactive)
-  (my/brightness-step-change my/brightness-step))
-
-(defun my/brightness-decrease ()
-  (interactive)
-  (my/brightness-step-change (- my/brightness-step)))
-
-(map! "<XF86MonBrightnessDown>" 'my/brightness-decrease)
-(map! "<XF86MonBrightnessUp>" 'my/brightness-increase)
-
-
-(defun my/set-brightness-lg-5k (level)
-  (interactive "nBrightness level: ")
-  (save-window-excursion
-    (shell-command
-     (format "echo \"0i%s\n\" | sudo /home/dan/repos/LG-ultrafine-brightness/build/LG_ultrafine_brightness" level) nil nil)))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -194,7 +132,6 @@
         org-return-follows-link t
         org-confirm-elisp-link-function nil
         org-confirm-shell-link-function nil
-        org-use-speed-commands t
         org-catch-invisible-edits 'show
         ;; Use with consel-org-goto (gh .)
         org-goto-interface 'outline-path-completion)
@@ -208,25 +145,7 @@
   ;; FIXME: Don't know why this isn't loaded automatically...
   (require 'ob-async)
 
-  ;; Clear Doom's default templates
   (setq org-capture-templates '())
-
-  (add-to-list 'org-capture-templates `("l" "Listen" entry (file ,(concat org-directory "org-roam2/orgzly/listen.org"))
-                                        "* TODO %?\n%i"))
-  (add-to-list 'org-capture-templates `("i" "Incoming" entry (file ,(concat org-directory "org-roam2/orgzly/incoming.org"))
-                                        "* %?\n%i"))
-
-  ;; (add-to-list 'org-latex-packages-alist "\\usepackage{braket}")
-
-  ;; http://kitchingroup.cheme.cmu.edu/blog/2015/01/04/Redirecting-stderr-in-org-mode-shell-blocks/
-  ;; NOTE: This will affect (break) tangled output. Use directly on top of code blocks when needed instead.
-  ;; TODO: Figure out how to keep this without adding it to tangled output.
-  ;; (setq org-babel-default-header-args:sh
-  ;;       '((:prologue . "exec 2>&1") (:epilogue . ":")))
-
-  (setq org-babel-default-header-args:jupyter-julia '((:kernel . "julia-1.6")
-                                                      (:display . "text/plain")
-                                                      (:async . "yes")))
 
   (setq org-confirm-babel-evaluate nil
         org-use-property-inheritance t
@@ -254,24 +173,14 @@
         org-src-ask-before-returning-to-edit-buffer nil
         org-insert-heading-respect-content nil)
 
-  ;; (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  ;; (add-hook 'org-babel-after-execute-hook 'org-toggle-latex-fragment 'append)
-
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-  (add-to-list 'org-structure-template-alist '("jl" . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist '("r" . "src rust"))
   (add-to-list 'org-structure-template-alist '("py" . "src jupyter-python"))
 
   (setq org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps nil
         org-refile-allow-creating-parent-nodes 'confirm)
-
-  ;; (setq org-format-latex-options
-  ;;       (quote (:foreground default
-  ;;               :background default
-  ;;               :scale 2.0
-  ;;               :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
 
   ;; Colorize org babel output. Without this color codes are left in the output.
   (defun my/display-ansi-colors ()
@@ -460,15 +369,6 @@
 
 (use-package! gptel)
 
-;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
-
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -484,24 +384,6 @@
          ("'" . nil)             ; leave tick behaviour alone
          ("M-n" . nil)
          ("C-M-m" . nil)))
-
-;; (use-package! smartparens
-;;   :init
-;;   (map! :map smartparens-mode-map
-;;         "C-M-f" #'sp-forward-sexp
-;;         "C-M-b" #'sp-backward-sexp
-;;         "C-M-u" #'sp-backward-up-sexp
-;;         "C-M-d" #'sp-down-sexp
-;;         "C-M-p" #'sp-backward-down-sexp
-;;         "C-M-n" #'sp-up-sexp
-;;         "C-M-s" #'sp-splice-sexp
-;;         ;; conflicts with mc
-;;         ;; "C-)" #'sp-forward-slurp-sexp
-;;         "C-}" #'sp-forward-barf-sexp
-;;         ;; conflicts with mc
-;;         ;; "C-(" #'sp-backward-slurp-sexp
-;;         "C-M-)" #'sp-backward-slurp-sexp
-;;         "C-M-)" #'sp-backward-barf-sexp))
 
 (use-package! wrap-region
   :hook
@@ -534,11 +416,6 @@
          ("C-M->" . mc/skip-to-next-like-this)
          ("C-(" . mc/skip-to-previous-like-this)
          ("C-M-<" . mc/skip-to-previous-like-this)))
-
-;; (use-package! iedit
-;;   :init
-;;   (map! "C-;" 'company-complete)
-;;   (map! "M-i" 'iedit-mode))
 
 (use-package! undo-tree
   :init
@@ -573,6 +450,7 @@
 
 (use-package! consult
   :bind
+  ;; swiper muscle-memory
   ("M-s l" . consult-line))
 
 (add-to-dk-keymap
@@ -585,6 +463,12 @@
    ("l" . consult-buffer)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)
+
+(use-package! ctrlf
+  :init
+  (ctrlf-mode +1))
+
+(use-package! deadgrep)
 
 (use-package! smartscan
   :init (global-smartscan-mode 1)

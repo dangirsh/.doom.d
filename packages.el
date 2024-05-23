@@ -3,8 +3,6 @@
 (package! ace-window)
 (package! aggressive-indent)
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! ctrlf)
 (package! deadgrep)
 (package! dired-rsync)

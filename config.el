@@ -73,8 +73,7 @@
 (defun simulate-seq (seq)
   (setq unread-command-events (listify-key-sequence seq)))
 
-(defun send-doom-leader ()
-  (interactive)
+(defun send-doom-leader ()  (interactive)
   (simulate-seq "\C-c"))
 
 (setq doom-localleader-alt-key "M-c")
@@ -85,16 +84,13 @@
 
 (after! key-chord
 
-  (key-chord-define-global "fj" 'send-doom-leader)
   (key-chord-define-global "pl" 'send-doom-leader)
   (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
-  (key-chord-define-global "gh" 'send-doom-local-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
   (global-set-key (kbd "<XF86Launch8>") 'send-doom-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
-  (key-chord-define-global "dk" dk-keymap)
   (key-chord-define-global "fu" dk-keymap)
   ;; for voyager, the dk chord is mapped to f13/XF86Tools
   (global-set-key (kbd "<XF86Tools>") dk-keymap)
@@ -108,7 +104,6 @@
 
   (add-to-dk-keymap
    '(("." . jump-to-register)
-     ("/" . org-recoll-search)
      ("<SPC>" . rgrep)
      ("a" . my/org-agenda)
      ("b" . my/set-brightness)
@@ -117,53 +112,34 @@
      ("k" . doom/kill-this-buffer-in-all-windows)
      ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
-     ("o" . ibuffer)
-     ("p" . my/publish-dangirsh.org)
      ("s" . save-buffer)
      ("t" . +vterm/here)
-     ("T" . google-translate-at-point)
      ("v" . neurosys/open-config-file)
-     ("w" . google-this-noconfirm)
-     ("x" . sp-splice-sexp)))
+     ("w" . google-this-noconfirm)))
 
   (key-chord-define-global ",." 'end-of-buffer)
-  (key-chord-define-global "./" 'end-of-buffer)
   ;; FIXME: accidentally triggered too often
-  (key-chord-define-global "zx" 'beginning-of-buffer)
   (key-chord-define-global "xc" 'beginning-of-buffer)
 
   (key-chord-define-global "qw" 'delete-window)
-  (key-chord-define-global "qp" 'delete-other-windows)
   (key-chord-define-global "q;" 'delete-other-windows)
   (key-chord-define-global ",," 'doom/open-scratch-buffer)
 
-  (key-chord-define-global "fk" 'other-window)
   (key-chord-define-global "pu" 'other-window)
-  (global-set-key (kbd "<XF86Launch9>") 'other-window)
-  (key-chord-define-global "jd" 'rev-other-window)
   (key-chord-define-global "fl" 'rev-other-window)
-  (global-set-key (kbd "<XF86Launch8>") 'rev-other-window)
 
-  (key-chord-define-global "vn" 'split-window-vertically-and-switch)
+
   (key-chord-define-global "vk" 'split-window-vertically-and-switch)
-  (global-set-key (kbd "<XF86Launch5>") 'split-window-vertically-and-switch)
-
-  (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+  (key-chord-define-global "vh" 'split-window-vertically-and-switch) ; ergodox
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
-  (global-set-key (kbd "<XF86Launch6>") 'split-window-horizontally-and-switch)
 
-  (key-chord-define-global "jm" 'my/duplicate-line-or-region)
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
-  (key-chord-define-global "fv" 'comment-line)
-  (key-chord-define-global "tv" 'comment-line)
+  (key-chord-define-global "td" 'comment-line)
 
-  (key-chord-define-global "kl" 'er/expand-region)
   (key-chord-define-global "uy" 'er/expand-region)
-  (global-set-key (kbd "<XF86AudioMicMute>") 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xf" 'ffap)
-  (key-chord-define-global "xt" 'ffap))
+  (key-chord-define-global "ct" 'ffap))
 
 (setq my/brightness-min 1)
 (setq my/brightness-max 100)

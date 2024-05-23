@@ -57,12 +57,12 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#structure-editing][Structure Editing]]
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
+    - [[#toppy][toppy]]
   - [[#rust][Rust]]
     - [[#rustic][Rustic]]
-  - [[#selectrum-etc][Selectrum etc...]]
-    - [[#consult][Consult]]
-    - [[#marginalia][Marginalia]]
+  - [[#consult-bindings][Consult Bindings]]
   - [[#search-utilities][Search Utilities]]
+    - [[#ctrlf][CtrlF]]
     - [[#better-grep][Better Grep]]
     - [[#scanning-occurances-within-a-buffer][Scanning occurances within a buffer]]
   - [[#version-control][Version Control]]
@@ -108,7 +108,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 neurosys
 
 	 :completion
-	 (company +childframe)
+	 (vertico +childframe +icons)
 
 	 :ui
 	 doom
@@ -1172,119 +1172,44 @@ Config thanks to: [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Con
 
 - cargo-edit
 
-** Selectrum etc...
-:PROPERTIES:
-:ID:       2b685615-6622-41ab-aa27-13f9ccfdaca1
-:END:
-
-[[https://dev.arcology.garden/cce/selectrum.html][Selectrum, etc]]
-
-#+begin_src emacs-lisp
-(use-package! selectrum
-  :config
-  (selectrum-mode +1)
-  (setq selectrum-max-window-height 15)
-  (setq selectrum-fix-vertical-window-height t)
-  (setq selectrum-group-format nil)
-  (setq magit-completing-read-function #'selectrum-completing-read))
-
-(use-package! orderless
-  :custom (completion-styles '(orderless)))
-
-(use-package! selectrum-prescient
-  :after (selectrum)
-  :config
-  (setq selectrum-prescient-enable-filtering nil)
-  (selectrum-prescient-mode +1)
-  (prescient-persist-mode +1))
-
-(use-package! ctrlf
-  :init
-  (ctrlf-mode +1))
-#+end_src
-
-*** Consult
+** Consult Bindings
 :PROPERTIES:
 :ID:       21b80d84-22d0-4c51-bd9b-df794f575eb9
 :END:
 
 #+begin_src emacs-lisp
+(map! :map vertico-map
+      "C-SPC" #'+vertico/embark-preview)
+
 (use-package! consult
-  :init
-  (setq xref-search-program 'ripgrep
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-  (map! :localleader
-        :map org-mode-map
-        ;; override default binding for org-goto
-        "." 'consult-outline)
-  :config
-  (setq consult-async-split-style 'nil)
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-root-function #'projectile-project-root)
-  (setq consult-ripgrep-command "rg --null --ignore-case --line-buffered --color=ansi --max-columns=1000   --no-heading --line-number . -e ARG OPTS")
   :bind
-  (;; C-c bindings (mode-specific-map)
-   ("M-g M-g" . consult-goto-line) ;; orig. goto-line
-   ("M-g m" . consult-mark)
-   ("M-g k" . consult-global-mark)
-   ("M-s l" . consult-line)
-   ("M-s m" . consult-multi-occur)
-   ("M-s k" . consult-keep-lines)
-   ("M-s u" . consult-focus-lines)
-   ;; Isearch integration
-   ("M-s e" . consult-isearch)
-   :map isearch-mode-map
-   ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
-   ("M-s l" . consult-line))   ;; needed by consult-line to detect isearch
-  )
+  ("M-s l" . consult-line))
+#+end_src
 
-(use-package! consult-flycheck
-  :bind (:map flycheck-command-map
-              ("!" . consult-flycheck)))
+#+RESULTS:
 
-(use-package! consult-projectile)
-
-;; (consult-customize
-;;  consult-ripgrep consult-git-grep consult-grep
-;;  consult-bookmark consult-recent-file consult-xref
-;;  consult--source-bookmark consult--source-recent-file
-;;  consult--source-project-recent-file
-;;  ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
-;;  :preview-key "M-.")
-
-
-;; (consult-customize
-;;  consult--source-file consult--source-project-file consult--source-bookmark
-;;  :preview-key "M-.")
-
+#+begin_src emacs-lisp
 (add-to-dk-keymap
  '(("<SPC>" . deadgrep)
    ;; Project content search. ripgrep automatically understands .gitignore
    ("g" . consult-ripgrep)
    ;; Project file search.
-   ("h" . consult-projectile)
+   ("j" . consult-projectile)
    ("i" . consult-imenu)
-   ("j" . consult-buffer)))
+   ("l" . consult-buffer)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)
 #+end_src
 
-*** Marginalia
-:PROPERTIES:
-:ID:       9a897aa0-c81c-4287-b486-25ea661c2fac
-:END:
+** Search Utilities
+
+*** CtrlF
 
 #+begin_src emacs-lisp
-(use-package! marginalia
-  :init (marginalia-mode)
-  :bind
-  (("M-A" . marginalia-cycle)
-   :map minibuffer-local-map
-   ("M-A" . marginalia-cycle)))
-#+end_src
-
-** Search Utilities
+(use-package! ctrlf
+  :init
+  (ctrlf-mode +1))
+#+end_sr
 
 *** Better Grep
 :PROPERTIES:
@@ -2260,8 +2185,6 @@ Any desired package not declared in a Doom module must be declared here. This se
   ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
-(package! consult)
-(package! consult-flycheck)
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
 (package! ctrlf)
 (package! deadgrep)
@@ -2272,18 +2195,15 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! gptel)
 (package! helpful)
 (package! key-chord)
-(package! marginalia)
-(package! orderless)
 (package! org-cliplink)
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
 (package! org-super-agenda)
 (package! phi-search)
 (package! real-auto-save)
 (package! rust-mode)
-(package! selectrum)
-(package! selectrum-prescient)
 (package! smartscan)
 (package! teleport)
+(package! topsy)
 (package! undo-tree)
 (package! wrap-region)
 #+end_src

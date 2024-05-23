@@ -146,7 +146,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 ; common-lisp
 	 data
 	 emacs-lisp
-	 go
+	 (go +lsp)
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)

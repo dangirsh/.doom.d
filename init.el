@@ -6,7 +6,7 @@
 	 neurosys
 
 	 :completion
-	 (company +childframe)
+	 (vertico +childframe +icons)
 
 	 :ui
 	 doom
@@ -44,7 +44,7 @@
 	 ; common-lisp
 	 data
 	 emacs-lisp
-	 go
+	 (go +lsp)
 	 ;; javascript
 	 (haskell +dante)
 	 ;; (julia +lsp)

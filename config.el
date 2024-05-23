@@ -21,7 +21,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 36)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -86,11 +86,16 @@
 (after! key-chord
 
   (key-chord-define-global "fj" 'send-doom-leader)
+  (key-chord-define-global "pl" 'send-doom-leader)
+  (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "gh" 'send-doom-local-leader)
+  (key-chord-define-global "bj" 'send-doom-local-leader)
+  (global-set-key (kbd "<XF86Launch8>") 'send-doom-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
+  (key-chord-define-global "fu" dk-keymap)
   ;; for voyager, the dk chord is mapped to f13/XF86Tools
   (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
@@ -110,7 +115,6 @@
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
      ("k" . doom/kill-this-buffer-in-all-windows)
-     ("l" . magit-show-refs-head)
      ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)
@@ -123,28 +127,43 @@
      ("x" . sp-splice-sexp)))
 
   (key-chord-define-global ",." 'end-of-buffer)
+  (key-chord-define-global "./" 'end-of-buffer)
   ;; FIXME: accidentally triggered too often
   (key-chord-define-global "zx" 'beginning-of-buffer)
+  (key-chord-define-global "xc" 'beginning-of-buffer)
 
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "qp" 'delete-other-windows)
+  (key-chord-define-global "q;" 'delete-other-windows)
   (key-chord-define-global ",," 'doom/open-scratch-buffer)
 
   (key-chord-define-global "fk" 'other-window)
+  (key-chord-define-global "pu" 'other-window)
+  (global-set-key (kbd "<XF86Launch9>") 'other-window)
   (key-chord-define-global "jd" 'rev-other-window)
-
+  (key-chord-define-global "fl" 'rev-other-window)
+  (global-set-key (kbd "<XF86Launch8>") 'rev-other-window)
 
   (key-chord-define-global "vn" 'split-window-vertically-and-switch)
-  (key-chord-define-global "vm" 'split-window-vertically-and-switch) ; ergodox
+  (key-chord-define-global "vk" 'split-window-vertically-and-switch)
+  (global-set-key (kbd "<XF86Launch5>") 'split-window-vertically-and-switch)
+
   (key-chord-define-global "hj" 'split-window-horizontally-and-switch)
+  (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
+  (global-set-key (kbd "<XF86Launch6>") 'split-window-horizontally-and-switch)
 
   (key-chord-define-global "jm" 'my/duplicate-line-or-region)
+  (key-chord-define-global "nh" 'my/duplicate-line-or-region)
   (key-chord-define-global "fv" 'comment-line)
+  (key-chord-define-global "tv" 'comment-line)
 
   (key-chord-define-global "kl" 'er/expand-region)
+  (key-chord-define-global "uy" 'er/expand-region)
+  (global-set-key (kbd "<XF86AudioMicMute>") 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xf" 'ffap))
+  (key-chord-define-global "xf" 'ffap)
+  (key-chord-define-global "xt" 'ffap))
 
 (setq my/brightness-min 1)
 (setq my/brightness-max 100)
@@ -465,6 +484,15 @@
 
 (use-package! gptel)
 
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -550,6 +578,13 @@
     (advice-add 'undo-tree-visualizer-quit :after #'my/undo-tree-restore-default))
   (global-undo-tree-mode 1))
 
+(use-package! topsy
+  :defer t
+  :init
+  (add-hook! prog-mode
+    (unless (memq major-mode '(+doom-dashboard-mode org-mode dirvish-mode))
+      (topsy-mode +1))))
+
 (setq rustic-lsp-client 'eglot)
 
 (add-hook 'eglot-managed-mode-hook
@@ -557,96 +592,23 @@
             (flymake-mode -1)
             (eglot-inlay-hints-mode -1)))
 
-(use-package! selectrum
-  :config
-  (selectrum-mode +1)
-  (setq selectrum-max-window-height 15)
-  (setq selectrum-fix-vertical-window-height t)
-  (setq selectrum-group-format nil)
-  (setq magit-completing-read-function #'selectrum-completing-read))
-
-(use-package! orderless
-  :custom (completion-styles '(orderless)))
-
-(use-package! selectrum-prescient
-  :after (selectrum)
-  :config
-  (setq selectrum-prescient-enable-filtering nil)
-  (selectrum-prescient-mode +1)
-  (prescient-persist-mode +1))
-
-(use-package! ctrlf
-  :init
-  (ctrlf-mode +1))
+(map! :map vertico-map
+      "C-SPC" #'+vertico/embark-preview)
 
 (use-package! consult
-  :init
-  (setq xref-search-program 'ripgrep
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-  (map! :localleader
-        :map org-mode-map
-        ;; override default binding for org-goto
-        "." 'consult-outline)
-  :config
-  (setq consult-async-split-style 'nil)
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-root-function #'projectile-project-root)
-  (setq consult-ripgrep-command "rg --null --ignore-case --line-buffered --color=ansi --max-columns=1000   --no-heading --line-number . -e ARG OPTS")
   :bind
-  (;; C-c bindings (mode-specific-map)
-   ("M-g M-g" . consult-goto-line) ;; orig. goto-line
-   ("M-g m" . consult-mark)
-   ("M-g k" . consult-global-mark)
-   ("M-s l" . consult-line)
-   ("M-s m" . consult-multi-occur)
-   ("M-s k" . consult-keep-lines)
-   ("M-s u" . consult-focus-lines)
-   ;; Isearch integration
-   ("M-s e" . consult-isearch)
-   :map isearch-mode-map
-   ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
-   ("M-s l" . consult-line))   ;; needed by consult-line to detect isearch
-  )
-
-(use-package! consult-flycheck
-  :bind (:map flycheck-command-map
-              ("!" . consult-flycheck)))
-
-(use-package! consult-projectile)
-
-;; (consult-customize
-;;  consult-ripgrep consult-git-grep consult-grep
-;;  consult-bookmark consult-recent-file consult-xref
-;;  consult--source-bookmark consult--source-recent-file
-;;  consult--source-project-recent-file
-;;  ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
-;;  :preview-key "M-.")
-
-
-;; (consult-customize
-;;  consult--source-file consult--source-project-file consult--source-bookmark
-;;  :preview-key "M-.")
+  ("M-s l" . consult-line))
 
 (add-to-dk-keymap
  '(("<SPC>" . deadgrep)
    ;; Project content search. ripgrep automatically understands .gitignore
    ("g" . consult-ripgrep)
    ;; Project file search.
-   ("h" . consult-projectile)
+   ("j" . consult-projectile)
    ("i" . consult-imenu)
-   ("j" . consult-buffer)))
+   ("l" . consult-buffer)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)
-
-(use-package! marginalia
-  :init (marginalia-mode)
-  :bind
-  (("M-A" . marginalia-cycle)
-   :map minibuffer-local-map
-   ("M-A" . marginalia-cycle)))
-
-(use-package! deadgrep)
 
 (use-package! smartscan
   :init (global-smartscan-mode 1)

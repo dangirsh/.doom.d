@@ -364,11 +364,16 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 (after! key-chord
 
   (key-chord-define-global "fj" 'send-doom-leader)
+  (key-chord-define-global "pl" 'send-doom-leader)
+  (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "gh" 'send-doom-local-leader)
+  (key-chord-define-global "bj" 'send-doom-local-leader)
+  (global-set-key (kbd "<XF86Launch8>") 'send-doom-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "dk" dk-keymap)
+  (key-chord-define-global "fu" dk-keymap)
   ;; for voyager, the dk chord is mapped to f13/XF86Tools
   (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
@@ -388,7 +393,6 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
      ("k" . doom/kill-this-buffer-in-all-windows)
-     ("l" . magit-show-refs-head)
      ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
      ("o" . ibuffer)

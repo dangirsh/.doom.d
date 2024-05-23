@@ -253,3 +253,327 @@ sudo chmod +x /usr/local/bin/rust-analyzer
    ("M-A" . marginalia-cycle)))
 #+end_src
 
+
+* Display Brightness
+:PROPERTIES:
+:ID:       a704c311-cb1c-4b0d-aacb-f368a1af0600
+:ARCHIVE_TIME: 2024-05-22 Mi 19:45
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Hardware Settings
+:ARCHIVE_CATEGORY: README
+:END:
+
+Set brightness by writing directly to system brightness file.
+
+#+begin_src emacs-lisp
+(setq my/brightness-min 1)
+(setq my/brightness-max 100)
+(setq my/brightness-step 5)
+
+(defun my/get-brightness ()
+  (* my/brightness-step (round (string-to-number
+                                (shell-command-to-string "light -G"))
+                               my/brightness-step)))
+
+(defun my/set-brightness (level)
+  (interactive "nBrightness level: ")
+  (let ((safe-level
+         (cond ((< level my/brightness-min) my/brightness-min)
+               ((> level my/brightness-max) my/brightness-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "sudo light -S %s" safe-level) nil nil))))
+
+(defun my/brightness-step-change (delta)
+  (my/set-brightness (+ delta (my/get-brightness))))
+
+(defun my/brightness-increase ()
+  (interactive)
+  (my/brightness-step-change my/brightness-step))
+
+(defun my/brightness-decrease ()
+  (interactive)
+  (my/brightness-step-change (- my/brightness-step)))
+#+end_src
+
+* COMMENT org-roam-ui
+:PROPERTIES:
+:ID:       55b7e312-f076-4d23-bf5d-bbb885aa4fee
+:ARCHIVE_TIME: 2024-05-22 Mi 19:49
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org/org-roam: Graph layer on top of Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+
+
+* COMMENT Search via consult
+:PROPERTIES:
+:ID:       17a22bb8-b3e9-4503-823a-94b9828b7f4f
+:ARCHIVE_TIME: 2024-05-22 Mi 19:49
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org/org-roam: Graph layer on top of Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+https://org-roam.discourse.group/t/using-consult-ripgrep-with-org-roam-for-searching-notes/1226
+
+#+begin_src emacs-lisp
+(defun my/org-dir-search (dir)
+  "Search an org directory using consult-ripgrep. With live-preview."
+  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=1000 --no-heading --line-number . -e ARG OPTS"))
+    (consult-ripgrep dir)))
+
+(map! "<f8>" #'(lambda () (interactive) (my/org-dir-search "/home/dan/Sync/org-roam-old")))
+#+end_src
+
+#+RESULTS:
+
+
+* COMMENT org-roam-bibtex: Manage PDFs, notes, & citations.
+:PROPERTIES:
+:ID:       9c4090a3-3687-449c-b8a3-c0c32e42cf48
+:ARCHIVE_TIME: 2024-05-22 Mi 19:49
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org/org-roam: Graph layer on top of Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! org-roam-bibtex
+  :after org-roam
+  ;; :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind (:map org-mode-map
+         (("C-c n a" . orb-note-actions)))
+  :config
+  (setq bibtex-completion-library-path "~/Sync/pdf/")
+  (setq orb-preformat-keywords
+        '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
+  ;; (setq orb-note-actions-interface 'ivy)
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${citekey}"
+           :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}
+
+- tags ::
+
+,* ${title}
+:PROPERTIES:
+:Custom_ID: ${citekey}
+:URL: ${url}
+:AUTHOR: ${author-or-editor}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
+:NOTER_PAGE:
+:END:"))))
+
+(unpin! org-roam company-org-roam)
+#+end_src
+
+#+RESULTS:
+: orb-note-actions
+
+
+* COMMENT org-noter: Syncing notes to PDFs
+:PROPERTIES:
+:ID:       5a6bff7b-1b4b-4703-9646-115b5c247d4b
+:ARCHIVE_TIME: 2024-05-22 Mi 19:51
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package! org-noter
+  :after org
+  :config
+  ;; helpful in EXWM, where there are no frames
+  (customize-set-variable 'org-noter-always-create-frame t)
+  (customize-set-variable 'org-noter-notes-window-behavior '(start))
+  (customize-set-variable 'org-noter-notes-window-location 'horizontal-split)
+  (setq org-noter-notes-window-location 'other-frame
+        org-noter-notes-search-path '("~/Sync")
+        org-noter-auto-save-last-location t
+        org-noter-default-notes-file-names '("~/Sync/pdf_notes.org"))
+#+END_SRC
+
+
+* COMMENT org-download: Inserting images into org-mode
+:PROPERTIES:
+:ID:       2e4bd258-5b1a-4ab0-88b0-68ff84dbaef2
+:ARCHIVE_TIME: 2024-05-22 Mi 19:51
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! org-download
+  :config
+  ;; take an image that is already on the clipboard
+  (customize-set-variable 'org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+#+end_src
+
+
+* COMMENT Another image insertion scheme
+:PROPERTIES:
+:ARCHIVE_TIME: 2024-05-22 Mi 19:52
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Org
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(defun my/org-insert-image ()
+  "Select and insert an image at point."
+  (interactive)
+  (let* ((file-name (format "%s.png" (cl-random (expt 2 31))))
+         (path (format "%s%s/%s" org-directory "images" file-name)))
+    (let ((maim-exit (call-process "maim" nil nil nil "-s" path)))
+      (when (= maim-exit 0)
+        (insert (format "[[%s]]" path))))))
+#+end_src
+
+#+RESULTS:
+: my/org-insert-image
+
+[[/home/dan/Sync/images/638692214.png]]
+
+
+* Copilot
+:PROPERTIES:
+:ARCHIVE_TIME: 2024-05-22 Mi 19:54
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Effective Editing/LLMs
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+#+end_src
+
+
+* COMMENT Only check/lint on host target arch
+:PROPERTIES:
+:ID:       4db4d556-d6a1-4819-8d8a-6c2d9cfb985d
+:ARCHIVE_TIME: 2024-05-22 Mi 19:55
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Rust
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(after! rustic-flycheck
+  (customize-set-variable 'rustic-flycheck-clippy-params-stable
+                          (concat rustic-flycheck-clippy-params-stable " --target x86_64-unknown-linux-gnu"))
+  (add-to-list 'flycheck-checkers 'rustic-clippy)
+  (delete 'rust-clippy flycheck-checkers)
+  (delete 'rust-cargo flycheck-checkers)
+  (delete 'rust flycheck-checkers))
+
+(after! lsp-rust
+  (setq lsp-rust-analyzer-cargo-watch-command "check"))
+#+end_src
+
+
+#+RESULTS:
+: clippy
+
+
+* Neurosys Module
+:PROPERTIES:
+:header-args: :tangle ./modules/personal/neurosys/config.el
+:ARCHIVE_TIME: 2024-05-22 Mi 20:01
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_CATEGORY: README
+:END:
+
+Elisp related to my [[nerusos][neurosys]].
+
+** Globals
+:PROPERTIES:
+:ID:       bb40fc42-2490-4e1a-9df0-67b136961929
+:END:
+
+#+begin_src emacs-lisp
+(setq neurosys/base-dir "/home/dan/repos/neurosys/")
+#+end_src
+
+** Helpers
+
+*** Deployment
+:PROPERTIES:
+:ID:       9a02b747-e5a1-44e0-a18c-a7f80c73a7e3
+:END:
+
+#+begin_src emacs-lisp
+(defun neurosys/deploy-to-host (host host-home-raw)
+  (interactive "sHost: \nsHost home: ")
+  (let ((host-root (format "/ssh:%s:/" host))
+        ;; mind the trailing slash, since we're passing it to rsync
+        (host-home (file-name-as-directory host-home-raw)))
+    (save-window-excursion
+      (org-babel-tangle)
+      (my/run-in-fresh-compilation
+       (format (concat neurosys/base-dir "rsync.sh %s %s") host host-home) neurosys/base-dir)
+      ;; TODO: Is there cleaner way to compile over TRAMP?
+      (find-file host-root)
+      (compile "nixos-rebuild switch --show-trace")))
+  (switch-to-buffer-other-window "*compilation*"))
+
+(defun neurosys/deploy-to-nixos-dev ()
+  (interactive)
+  (neurosys/deploy-to-host "root@nixos-dev" "/home/dan/"))
+#+end_src
+
+*** TODO Upgrading [0/2]
+
+- [ ] Update channels with =nix-channel --update=
+- [ ] Rebuild packages with =nixos-rebuild switch=
+
+NOTE: These can be combined with =nixos-rebuild switch --update=
+
+*** Misc
+:PROPERTIES:
+:ID:       8554032f-9167-4b4e-a0ae-0e57c32a1b69
+:END:
+
+#+begin_src emacs-lisp
+(defun neurosys/open-config-file ()
+  (interactive)
+  (find-file (concat neurosys/base-dir "README.org")))
+#+end_src
+
+** Keybindings
+:PROPERTIES:
+:ID:       22c0e92b-37d1-4851-9cb6-2fba931b048a
+:END:
+
+#+begin_src emacs-lisp
+(map!
+ :leader
+ :prefix ("j" . "neurosys")
+ :desc "deploy" "D" #'neurosys/deploy-to-host
+ :desc "deploy to nixos-dev" "d" #'neurosys/deploy-to-nixos-dev)
+#+end_src
+

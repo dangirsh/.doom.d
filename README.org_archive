@@ -76,3 +76,180 @@ sudo curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/down
 sudo chmod +x /usr/local/bin/rust-analyzer
 #+end_example
 
+
+* Selectrum etc...
+:PROPERTIES:
+:ID:       2b685615-6622-41ab-aa27-13f9ccfdaca1
+:ARCHIVE_TIME: 2024-05-03 Fr 17:03
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration
+:ARCHIVE_CATEGORY: README
+:END:
+
+[[https://dev.arcology.garden/cce/selectrum.html][Selectrum, etc]]
+
+#+begin_src emacs-lisp
+(use-package! selectrum
+  :config
+  (selectrum-mode +1)
+  (setq selectrum-max-window-height 15)
+  (setq selectrum-fix-vertical-window-height t)
+  (setq selectrum-group-format nil)
+  (setq magit-completing-read-function #'selectrum-completing-read))
+
+(use-package! orderless
+  :custom (completion-styles '(orderless)))
+
+(use-package! selectrum-prescient
+  :after (selectrum)
+  :config
+  (setq selectrum-prescient-enable-filtering nil)
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
+
+(use-package! ctrlf
+  :init
+  (ctrlf-mode +1))
+#+end_src
+
+** Consult
+:PROPERTIES:
+:ID:       21b80d84-22d0-4c51-bd9b-df794f575eb9
+:END:
+
+#+begin_src emacs-lisp
+(use-package! consult
+  :init
+  (setq xref-search-program 'ripgrep
+        xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  (map! :localleader
+        :map org-mode-map
+        ;; override default binding for org-goto
+        "." 'consult-outline)
+  :config
+  (setq consult-async-split-style 'nil)
+  (autoload 'projectile-project-root "projectile")
+  (setq consult-project-root-function #'projectile-project-root)
+  (setq consult-ripgrep-command "rg --null --ignore-case --line-buffered --color=ansi --max-columns=1000   --no-heading --line-number . -e ARG OPTS")
+  :bind
+  (;; C-c bindings (mode-specific-map)
+   ("M-g M-g" . consult-goto-line) ;; orig. goto-line
+   ("M-g m" . consult-mark)
+   ("M-g k" . consult-global-mark)
+   ("M-s l" . consult-line)
+   ("M-s m" . consult-multi-occur)
+   ("M-s k" . consult-keep-lines)
+   ("M-s u" . consult-focus-lines)
+   ;; Isearch integration
+   ("M-s e" . consult-isearch)
+   :map isearch-mode-map
+   ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
+   ("M-s l" . consult-line))   ;; needed by consult-line to detect isearch
+  )
+
+(use-package! consult-flycheck
+  :bind (:map flycheck-command-map
+              ("!" . consult-flycheck)))
+
+(use-package! consult-projectile)
+
+;; (consult-customize
+;;  consult-ripgrep consult-git-grep consult-grep
+;;  consult-bookmark consult-recent-file consult-xref
+;;  consult--source-bookmark consult--source-recent-file
+;;  consult--source-project-recent-file
+;;  ;; :preview-key '(:debounce 0.2 any) ;; Option 1: Delay preview
+;;  :preview-key "M-.")
+
+;; (consult-customize
+;;  consult--source-file consult--source-project-file consult--source-bookmark
+;;  :preview-key "M-.")
+
+(add-to-dk-keymap
+ '(("<SPC>" . deadgrep)
+   ;; Project content search. ripgrep automatically understands .gitignore
+   ("g" . consult-ripgrep)
+   ;; Project file search.
+   ("h" . consult-projectile)
+   ("i" . consult-imenu)
+   ("j" . consult-buffer)))
+
+(global-set-key [remap yank-pop] 'consult-yank-pop)
+#+end_src
+
+** Marginalia
+:PROPERTIES:
+:ID:       9a897aa0-c81c-4287-b486-25ea661c2fac
+:END:
+
+#+begin_src emacs-lisp
+(use-package! marginalia
+  :init (marginalia-mode)
+  :bind
+  (("M-A" . marginalia-cycle)
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle)))
+#+end_src
+
+
+* Selectrum
+:PROPERTIES:
+:ARCHIVE_TIME: 2024-05-03 Fr 17:08
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Selection, Completion, Search
+:ARCHIVE_CATEGORY: README
+:END:
+#+begin_src emacs-lisp
+(use-package! selectrum
+  :config
+  (selectrum-mode +1)
+  (setq selectrum-max-window-height 15)
+  (setq selectrum-fix-vertical-window-height t)
+  (setq selectrum-group-format nil)
+  (setq magit-completing-read-function #'selectrum-completing-read))
+#+end_src
+
+** Prescient
+
+#+begin_src emacs-lisp
+(use-package! selectrum-prescient
+  :after (selectrum)
+  :config
+  (setq selectrum-prescient-enable-filtering nil)
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
+#+end_src
+
+
+* Orderless
+:PROPERTIES:
+:ARCHIVE_TIME: 2024-05-03 Fr 17:14
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Selection, Completion, Search
+:ARCHIVE_CATEGORY: README
+:END:
+#+begin_src emacs-lisp
+(use-package! orderless
+  :custom (completion-styles '(orderless)))
+#+end_src
+
+
+* Marginalia
+:PROPERTIES:
+:ID:       9a897aa0-c81c-4287-b486-25ea661c2fac
+:ARCHIVE_TIME: 2024-05-03 Fr 17:14
+:ARCHIVE_FILE: /home/dan/repos/.doom.d/README.org
+:ARCHIVE_OLPATH: Package Configuration/Selection, Completion, Search
+:ARCHIVE_CATEGORY: README
+:END:
+
+#+begin_src emacs-lisp
+(use-package! marginalia
+  :init (marginalia-mode)
+  :bind
+  (("M-A" . marginalia-cycle)
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle)))
+#+end_src
+

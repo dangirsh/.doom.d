@@ -1136,6 +1136,18 @@ FIXME: This pulls in ivy/swiper/counsel :/
   (global-undo-tree-mode 1))
 #+END_SRC
 
+*** toppy
+
+#+begin_src elisp
+(use-package! topsy
+  :defer t
+  :init
+  (add-hook! prog-mode
+    (unless (memq major-mode '(+doom-dashboard-mode org-mode dirvish-mode))
+      (topsy-mode +1))))
+#+end_src
+
+
 *** COMMENT Language Model Interfaces
 
 To eventually make everything else in this project obsolete...

@@ -3,6 +3,9 @@
 #+PROPERTY: header-args
 
 * About
+:PROPERTIES:
+:ID:       0079bab1-003e-4b62-a4ba-471c108c2b3b
+:END:
 
 #+begin_quote
 “I'm rarely happier than when spending an entire day programming my computer to perform automatically a task that would otherwise take me a good ten seconds to do by hand.” - Douglas Adams
@@ -33,6 +36,8 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#global-constants][Global Constants]]
     - [[#contact-info][Contact info]]
     - [[#directories][Directories]]
+  - [[#hardware][Hardware]]
+    - [[#brightness][Brightness]]
   - [[#load-helper-functions][Load helper functions]]
   - [[#visual-settings][Visual Settings]]
     - [[#theme][Theme]]
@@ -94,7 +99,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 neurosys
 
 	 :completion
-	 (vertico +childframe +icons)
+	 (vertico +icons)
 
 	 :ui
 	 doom
@@ -213,6 +218,29 @@ clients, file templates and snippets.
 #+RESULTS:
 : /home/dan/Sync/org-roam/
 
+** Hardware
+
+*** Brightness
+
+#+begin_src emacs-lisp
+(setq my/brightness-min 1)
+(setq my/brightness-max 100)
+(setq my/brightness-step 5)
+
+(defun my/set-brightness (level)
+  (interactive "nBrightness level: ")
+  (let ((safe-level
+         (cond ((< level my/brightness-min) my/brightness-min)
+               ((> level my/brightness-max) my/brightness-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "sudo light -S %s" safe-level) nil nil))))
+#+end_src
+
+#+RESULTS:
+: my/set-brightness
+
 ** Load helper functions
 :PROPERTIES:
 :ID:       7b5b7825-c637-4def-ab9b-c7c0adc07e51
@@ -229,7 +257,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 22)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -284,7 +312,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.06)
+        key-chord-two-keys-delay 0.1)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 #+end_src
@@ -322,18 +350,18 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
 #+begin_src emacs-lisp
 (after! key-chord
-    ;; My external keyboard (Voyager) supports chords in the firmware
-    ;; For some cases, I find it less error prone to use these instead of
-    ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
+  ;; My external keyboard (Voyager) supports chords in the firmware
+  ;; For some cases, I find it less error prone to use these instead of
+  ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
 
   (key-chord-define-global "pl" 'send-doom-leader)
-  (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
+  ;; (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "fu" dk-keymap)
-  (global-set-key (kbd "<XF86Tools>") dk-keymap)
+  ;; (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -359,6 +387,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
   (key-chord-define-global ",." 'end-of-buffer)
   (key-chord-define-global "xc" 'beginning-of-buffer)
+  (key-chord-define-global "zx" 'beginning-of-buffer)
 
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "q;" 'delete-other-windows)
@@ -367,8 +396,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
 
-  (key-chord-define-global "vk" 'split-window-vertically-and-switch)
-  (key-chord-define-global "vh" 'split-window-vertically-and-switch) ; ergodox
+  (key-chord-define-global "dh" 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
@@ -377,8 +405,11 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "uy" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "ct" 'ffap))
+  (key-chord-define-global "xt" 'ffap))
 #+end_src
+
+#+RESULTS:
+: ffap
 
 ** Org
 :PROPERTIES:

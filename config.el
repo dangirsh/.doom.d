@@ -18,10 +18,24 @@
   (find-file my/org-roam-todo-file)
   (save-buffer))
 
+(setq my/brightness-min 1)
+(setq my/brightness-max 100)
+(setq my/brightness-step 5)
+
+(defun my/set-brightness (level)
+  (interactive "nBrightness level: ")
+  (let ((safe-level
+         (cond ((< level my/brightness-min) my/brightness-min)
+               ((> level my/brightness-max) my/brightness-max)
+               (t level))))
+    (save-window-excursion
+      (shell-command
+       (format "sudo light -S %s" safe-level) nil nil))))
+
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 22)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -44,7 +58,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.06)
+        key-chord-two-keys-delay 0.1)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -62,18 +76,18 @@
   (simulate-seq "\M-c"))
 
 (after! key-chord
-    ;; My external keyboard (Voyager) supports chords in the firmware
-    ;; For some cases, I find it less error prone to use these instead of
-    ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
+  ;; My external keyboard (Voyager) supports chords in the firmware
+  ;; For some cases, I find it less error prone to use these instead of
+  ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
 
   (key-chord-define-global "pl" 'send-doom-leader)
-  (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
+  ;; (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
 
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "fu" dk-keymap)
-  (global-set-key (kbd "<XF86Tools>") dk-keymap)
+  ;; (global-set-key (kbd "<XF86Tools>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -99,6 +113,7 @@
 
   (key-chord-define-global ",." 'end-of-buffer)
   (key-chord-define-global "xc" 'beginning-of-buffer)
+  (key-chord-define-global "zx" 'beginning-of-buffer)
 
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "q;" 'delete-other-windows)
@@ -107,8 +122,7 @@
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
 
-  (key-chord-define-global "vk" 'split-window-vertically-and-switch)
-  (key-chord-define-global "vh" 'split-window-vertically-and-switch) ; ergodox
+  (key-chord-define-global "dh" 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
@@ -117,7 +131,7 @@
   (key-chord-define-global "uy" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "ct" 'ffap))
+  (key-chord-define-global "xt" 'ffap))
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)

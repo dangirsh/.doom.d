@@ -6,7 +6,7 @@
 	 neurosys
 
 	 :completion
-	 (vertico +childframe +icons)
+	 (vertico +icons)
 
 	 :ui
 	 doom

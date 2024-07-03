@@ -58,6 +58,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
     - [[#topsy][topsy]]
+    - [[#misc][misc]]
   - [[#rust][Rust]]
   - [[#consult-bindings][Consult Bindings]]
   - [[#search-utilities][Search Utilities]]
@@ -73,7 +74,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#dont-save-passwords-to-clipboard-history][Don't save passwords to clipboard history]]
-  - [[#misc][Misc]]
+  - [[#misc-1][Misc]]
   - [[#autosave][Autosave]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
 - [[#utility-functions][Utility functions.]]
@@ -138,7 +139,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 ;; javascript
 	 ;; (haskell +dante)
 	 ;; (julia +lsp)
-	 (latex +latexmk +cdlatex)
+	 ;; (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)
@@ -257,7 +258,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 22)
+ doom-font (font-spec :family "Iosevka" :size 24)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -361,7 +362,7 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "fu" dk-keymap)
-  ;; (global-set-key (kbd "<XF86Tools>") dk-keymap)
+  (global-set-key (kbd "<XF86Launch6>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -395,6 +396,10 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
 
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
+
+  (global-set-key (kbd "<XF86Launch5>") 'other-window)
+  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
+
 
   (key-chord-define-global "dh" 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
@@ -882,6 +887,17 @@ FIXME: This pulls in ivy/swiper/counsel :/
       (topsy-mode +1))))
 #+end_src
 
+
+*** misc
+
+#+begin_src emacs-lisp
+;; Colemak
+(customize-set-variable 'avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+#+end_src
+
+#+RESULTS:
+| 97 | 114 | 115 | 116 | 110 | 101 | 105 | 111 |
+
 ** Rust
 :PROPERTIES:
 :ID:       81b0ce9d-0850-4d9b-9c37-75d8f4b0ae51
@@ -908,6 +924,8 @@ FIXME: This pulls in ivy/swiper/counsel :/
 (map! :map vertico-map
       "C-SPC" #'+vertico/embark-preview)
 
+(global-set-key (kbd "M-i") 'iedit-mode)
+
 (use-package! consult
   :bind
   ;; swiper muscle-memory
@@ -924,7 +942,8 @@ FIXME: This pulls in ivy/swiper/counsel :/
    ;; Project file search.
    ("j" . consult-projectile)
    ("i" . consult-imenu)
-   ("l" . consult-buffer)))
+   ("l" . consult-buffer)
+   ("o" . consult-outline)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)
 #+end_src

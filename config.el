@@ -35,7 +35,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 22)
+ doom-font (font-spec :family "Iosevka" :size 24)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -87,7 +87,7 @@
   (setq dk-keymap (make-sparse-keymap))
 
   (key-chord-define-global "fu" dk-keymap)
-  ;; (global-set-key (kbd "<XF86Tools>") dk-keymap)
+  (global-set-key (kbd "<XF86Launch6>") dk-keymap)
 
   (defun add-to-keymap (keymap bindings)
     (dolist (binding bindings)
@@ -121,6 +121,10 @@
 
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
+
+  (global-set-key (kbd "<XF86Launch5>") 'other-window)
+  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
+
 
   (key-chord-define-global "dh" 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
@@ -381,6 +385,28 @@
       (funcall orig-func sfiles dest)))
   (advice-add 'dired-rsync--remote-to-from-local-cmd :around #'teleport-rsync-advice))
 
+;; (use-package! org-ai
+;;   :commands (org-ai-mode
+;;              org-ai-global-mode)
+;;   :init
+;;   (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+;;   (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
+;;   :config
+;;   (setq org-ai-default-chat-model "gpt-4")
+;;   (setq org-ai-openai-api-token (password-store-get "openai/apikey")))
+
+(use-package! org-ai
+  :hook
+  (org-mode . org-ai-mode)
+  :init
+  (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
+  :config
+  (setq org-ai-service 'anthropic)
+  (setq org-ai-default-max-tokens 'nil)
+  (setq org-ai-default-chat-model "claude-3-5-sonnet-20240620")
+  (setq org-ai-anthropic-api-version "2023-06-01")
+  (setq org-ai-openai-api-token (password-store-get "claude/dan.girsh/api-key/emacs")))
+
 (use-package! gptel)
 
 (use-package! lispy
@@ -452,6 +478,9 @@
     (unless (memq major-mode '(+doom-dashboard-mode org-mode dirvish-mode))
       (topsy-mode +1))))
 
+;; Colemak
+(customize-set-variable 'avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+
 (setq rustic-lsp-client 'eglot)
 
 (add-hook 'eglot-managed-mode-hook
@@ -461,6 +490,8 @@
 
 (map! :map vertico-map
       "C-SPC" #'+vertico/embark-preview)
+
+(global-set-key (kbd "M-i") 'iedit-mode)
 
 (use-package! consult
   :bind
@@ -474,7 +505,8 @@
    ;; Project file search.
    ("j" . consult-projectile)
    ("i" . consult-imenu)
-   ("l" . consult-buffer)))
+   ("l" . consult-buffer)
+   ("o" . consult-outline)))
 
 (global-set-key [remap yank-pop] 'consult-yank-pop)
 

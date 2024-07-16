@@ -817,7 +817,20 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 (use-package! greader)
 #+end_src
 
-**** gptel
+**** copilot
+
+#+begin_src emacs-lisp
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+#+end_src
+
+
+**** COMMENT gptel
 
 #+begin_src emacs-lisp :noweb yes
 (use-package! gptel)
@@ -1897,6 +1910,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! ace-window)
 (package! aggressive-indent)
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! ctrlf)
 (package! deadgrep)
 (package! dired-rsync)

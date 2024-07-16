@@ -313,7 +313,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.1)
+        key-chord-two-keys-delay 0.075)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 #+end_src

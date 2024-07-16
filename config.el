@@ -35,7 +35,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 24)
+ doom-font (font-spec :family "Iosevka" :size 30)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -58,7 +58,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.1)
+        key-chord-two-keys-delay 0.075)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -385,16 +385,6 @@
       (funcall orig-func sfiles dest)))
   (advice-add 'dired-rsync--remote-to-from-local-cmd :around #'teleport-rsync-advice))
 
-;; (use-package! org-ai
-;;   :commands (org-ai-mode
-;;              org-ai-global-mode)
-;;   :init
-;;   (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
-;;   (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
-;;   :config
-;;   (setq org-ai-default-chat-model "gpt-4")
-;;   (setq org-ai-openai-api-token (password-store-get "openai/apikey")))
-
 (use-package! org-ai
   :hook
   (org-mode . org-ai-mode)
@@ -404,10 +394,22 @@
   (setq org-ai-service 'anthropic)
   (setq org-ai-default-max-tokens 'nil)
   (setq org-ai-default-chat-model "claude-3-5-sonnet-20240620")
-  (setq org-ai-anthropic-api-version "2023-06-01")
-  (setq org-ai-openai-api-token (password-store-get "claude/dan.girsh/api-key/emacs")))
+  (setq org-ai-anthropic-api-version "2023-06-01"))
 
-(use-package! gptel)
+;; hack around password-store init. neither "after" or "requires" worked...
+(defun my/set-org-ai-token ()
+  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "claude/dan.girsh/api-key/emacs")) 'utf-8)))
+
+
+(run-with-idle-timer 1 nil #'my/set-org-ai-token)
+
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
 (use-package! lispy
   :config

@@ -139,7 +139,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 ;; javascript
 	 ;; (haskell +dante)
 	 ;; (julia +lsp)
-	 ;; (latex +latexmk +cdlatex)
+	 (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)
@@ -258,7 +258,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 24)
+ doom-font (font-spec :family "Iosevka" :size 36)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -313,7 +313,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.075)
+        key-chord-two-keys-delay 0.035)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 #+end_src
@@ -547,6 +547,7 @@ I largely live inside Org. It currently manages:
 
   (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
   (require 'ox-latex))
+
 
 ;; Setup syntax highlighting for code block pdf exports
 ;; (after! ox-latex
@@ -791,15 +792,13 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
   :init
   (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
   :config
-  (setq org-ai-service 'anthropic)
-  (setq org-ai-default-max-tokens 'nil)
-  (setq org-ai-default-chat-model "claude-3-5-sonnet-20240620")
-  (setq org-ai-anthropic-api-version "2023-06-01"))
+  (setq org-ai-service 'openai)
+  (setq org-ai-default-max-tokens nil)
+  (setq org-ai-default-chat-model "gpt-4o"))
 
 ;; hack around password-store init. neither "after" or "requires" worked...
 (defun my/set-org-ai-token ()
-  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "claude/dan.girsh/api-key/emacs")) 'utf-8)))
-
+  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "openai/apikey")) 'utf-8)))
 
 (run-with-idle-timer 1 nil #'my/set-org-ai-token)
 #+end_src
@@ -1930,6 +1929,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! real-auto-save)
 (package! rust-mode)
 (package! smartscan)
+(package! speed-type)
 (package! teleport)
 (package! topsy)
 (package! undo-tree)

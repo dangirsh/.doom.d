@@ -23,6 +23,7 @@
 (package! real-auto-save)
 (package! rust-mode)
 (package! smartscan)
+(package! speed-type)
 (package! teleport)
 (package! topsy)
 (package! undo-tree)

@@ -35,7 +35,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 30)
+ doom-font (font-spec :family "Iosevka" :size 36)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -58,7 +58,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.075)
+        key-chord-two-keys-delay 0.035)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -232,7 +232,7 @@
           ("DELEGATED" . +org-todo-onhold)
           ("KILL" . +org-todo-cancel)))
 
-  ;; Update parent TODO state when all children TODOs are done
+  ;; UPDATE PARENT TODhO state when all children TODOs are done
   ;; NOTE: Only works if the parent has a "[/]" or "[%]" in the heading!!
   ;; https://orgmode.org/manual/Breaking-Down-Tasks.html#Breaking-Down-Tasks
   (defun org-summary-todo (n-done n-not-done)
@@ -248,6 +248,7 @@
 
   (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
   (require 'ox-latex))
+
 
 ;; Setup syntax highlighting for code block pdf exports
 ;; (after! ox-latex
@@ -391,15 +392,13 @@
   :init
   (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
   :config
-  (setq org-ai-service 'anthropic)
-  (setq org-ai-default-max-tokens 'nil)
-  (setq org-ai-default-chat-model "claude-3-5-sonnet-20240620")
-  (setq org-ai-anthropic-api-version "2023-06-01"))
+  (setq org-ai-service 'openai)
+  (setq org-ai-default-max-tokens nil)
+  (setq org-ai-default-chat-model "gpt-4o"))
 
 ;; hack around password-store init. neither "after" or "requires" worked...
 (defun my/set-org-ai-token ()
-  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "claude/dan.girsh/api-key/emacs")) 'utf-8)))
-
+  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "openai/apikey")) 'utf-8)))
 
 (run-with-idle-timer 1 nil #'my/set-org-ai-token)
 

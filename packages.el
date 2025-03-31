@@ -9,6 +9,7 @@
 (package! deadgrep)
 (package! dired-rsync)
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
+(package! exec-path-from-shell)
 (package! fancy-dabbrev)
 (package! google-this)
 ;; (package! greader)

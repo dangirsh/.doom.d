@@ -258,7 +258,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 36)
+ doom-font (font-spec :family "Iosevka" :size 22)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -313,7 +313,7 @@ Set hardware-specific delay. Tweak this if:
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.035)
+        key-chord-two-keys-delay 0.04)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 #+end_src
@@ -401,7 +401,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
 
 
-  (key-chord-define-global "dh" 'split-window-vertically-and-switch)
+  ;; (key-chord-define-global "dh" 'split-window-vertically-and-switch)
+  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
@@ -410,7 +411,8 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   (key-chord-define-global "uy" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xt" 'ffap))
+  ;; (key-chord-define-global "xt" 'ffap)
+  )
 #+end_src
 
 #+RESULTS:
@@ -1254,7 +1256,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 (setq async-shell-command-buffer 'new-buffer)
 
-; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+                                        ; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
 
 ;; all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -1298,7 +1300,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
                     list-buffers-directory
                     default-directory
                     dired-directory))
- mad-do-it))
+    mad-do-it))
 
 (setq projectile-mode-line "Projectile")
 
@@ -1331,6 +1333,11 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
   (visual-line-mode 1))
 
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+
+(use-package! exec-path-from-shell-copy-env
+  :init
+  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
 #+end_src
 
 #+RESULTS:
@@ -1915,6 +1922,7 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! deadgrep)
 (package! dired-rsync)
 (package! elegant-agenda-mode :recipe (:host github :repo "justinbarclay/elegant-agenda-mode"))
+(package! exec-path-from-shell)
 (package! fancy-dabbrev)
 (package! google-this)
 ;; (package! greader)

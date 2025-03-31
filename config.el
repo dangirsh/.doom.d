@@ -35,7 +35,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 36)
+ doom-font (font-spec :family "Iosevka" :size 22)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -58,7 +58,7 @@
   :config
   (key-chord-mode 1)
   (setq key-chord-one-key-delay 0.20 ; same key (e.g. xx)
-        key-chord-two-keys-delay 0.035)
+        key-chord-two-keys-delay 0.04)
   (customize-set-variable 'key-chord-safety-interval-forward 0.0)
   (customize-set-variable 'key-chord-safety-interval-backward 0.0))
 
@@ -126,7 +126,8 @@
   (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
 
 
-  (key-chord-define-global "dh" 'split-window-vertically-and-switch)
+  ;; (key-chord-define-global "dh" 'split-window-vertically-and-switch)
+  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
@@ -135,7 +136,8 @@
   (key-chord-define-global "uy" 'er/expand-region)
 
   (key-chord-define-global "xx" 'execute-extended-command)
-  (key-chord-define-global "xt" 'ffap))
+  ;; (key-chord-define-global "xt" 'ffap)
+  )
 
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -232,7 +234,7 @@
           ("DELEGATED" . +org-todo-onhold)
           ("KILL" . +org-todo-cancel)))
 
-  ;; UPDATE PARENT TODhO state when all children TODOs are done
+  ;; Update parent TODO state when all children TODOs are done
   ;; NOTE: Only works if the parent has a "[/]" or "[%]" in the heading!!
   ;; https://orgmode.org/manual/Breaking-Down-Tasks.html#Breaking-Down-Tasks
   (defun org-summary-todo (n-done n-not-done)
@@ -637,7 +639,7 @@
 
 (setq async-shell-command-buffer 'new-buffer)
 
-; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
+                                        ; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
 
 ;; all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -681,7 +683,7 @@
                     list-buffers-directory
                     default-directory
                     dired-directory))
- mad-do-it))
+    mad-do-it))
 
 (setq projectile-mode-line "Projectile")
 
@@ -714,6 +716,11 @@
   (visual-line-mode 1))
 
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+
+(use-package! exec-path-from-shell-copy-env
+  :init
+  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
 
 (use-package! real-auto-save
   :hook

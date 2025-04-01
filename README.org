@@ -818,7 +818,7 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 (use-package! greader)
 #+end_src
 
-**** copilot
+**** COMMENT copilot
 
 #+begin_src emacs-lisp
 (use-package! copilot
@@ -1916,8 +1916,8 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! ace-window)
 (package! aggressive-indent)
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+;(package! copilot
+;  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! ctrlf)
 (package! deadgrep)
 (package! dired-rsync)

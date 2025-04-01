@@ -1334,7 +1334,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
-(use-package! exec-path-from-shell-copy-env
+(use-package! exec-path-from-shell
   :init
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))

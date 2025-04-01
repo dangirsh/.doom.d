@@ -404,14 +404,6 @@
 
 (run-with-idle-timer 1 nil #'my/set-org-ai-token)
 
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
-
 (use-package! lispy
   :config
   (advice-add 'delete-selection-pre-hook :around 'lispy--delsel-advice)
@@ -717,7 +709,7 @@
 
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
-(use-package! exec-path-from-shell-copy-env
+(use-package! exec-path-from-shell
   :init
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))

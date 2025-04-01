@@ -1099,6 +1099,10 @@ Stunningly useful.
 
 (use-package! dired-x)
 
+;; Remove M-s binding from dirvish to use it for swiper in dired buffers
+(after! dirvish
+  (define-key dirvish-mode-map (kbd "M-s") nil))
+
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)
 #+END_SRC

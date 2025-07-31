@@ -19,7 +19,7 @@
 	 (format +onsave)
 
 	 :emacs
-	 dired
+	 ;dired
 	 electric
 
 	 :term

@@ -2,6 +2,8 @@
   ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
+(package! claude-code-emacs :recipe (:local-repo "~/repos/claude-code-emacs/"))
+(package! websocket) ;; Required for claude-code-emacs MCP server communication
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
 ;(package! copilot
 ;  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))

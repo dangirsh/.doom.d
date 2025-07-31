@@ -45,6 +45,38 @@
 (set-face-background 'vertical-border "grey")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
+;; Visual indication for focused window using fringes
+(defface my/focused-window-fringe
+  '((t :background "#51afef"))
+  "Face for focused window fringe.")
+
+(defvar my/fringe-overlay-list nil
+  "List of fringe overlays for focused window indication.")
+
+(defun my/highlight-focused-window ()
+  "Show focused window by adding colored fringe."
+  ;; Remove all existing fringe overlays
+  (mapc #'delete-overlay my/fringe-overlay-list)
+  (setq my/fringe-overlay-list nil)
+  
+  ;; Add fringe overlay to focused window
+  (let* ((win (selected-window))
+         (buf (window-buffer win)))
+    (with-current-buffer buf
+      (let ((ov (make-overlay (point-min) (point-max))))
+        (overlay-put ov 'window win)
+        (overlay-put ov 'before-string 
+                     (propertize " " 'display 
+                                 '(left-fringe vertical-bar my/focused-window-fringe)))
+        (push ov my/fringe-overlay-list)))))
+
+;; Update on window selection change
+(add-hook 'window-selection-change-functions
+          (lambda (_) (my/highlight-focused-window)))
+
+;; Initialize on startup
+(add-hook 'after-init-hook #'my/highlight-focused-window)
+
 (use-package! doom-themes
   :config
   (setq doom-themes-enable-bold t
@@ -388,21 +420,15 @@
       (funcall orig-func sfiles dest)))
   (advice-add 'dired-rsync--remote-to-from-local-cmd :around #'teleport-rsync-advice))
 
-(use-package! org-ai
-  :hook
-  (org-mode . org-ai-mode)
-  :init
-  (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
-  :config
-  (setq org-ai-service 'openai)
-  (setq org-ai-default-max-tokens nil)
-  (setq org-ai-default-chat-model "gpt-4o"))
-
-;; hack around password-store init. neither "after" or "requires" worked...
-(defun my/set-org-ai-token ()
-  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "openai/apikey")) 'utf-8)))
-
-(run-with-idle-timer 1 nil #'my/set-org-ai-token)
+;; Ensure transient is loaded before claude-code-emacs autoloads
+(after! (:and transient projectile)
+  (use-package! claude-code-emacs
+    :commands (claude-code-emacs-transient
+               claude-code-emacs-run
+               claude-code-emacs-switch-to-buffer)
+    :init
+    (map! :leader
+          :desc "Claude Code" "c c" #'claude-code-emacs-transient)))
 
 (use-package! lispy
   :config
@@ -554,6 +580,10 @@
               ("C-c C-r" . dired-rsync)))
 
 (use-package! dired-x)
+
+;; Remove M-s binding from dirvish to use it for swiper in dired buffers
+(after! dirvish
+      (define-key dirvish-mode-map (kbd "M-s") nil))
 
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)

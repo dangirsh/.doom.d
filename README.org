@@ -113,7 +113,7 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 (format +onsave)
 
 	 :emacs
-	 dired
+	 ;dired
 	 electric
 
 	 :term
@@ -267,6 +267,38 @@ clients, file templates and snippets.
 ;; Thin grey line separating windows
 (set-face-background 'vertical-border "grey")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
+
+;; Visual indication for focused window using fringes
+(defface my/focused-window-fringe
+  '((t :background "#51afef"))
+  "Face for focused window fringe.")
+
+(defvar my/fringe-overlay-list nil
+  "List of fringe overlays for focused window indication.")
+
+(defun my/highlight-focused-window ()
+  "Show focused window by adding colored fringe."
+  ;; Remove all existing fringe overlays
+  (mapc #'delete-overlay my/fringe-overlay-list)
+  (setq my/fringe-overlay-list nil)
+  
+  ;; Add fringe overlay to focused window
+  (let* ((win (selected-window))
+         (buf (window-buffer win)))
+    (with-current-buffer buf
+      (let ((ov (make-overlay (point-min) (point-max))))
+        (overlay-put ov 'window win)
+        (overlay-put ov 'before-string 
+                     (propertize " " 'display 
+                                 '(left-fringe vertical-bar my/focused-window-fringe)))
+        (push ov my/fringe-overlay-list)))))
+
+;; Update on window selection change
+(add-hook 'window-selection-change-functions
+          (lambda (_) (my/highlight-focused-window)))
+
+;; Initialize on startup
+(add-hook 'after-init-hook #'my/highlight-focused-window)
 #+end_src
 
 *** Theme
@@ -782,7 +814,21 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 
 *** LLMs
 
-**** org-ai
+**** claude
+
+#+begin_src emacs-lisp
+;; Ensure transient is loaded before claude-code-emacs autoloads
+(after! (:and transient projectile)
+  (use-package! claude-code-emacs
+    :commands (claude-code-emacs-transient
+               claude-code-emacs-run
+               claude-code-emacs-switch-to-buffer)
+    :init
+    (map! :leader
+          :desc "Claude Code" "c c" #'claude-code-emacs-transient)))
+#+end_src
+
+**** COMMENT org-ai
 :PROPERTIES:
 :ID:       c782d94b-482d-4821-a086-3e442565987e
 :END:
@@ -1101,7 +1147,7 @@ Stunningly useful.
 
 ;; Remove M-s binding from dirvish to use it for swiper in dired buffers
 (after! dirvish
-  (define-key dirvish-mode-map (kbd "M-s") nil))
+      (define-key dirvish-mode-map (kbd "M-s") nil))
 
 ;; Directly edit permission bits!
 (setq wdired-allow-to-change-permissions t)
@@ -1919,6 +1965,8 @@ Any desired package not declared in a Doom module must be declared here. This se
   ;;; $DOOMDIR/packages.el
 (package! ace-window)
 (package! aggressive-indent)
+(package! claude-code-emacs :recipe (:local-repo "~/repos/claude-code-emacs/"))
+(package! websocket) ;; Required for claude-code-emacs MCP server communication
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
 ;(package! copilot
 ;  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))

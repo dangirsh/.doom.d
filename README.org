@@ -205,9 +205,7 @@ clients, file templates and snippets.
       org-roam-db-location (concat org-roam-directory "org-roam.db")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
-(save-window-excursion
-  (find-file my/org-roam-todo-file)
-  (save-buffer))
+;; Todo file will be created when first accessed
 #+end_src
 
 #+RESULTS:
@@ -746,7 +744,8 @@ The =org-capture-templates= templates used here:
 Automatically pulls the titles from pages from a URL, then inserts a corresponding org-link.
 
 #+begin_src emacs-lisp
-(use-package! org-cliplink)
+(use-package! org-cliplink
+  :defer t)
 #+end_src
 
 ** Remote Machine Interfaces
@@ -991,7 +990,8 @@ FIXME: This pulls in ivy/swiper/counsel :/
 :END:
 
 #+BEGIN_SRC emacs-lisp
-(use-package! deadgrep)
+(use-package! deadgrep
+  :defer t)
 #+END_SRC
 
 Edit results with =deadgrep-edit-mode= (replaces wgrep). Save changes with =save-some-buffers= (=C-x s !=).
@@ -1216,7 +1216,7 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 :ID:       84c57526-9ea1-4c89-b247-084651330d97
 :END:
 #+begin_src emacs-lisp
-(doom/open-scratch-buffer nil nil t)
+;; Scratch buffer will be opened when needed
 
 (set-company-backend! 'text-mode nil)
 

@@ -113,7 +113,6 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 (format +onsave)
 
 	 :emacs
-	 ;dired
 	 electric
 
 	 :term
@@ -135,16 +134,11 @@ Remember to run =doom sync= or =doom/reload=  after modifying it.
 	 cc
 	 data
 	 emacs-lisp
-	 ;; (go +lsp)
-	 ;; javascript
-	 ;; (haskell +dante)
-	 ;; (julia +lsp)
 	 (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)
 	 python
-	 ;; rest
          (rust +lsp)
 	 sh
 	 yaml
@@ -258,7 +252,7 @@ clients, file templates and snippets.
 
 #+begin_src emacs-lisp
 (setq
- doom-font (font-spec :family "Iosevka" :size 22)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -583,12 +577,6 @@ I largely live inside Org. It currently manages:
   (require 'ox-latex))
 
 
-;; Setup syntax highlighting for code block pdf exports
-;; (after! ox-latex
-;;   (setq org-latex-pdf-process
-;;         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-;;         org-latex-listings 'minted
-;;         org-latex-packages-alist '(("" "minted"))))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -726,6 +714,7 @@ The =org-capture-templates= templates used here:
 
 #+begin_src emacs-lisp
 (use-package! org-super-agenda
+  :defer t
   :after org-agenda
   :config
   (setq org-super-agenda-groups
@@ -784,6 +773,7 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
 
 #+begin_src emacs-lisp
 (use-package! teleport
+  :defer t
   :init  (teleport-tramp-add-method)
   :bind (:map teleport-list-nodes-mode-map
               ("v" . vterm)
@@ -828,66 +818,6 @@ Automatically pulls the titles from pages from a URL, then inserts a correspondi
           :desc "Claude Code" "c c" #'claude-code-emacs-transient)))
 #+end_src
 
-**** COMMENT org-ai
-:PROPERTIES:
-:ID:       c782d94b-482d-4821-a086-3e442565987e
-:END:
-
-#+begin_src emacs-lisp
-(use-package! org-ai
-  :hook
-  (org-mode . org-ai-mode)
-  :init
-  (org-ai-global-mode)                  ; installs global keybindings on C-c M-a
-  :config
-  (setq org-ai-service 'openai)
-  (setq org-ai-default-max-tokens nil)
-  (setq org-ai-default-chat-model "gpt-4o"))
-
-;; hack around password-store init. neither "after" or "requires" worked...
-(defun my/set-org-ai-token ()
-  (setq org-ai-openai-api-token (encode-coding-string (format "%s" (password-store-get "openai/apikey")) 'utf-8)))
-
-(run-with-idle-timer 1 nil #'my/set-org-ai-token)
-#+end_src
-
-***** COMMENT Whisper
-
-#+begin_src emacs-lisp
-(use-package! whisper
-  :bind ("M-s r" . whisper-run))
-
-(after! org-ai
-  (require 'whisper)
-  (require 'org-ai-talk))
-
-(use-package! greader)
-#+end_src
-
-**** COMMENT copilot
-
-#+begin_src emacs-lisp
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
-#+end_src
-
-
-**** COMMENT gptel
-
-#+begin_src emacs-lisp :noweb yes
-(use-package! gptel)
-#+end_src
-
-Add this to =~/.authinfo.gpg=
-
-#+begin_example sh :noweb yes
-machine api.openai.com login apikey password <token>
-#+end_example
 
 *** Structure Editing
 :PROPERTIES:
@@ -1108,6 +1038,7 @@ Stunningly useful.
 
 #+BEGIN_SRC emacs-lisp
 (use-package! magit
+  :defer t
   :config
   (set-default 'magit-stage-all-confirm nil)
   (set-default 'magit-unstage-all-confirm nil)
@@ -1254,9 +1185,6 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo
  "C-x C-z" nil)
-  ;; remove binding for suspend-frame
-;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
-;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 #+END_SRC
 
@@ -1317,7 +1245,6 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 ;; Coordinate between kill ring and system clipboard
 (setq save-interprogram-paste-before-kill t)
 
-;; (setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.
@@ -1968,8 +1895,6 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! claude-code-emacs :recipe (:local-repo "~/repos/claude-code-emacs/"))
 (package! websocket) ;; Required for claude-code-emacs MCP server communication
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
-;(package! copilot
-;  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! ctrlf)
 (package! deadgrep)
 (package! dired-rsync)
@@ -1977,7 +1902,6 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! exec-path-from-shell)
 (package! fancy-dabbrev)
 (package! google-this)
-;; (package! greader)
 (package! gptel)
 (package! helpful)
 (package! key-chord)
@@ -1994,5 +1918,4 @@ Any desired package not declared in a Doom module must be declared here. This se
 (package! topsy)
 (package! undo-tree)
 (package! wrap-region)
-;; (package! whisper :recipe (:local-repo "~/repos/whisper.el/"))
 #+end_src

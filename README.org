@@ -381,12 +381,12 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
   ;; For some cases, I find it less error prone to use these instead of
   ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
 
+  ;; Leaders
   (key-chord-define-global "pl" 'send-doom-leader)
-  ;; (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
 
+  ;; Custom keymap for frequently used commands
   (setq dk-keymap (make-sparse-keymap))
-
   (key-chord-define-global "fu" dk-keymap)
   (global-set-key (kbd "<XF86Launch6>") dk-keymap)
 
@@ -412,32 +412,31 @@ https://gist.github.com/dangirsh/86c001351c02b42321d20f462a66da6b
      ("v" . neurosys/open-config-file)
      ("w" . google-this-noconfirm)))
 
+  ;; Navigation
   (key-chord-define-global ",." 'end-of-buffer)
   (key-chord-define-global "xc" 'beginning-of-buffer)
   (key-chord-define-global "zx" 'beginning-of-buffer)
 
+  ;; Window management
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "q;" 'delete-other-windows)
-  (key-chord-define-global ",," 'doom/open-scratch-buffer)
-
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
-
-  (global-set-key (kbd "<XF86Launch5>") 'other-window)
-  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
-
-
-  ;; (key-chord-define-global "dh" 'split-window-vertically-and-switch)
-  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
+  ;; Hardware keys for window operations
+  (global-set-key (kbd "<XF86Launch5>") 'other-window)
+  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
+  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
+
+  ;; Editing
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
   (key-chord-define-global "td" 'comment-line)
-
   (key-chord-define-global "uy" 'er/expand-region)
 
+  ;; Commands
+  (key-chord-define-global ",," 'doom/open-scratch-buffer)
   (key-chord-define-global "xx" 'execute-extended-command)
-  ;; (key-chord-define-global "xt" 'ffap)
   )
 #+end_src
 
@@ -582,7 +581,7 @@ I largely live inside Org. It currently manages:
   :hook (org-mode . toc-org-mode))
 #+end_src
 
-*** org-roam: Graph layer on top of Org
+*** Org Roam: Graph layer on top of Org
 :PROPERTIES:
 :ID:       2252cd6a-0724-4bd1-9174-ccf6e51488d1
 :END:
@@ -667,7 +666,7 @@ The =org-capture-templates= templates used here:
   )
 #+end_src
 
-*** Org Agenda
+*** Org Agenda Configuration
 :PROPERTIES:
 :ID:       bb591dea-93dc-49d1-a148-7dec1a39a4e9
 :END:
@@ -916,10 +915,10 @@ FIXME: This pulls in ivy/swiper/counsel :/
 #+end_src
 
 
-*** misc
+*** Keyboard Layout Settings
 
 #+begin_src emacs-lisp
-;; Colemak
+;; Colemak layout support for avy navigation
 (customize-set-variable 'avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
 #+end_src
 
@@ -1226,15 +1225,9 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 (after! recentf
   (add-to-list 'recentf-keep 'my/file-local-p))
-;; (setq warning-minimum-level :emergency)
-
-;; (when doom-debug-p
-;;   (require 'benchmark-init)
-;;   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
 
 (setq async-shell-command-buffer 'new-buffer)
 
-                                        ; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
 
 ;; all backup and autosave files in the tmp dir
 (setq backup-directory-alist

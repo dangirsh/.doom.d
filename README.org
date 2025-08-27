@@ -46,8 +46,8 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#setup-for-binding-chords-as-leaders][Setup for binding chords as leaders]]
     - [[#define-global-key-chords][Define global key-chords]]
   - [[#org][Org]]
-    - [[#org-roam-graph-layer-on-top-of-org][org-roam: Graph layer on top of Org]]
-    - [[#org-agenda][Org Agenda]]
+    - [[#org-roam-graph-layer-on-top-of-org][Org Roam: Graph layer on top of Org]]
+    - [[#org-agenda-configuration][Org Agenda Configuration]]
     - [[#org-cliplink-better-external-links][org-cliplink: Better external links]]
   - [[#remote-machine-interfaces][Remote Machine Interfaces]]
     - [[#tramp][Tramp]]
@@ -58,7 +58,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
     - [[#multiple-cursors][Multiple Cursors]]
     - [[#undo-tree][Undo Tree]]
     - [[#topsy][topsy]]
-    - [[#misc][misc]]
+    - [[#keyboard-layout-settings][Keyboard Layout Settings]]
   - [[#rust][Rust]]
   - [[#consult-bindings][Consult Bindings]]
   - [[#search-utilities][Search Utilities]]
@@ -74,7 +74,7 @@ If you're reading this in a browser, consider opening it in Emacs Org mode for t
   - [[#load-untracked-elisp-work-specific][Load Untracked Elisp (work-specific)]]
   - [[#misc-global-keybindings][Misc Global Keybindings]]
   - [[#dont-save-passwords-to-clipboard-history][Don't save passwords to clipboard history]]
-  - [[#misc-1][Misc]]
+  - [[#misc][Misc]]
   - [[#autosave][Autosave]]
   - [[#better-expansions-with-fancy-dabbrev][Better Expansions with Fancy Dabbrev]]
 - [[#utility-functions][Utility functions.]]
@@ -485,6 +485,7 @@ I largely live inside Org. It currently manages:
 
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
+  (require 'ob)
   (require 'ob-async)
 
   (setq org-capture-templates '())
@@ -711,7 +712,6 @@ The =org-capture-templates= templates used here:
 
 #+begin_src emacs-lisp
 (use-package! org-super-agenda
-  :defer t
   :after org-agenda
   :config
   (setq org-super-agenda-groups
@@ -1147,8 +1147,10 @@ Load extra work config if the environment variable =EMACS_WORK_MODE= is set.
 
 #+begin_src emacs-lisp
 (unless (getenv "EMACS_NON_WORK_MODE")
-  (load-file "/home/dan/Work/w/emacs/work-config.el")
-  (require 'work-config))
+  (after! org
+    (require 'ob)  ; Ensure org-babel is available
+    (load-file "/home/dan/Work/w/emacs/work-config.el")
+    (require 'work-config)))
 #+end_src
 
 ** Misc Global Keybindings

@@ -5,8 +5,6 @@
 (package! claude-code-emacs :recipe (:local-repo "~/repos/claude-code-emacs/"))
 (package! websocket) ;; Required for claude-code-emacs MCP server communication
 (package! consult-projectile :recipe (:host gitlab :repo "OlMon/consult-projectile"))
-;(package! copilot
-;  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! ctrlf)
 (package! deadgrep)
 (package! dired-rsync)
@@ -14,7 +12,6 @@
 (package! exec-path-from-shell)
 (package! fancy-dabbrev)
 (package! google-this)
-;; (package! greader)
 (package! gptel)
 (package! helpful)
 (package! key-chord)
@@ -31,4 +28,3 @@
 (package! topsy)
 (package! undo-tree)
 (package! wrap-region)
-;; (package! whisper :recipe (:local-repo "~/repos/whisper.el/"))

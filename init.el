@@ -19,7 +19,6 @@
 	 (format +onsave)
 
 	 :emacs
-	 ;dired
 	 electric
 
 	 :term
@@ -41,16 +40,11 @@
 	 cc
 	 data
 	 emacs-lisp
-	 ;; (go +lsp)
-	 ;; javascript
-	 ;; (haskell +dante)
-	 ;; (julia +lsp)
 	 (latex +latexmk +cdlatex)
 	 markdown
 	 nix
 	 (org +roam2)
 	 python
-	 ;; rest
        (rust +lsp)
 	 sh
 	 yaml

@@ -14,9 +14,7 @@
       org-roam-db-location (concat org-roam-directory "org-roam.db")
       my/org-roam-todo-file (concat org-roam-directory "orgzly/todo.org"))
 
-(save-window-excursion
-  (find-file my/org-roam-todo-file)
-  (save-buffer))
+;; Todo file will be created when first accessed
 
 (setq my/brightness-min 1)
 (setq my/brightness-max 100)
@@ -35,7 +33,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 22)
+ doom-font (font-spec :family "Iosevka" :size 26)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -112,12 +110,12 @@
   ;; For some cases, I find it less error prone to use these instead of
   ;; keychord.el. In these cases, the keyboard sends a function key (e.g. f13)
 
+  ;; Leaders
   (key-chord-define-global "pl" 'send-doom-leader)
-  ;; (global-set-key (kbd "<XF86Launch7>") 'send-doom-leader)
   (key-chord-define-global "bj" 'send-doom-local-leader)
 
+  ;; Custom keymap for frequently used commands
   (setq dk-keymap (make-sparse-keymap))
-
   (key-chord-define-global "fu" dk-keymap)
   (global-set-key (kbd "<XF86Launch6>") dk-keymap)
 
@@ -143,32 +141,31 @@
      ("v" . neurosys/open-config-file)
      ("w" . google-this-noconfirm)))
 
+  ;; Navigation
   (key-chord-define-global ",." 'end-of-buffer)
   (key-chord-define-global "xc" 'beginning-of-buffer)
   (key-chord-define-global "zx" 'beginning-of-buffer)
 
+  ;; Window management
   (key-chord-define-global "qw" 'delete-window)
   (key-chord-define-global "q;" 'delete-other-windows)
-  (key-chord-define-global ",," 'doom/open-scratch-buffer)
-
   (key-chord-define-global "pu" 'other-window)
   (key-chord-define-global "fl" 'rev-other-window)
-
-  (global-set-key (kbd "<XF86Launch5>") 'other-window)
-  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
-
-
-  ;; (key-chord-define-global "dh" 'split-window-vertically-and-switch)
-  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
   (key-chord-define-global "mn" 'split-window-horizontally-and-switch)
 
+  ;; Hardware keys for window operations
+  (global-set-key (kbd "<XF86Launch5>") 'other-window)
+  (global-set-key (kbd "<XF86Tools>") 'rev-other-window)
+  (global-set-key (kbd "<XF86Launch7>") 'split-window-vertically-and-switch)
+
+  ;; Editing
   (key-chord-define-global "nh" 'my/duplicate-line-or-region)
   (key-chord-define-global "td" 'comment-line)
-
   (key-chord-define-global "uy" 'er/expand-region)
 
+  ;; Commands
+  (key-chord-define-global ",," 'doom/open-scratch-buffer)
   (key-chord-define-global "xx" 'execute-extended-command)
-  ;; (key-chord-define-global "xt" 'ffap)
   )
 
 (use-package! org
@@ -195,6 +192,7 @@
 
 (after! org
   ;; FIXME: Don't know why this isn't loaded automatically...
+  (require 'ob)
   (require 'ob-async)
 
   (setq org-capture-templates '())
@@ -284,12 +282,6 @@
   (require 'ox-latex))
 
 
-;; Setup syntax highlighting for code block pdf exports
-;; (after! ox-latex
-;;   (setq org-latex-pdf-process
-;;         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-;;         org-latex-listings 'minted
-;;         org-latex-packages-alist '(("" "minted"))))
 
 (use-package! toc-org
   :hook (org-mode . toc-org-mode))
@@ -388,7 +380,8 @@
           (:auto-todo t)))
   (org-super-agenda-mode))
 
-(use-package! org-cliplink)
+(use-package! org-cliplink
+  :defer t)
 
 (after! tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
@@ -398,6 +391,7 @@
 (setq password-cache-expiry nil)
 
 (use-package! teleport
+  :defer t
   :init  (teleport-tramp-add-method)
   :bind (:map teleport-list-nodes-mode-map
               ("v" . vterm)
@@ -499,7 +493,7 @@
     (unless (memq major-mode '(+doom-dashboard-mode org-mode dirvish-mode))
       (topsy-mode +1))))
 
-;; Colemak
+;; Colemak layout support for avy navigation
 (customize-set-variable 'avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
 
 (setq rustic-lsp-client 'eglot)
@@ -535,7 +529,8 @@
   :init
   (ctrlf-mode +1))
 
-(use-package! deadgrep)
+(use-package! deadgrep
+  :defer t)
 
 (use-package! smartscan
   :init (global-smartscan-mode 1)
@@ -551,6 +546,7 @@
                         tramp-file-name-regexp))
 
 (use-package! magit
+  :defer t
   :config
   (set-default 'magit-stage-all-confirm nil)
   (set-default 'magit-unstage-all-confirm nil)
@@ -597,8 +593,10 @@
 (set-register ?r '(file . "~/Sync/resume/resume.tex"))
 
 (unless (getenv "EMACS_NON_WORK_MODE")
-  (load-file "/home/dan/Work/w/emacs/work-config.el")
-  (require 'work-config))
+  (after! org
+    (require 'ob)  ; Ensure org-babel is available
+    (load-file "/home/dan/Work/w/emacs/work-config.el")
+    (require 'work-config)))
 
 (map!
  "M-p" (lambda () (interactive) (scroll-down 4))
@@ -627,9 +625,6 @@
  "C-/"   'undo-fu-only-undo
  "C-?" 'undo-fu-only-redo
  "C-x C-z" nil)
-  ;; remove binding for suspend-frame
-;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
-;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 (defun pause-greenclip-daemon ()
   (shell-command "ps axf | grep 'greenclip daemon' | grep -v grep | awk '{print $1}' | xargs kill -20"))
@@ -644,7 +639,7 @@
   (run-with-idle-timer 10 1 #'resume-greenclip-daemon)
   )
 
-(doom/open-scratch-buffer nil nil t)
+;; Scratch buffer will be opened when needed
 
 (set-company-backend! 'text-mode nil)
 
@@ -653,15 +648,9 @@
 
 (after! recentf
   (add-to-list 'recentf-keep 'my/file-local-p))
-;; (setq warning-minimum-level :emergency)
-
-;; (when doom-debug-p
-;;   (require 'benchmark-init)
-;;   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
 
 (setq async-shell-command-buffer 'new-buffer)
 
-                                        ; (add-to-list 'auto-mode-alist '("\\.eps\\'" . doc-view-minor-mode))
 
 ;; all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -672,7 +661,6 @@
 ;; Coordinate between kill ring and system clipboard
 (setq save-interprogram-paste-before-kill t)
 
-;; (setq eshell-history-file-name (concat doom-private-dir "eshell-history"))
 
 ;; This is dangerous, but reduces the annoying step of confirming local variable settings each time
 ;; a file with a "Local Variables" clause (like many Org files) is opened.

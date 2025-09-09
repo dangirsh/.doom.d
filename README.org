@@ -694,13 +694,13 @@ The =org-capture-templates= templates used here:
       org-priority-lowest 5
       org-priority-default 3)
 
-;; Pro Tools-inspired priority colors - vibrant and professional
+;; Task management inspired priority colors (Asana/Jira/Monday.com patterns)
 (after! org
-  (customize-set-variable 'org-priority-faces '((49 . (:foreground "#FF3030" :weight bold))   ; Priority 1 - Bright Red (Pro Tools recording)
-                                                (50 . (:foreground "#FFB000" :weight bold))   ; Priority 2 - Amber/Orange (Pro Tools caution)
-                                                (51 . (:foreground "#FFD700" :weight bold))   ; Priority 3 - Bright Yellow (medium priority)
-                                                (52 . (:foreground "#00FF00"))                ; Priority 4 - Bright Green (Pro Tools safe)
-                                                (53 . (:foreground "#0080FF"))))              ; Priority 5 - Bright Blue (Pro Tools focus)
+  (customize-set-variable 'org-priority-faces '((49 . (:foreground "#FF4D4D" :weight bold))   ; Priority 1 - Urgent/Critical (Red)
+                                                (50 . (:foreground "#FFAA33" :weight bold))   ; Priority 2 - High Priority (Orange/Amber)
+                                                (51 . (:foreground "#FFD700" :weight bold))   ; Priority 3 - Medium Priority (Yellow)
+                                                (52 . (:foreground "#66CC66"))                ; Priority 4 - Low Priority (Green)
+                                                (53 . (:foreground "#66B3FF"))))              ; Priority 5 - Informational (Blue)
 
 (defun my/org-agenda ()
   (interactive)

@@ -2,32 +2,32 @@
 
 (doom! :input
 
-	 :personal
-	 neurosys
+       :personal
+       neurosys
 
-	 :completion
-	 (vertico +icons)
+       :completion
+       (vertico +icons)
 
-	 :ui
-	 doom
-	 modeline
-	 zen
+       :ui
+       doom
+       modeline
+       zen
 
-	 :editor
-	 lispy
-	 multiple-cursors
-	 (format +onsave)
+       :editor
+       lispy
+       multiple-cursors
+       (format +onsave)
 
-	 :emacs
-	 electric
+       :emacs
+       electric
 
-	 :term
-	 vterm
+       :term
+       vterm
 
-	 :checkers
-	 syntax
+       :checkers
+       syntax
 
-	 :tools
+       :tools
        direnv
        docker
        magit
@@ -36,19 +36,19 @@
        pdf
        tree-sitter
 
-	 :lang
-	 cc
-	 data
-	 emacs-lisp
-	 (latex +latexmk +cdlatex)
-	 markdown
-	 nix
-	 (org +roam2)
-	 python
+       :lang
+       cc
+       data
+       emacs-lisp
+       (latex +latexmk +cdlatex)
+       markdown
+       nix
+       (org +roam2)
+       python
        (rust +lsp)
-	 sh
-	 yaml
+       sh
+       yaml
 
-	 :config
-	 literate
-	 (default +bindings))
+       :config
+       literate
+       (default +bindings))

@@ -346,11 +346,13 @@
       org-priority-lowest 5
       org-priority-default 3)
 
-(customize-set-variable 'org-priority-faces '((49 . error)
-                                              (50 . warning)
-                                              (51 . success)
-                                              (52 . success)
-                                              (53 . success)))
+;; Set priority faces after theme loads to prevent override
+(after! org
+  (customize-set-variable 'org-priority-faces '((49 . (:foreground "red" :weight bold))       ; Priority 1 - Red
+                                                (50 . (:foreground "orange" :weight bold))    ; Priority 2 - Orange
+                                                (51 . (:foreground "green" :weight bold))     ; Priority 3 - Green  
+                                                (52 . (:foreground "blue" :weight bold))      ; Priority 4 - Blue
+                                                (53 . (:foreground "purple" :weight bold)))); Priority 5 - Purple
 
 (defun my/org-agenda ()
   (interactive)
@@ -693,7 +695,7 @@
                     list-buffers-directory
                     default-directory
                     dired-directory))
-    mad-do-it))
+    ad-do-it))
 
 (setq projectile-mode-line "Projectile")
 
@@ -749,4 +751,4 @@
   (setq dabbrev-case-fold-search t)
   (setq dabbrev-case-replace nil)
   (add-hook 'minibuffer-setup-hook (lambda () (fancy-dabbrev-mode 0)))
-  (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1))))
+  (add-hook 'minibuffer-exit-hook (lambda () (fancy-dabbrev-mode 1)))))

@@ -33,7 +33,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 26)
+ doom-font (font-spec :family "Iosevka" :size 30)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -346,13 +346,13 @@
       org-priority-lowest 5
       org-priority-default 3)
 
-;; Task management inspired priority colors (Asana/Jira/Monday.com patterns)
+;; Luminance-optimized priority colors for dark backgrounds
 (after! org
-  (customize-set-variable 'org-priority-faces '((49 . (:foreground "#FF4D4D" :weight bold))   ; Priority 1 - Urgent/Critical (Red)
-                                                (50 . (:foreground "#FFAA33" :weight bold))   ; Priority 2 - High Priority (Orange/Amber)
-                                                (51 . (:foreground "#FFD700" :weight bold))   ; Priority 3 - Medium Priority (Yellow)
-                                                (52 . (:foreground "#66CC66"))                ; Priority 4 - Low Priority (Green)
-                                                (53 . (:foreground "#66B3FF"))))              ; Priority 5 - Informational (Blue)
+  (customize-set-variable 'org-priority-faces '((49 . (:foreground "#FF5555" :weight bold))   ; Priority 1 - Critical (Red, luminance ~0.21)
+                                                (50 . (:foreground "#FF8C42" :weight bold))   ; Priority 2 - High (Orange, luminance ~0.35)  
+                                                (51 . (:foreground "#D1A23E"))                ; Priority 3 - Medium (Muted Gold, luminance ~0.28)
+                                                (52 . (:foreground "#5AA86C"))                ; Priority 4 - Low (Muted Green, luminance ~0.22)
+                                                (53 . (:foreground "#3D7CA8"))))              ; Priority 5 - Minimal (Muted Blue, luminance ~0.15)
 
 (defun my/org-agenda ()
   (interactive)

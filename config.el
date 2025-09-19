@@ -33,7 +33,7 @@
 (load-file (concat doom-private-dir "funcs.el"))
 
 (setq
- doom-font (font-spec :family "Iosevka" :size 30)
+ doom-font (font-spec :family "Iosevka" :size 24)
  doom-variable-pitch-font (font-spec :family "Libre Baskerville")
  doom-serif-font (font-spec :family "Libre Baskerville"))
 
@@ -126,6 +126,13 @@
   (defun add-to-dk-keymap (bindings)
     (add-to-keymap dk-keymap bindings))
 
+  ;; Define org-agenda function that works immediately
+  (defun my/org-agenda ()
+    "Open org-agenda. Loads org if needed."
+    (interactive)
+    (require 'org-agenda)
+    (org-agenda nil "n"))
+
   (add-to-dk-keymap
    '(("." . jump-to-register)
      ("<SPC>" . rgrep)
@@ -133,6 +140,7 @@
      ("b" . my/set-brightness)
      ("c" . my/open-literate-private-config-file)
      ("d" . dired-jump)
+     ("J" . org-roam-dailies-goto-today)
      ("k" . doom/kill-this-buffer-in-all-windows)
      ("m" . magit-status)
      ("n" . narrow-or-widen-dwim)
@@ -306,9 +314,6 @@
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
 
-(add-to-dk-keymap
- '(("J" . org-roam-dailies-goto-today)))
-
 ;; leader-n-r-d-t also works, but this muscle-memory from the org-journal days is easier to type
 (map! :leader
       (:prefix-map ("n" . "notes")
@@ -353,10 +358,6 @@
                                                 (51 . (:foreground "#D1A23E"))                ; Priority 3 - Medium (Muted Gold, luminance ~0.28)
                                                 (52 . (:foreground "#5AA86C"))                ; Priority 4 - Low (Muted Green, luminance ~0.22)
                                                 (53 . (:foreground "#3D7CA8"))))              ; Priority 5 - Minimal (Muted Blue, luminance ~0.15)
-
-(defun my/org-agenda ()
-  (interactive)
-  (org-agenda nil "n"))
 
 (use-package! org-super-agenda
   :after org-agenda
